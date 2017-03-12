@@ -6,6 +6,9 @@ public enum TokenType {
     ATTIBUTE,
     ATTRIBUTES,
     TEXT,
+    SPACE_TEXT,
+    BRACKET_OPEN,
+    BRACKET_CLOSE,
     CDATA,
     DOCTYPE,
     COMMENT
