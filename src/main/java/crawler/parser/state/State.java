@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public abstract class State<T extends Token> {
-    protected T token;
+public abstract class State {
+    protected Token token;
     protected boolean tokenBuilt;
     protected boolean finished;
     protected boolean isFinal;
-    protected Map<Predicate<ContentReader>, State<? extends Token>> nextStates;
+    protected Map<Predicate<ContentReader>, State> nextStates;
     protected ContentReader reader;
 
     public State(boolean isFinal, ContentReader reader) {
@@ -21,7 +21,7 @@ public abstract class State<T extends Token> {
         this.reader = reader;
     }
 
-    T getToken() {
+    Token getToken() {
         if (!this.tokenBuilt) {
             throw new IllegalStateException("Token has not been built yet.");
         }
@@ -32,7 +32,7 @@ public abstract class State<T extends Token> {
         if (this.finished) {
             throw new IllegalStateException("Cannot perform next step. State has been already finished.");
         } else {
-            nextStep(reader);
+            nextStep();
         }
     }
 
@@ -45,7 +45,7 @@ public abstract class State<T extends Token> {
         }
     }
 
-    State<T> addNextState(Predicate<ContentReader> predicate, State<? extends Token> nextState){
+    State addNextState(Predicate<ContentReader> predicate, State nextState){
         if(isFinal){
            throw new IllegalStateException("State cannot contain any transition to another state because this state final.");
         }
@@ -53,7 +53,7 @@ public abstract class State<T extends Token> {
         return this;
     }
 
-    State<? extends Token> traverse() {
+    State traverse() {
         if (isFinal) {
             throw new IllegalStateException("Cannot traverse to another state because this state is final.");
         }
@@ -77,7 +77,7 @@ public abstract class State<T extends Token> {
         this.finished = true;
     }
 
-    protected abstract void nextStep(ContentReader reader);
+    protected abstract void nextStep();
 
     protected abstract void makeBuild();
 }
