@@ -1,15 +1,15 @@
-package crawler.event;
+package crawler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
 
-public class CrawlerEventPublisher {
+public class EventPublisher {
 
     @Autowired
     private EventBus eventBus;
 
-    public void publish(Event event) {
-        eventBus.notify("event published", event);
+    public void publish(Event event){
+        eventBus.notify(event.getData().getClass(), event);
     }
 }

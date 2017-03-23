@@ -1,34 +1,43 @@
 package crawler;
 
-import crawler.event.CrawlerConsumer;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import crawler.event.HtmlDownloadedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import reactor.bus.Event;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 
-public class ContentDownloader extends CrawlerConsumer<URL> {
+import static java.util.Objects.requireNonNull;
 
-    public String getHtml(String urlStr) throws IOException {
-        return getHtml(new URL(urlStr));
+public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
+
+    private static final String ACCEPT = "accept";
+    private static final String TEXT_CSS = "text/css";
+    private static final String ERROR_MESSAGE = "An error occurred during content downloading. ";
+
+    @Autowired
+    private EventPublisher publisher;
+
+    public ContentDownloader(CrawlerContext crawlerContext) {
+        super(crawlerContext);
     }
 
-    public String getHtml(URL url) throws IOException {
-        URLConnection connection = url.openConnection();
-
-        StringBuilder htmlContentBuilder = new StringBuilder();
-        BufferedReader contentReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line = null;
-        while ((line = contentReader.readLine()) != null) {
-            htmlContentBuilder.append(line);
-            htmlContentBuilder.append('\n');
-        }
-        return htmlContentBuilder.toString();
-    }
-
+    @Override
     public void accept(Event<URL> event) {
+        requireNonNull(event.getData());
+        String content = null;
+        try {
+            content = Unirest.get(event.getData().getPath())
+                    .header(ACCEPT, TEXT_CSS)
+                    .asObject(String.class)
+                    .getBody();
+        } catch (UnirestException e) {
+            this.logger.error(ERROR_MESSAGE, event.getData().getPath(), e);
+        }
 
+        if (content != null) {
+            publisher.publish(new HtmlDownloadedEvent(content, crawlerContext));
+        }
     }
 }
