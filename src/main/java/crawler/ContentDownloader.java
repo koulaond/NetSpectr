@@ -16,11 +16,8 @@ public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
     private static final String TEXT_CSS = "text/css";
     private static final String ERROR_MESSAGE = "An error occurred during content downloading. ";
 
-    @Autowired
-    private EventPublisher publisher;
-
-    public ContentDownloader(CrawlerContext crawlerContext) {
-        super(crawlerContext);
+    public ContentDownloader(CrawlerContext crawlerContext, EventPublisher publisher) {
+        super(crawlerContext, publisher);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
         }
 
         if (content != null) {
-            publisher.publish(new HtmlDownloadedEvent(content, crawlerContext));
+            publisher.publish(new HtmlDownloadedEvent(content, crawlerContext, event.getData()));
         }
     }
 }

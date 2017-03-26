@@ -9,11 +9,11 @@ public abstract class CrawlerConsumer<T> implements Consumer<T> {
     protected Logger logger;
     protected CrawlerContext crawlerContext;
 
-    @Autowired
     protected EventPublisher publisher;
 
-    public CrawlerConsumer(CrawlerContext crawlerContext) {
+    public CrawlerConsumer(CrawlerContext crawlerContext, EventPublisher publisher) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.crawlerContext = crawlerContext;
+        this.publisher = publisher;
     }
 }

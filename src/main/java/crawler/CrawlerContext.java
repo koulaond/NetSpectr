@@ -25,4 +25,8 @@ public class CrawlerContext {
     public String getHost(){
         return baseUrl.getHost();
     }
+
+    public LinksStorage getLinksStorage() {
+        return linksStorage;
+    }
 }
