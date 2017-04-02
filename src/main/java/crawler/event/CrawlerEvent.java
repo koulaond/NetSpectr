@@ -14,4 +14,8 @@ public class CrawlerEvent<T> extends Event<T> {
         this.crawlerContext = crawlerContext;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
+
+    public CrawlerContext getCrawlerContext() {
+        return crawlerContext;
+    }
 }

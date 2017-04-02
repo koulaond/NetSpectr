@@ -1,6 +1,6 @@
 package crawler;
 
-import crawler.event.HtmlDownloadedEvent;
+import crawler.event.ContentToExtractEvent;
 import crawler.event.LinksExtractedEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class LinkExtractor extends CrawlerConsumer<HtmlDownloadedEvent> {
+public class LinkExtractor extends CrawlerConsumer<ContentToExtractEvent> {
     private static final String HREF = "href";
 
     public LinkExtractor(CrawlerContext crawlerContext, EventPublisher publisher) {
@@ -21,7 +21,7 @@ public class LinkExtractor extends CrawlerConsumer<HtmlDownloadedEvent> {
     }
 
     @Override
-    public void accept(HtmlDownloadedEvent event) {
+    public void accept(ContentToExtractEvent event) {
         requireNonNull(event.getData());
         String html = event.getData();
         Document htmlDocument = Jsoup.parse(html);

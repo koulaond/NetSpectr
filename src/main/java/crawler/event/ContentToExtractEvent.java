@@ -5,12 +5,12 @@ import crawler.CrawlerContext;
 import java.net.URL;
 
 
-public class HtmlDownloadedEvent extends CrawlerEvent<String> {
+public class ContentToExtractEvent extends CrawlerEvent<String> {
 
     private URL sourceUrl;
 
-    public HtmlDownloadedEvent(String data, CrawlerContext crawlerContext, URL sourceUrl) {
-        super(data, crawlerContext);
+    public ContentToExtractEvent(String htmlContext, CrawlerContext crawlerContext, URL sourceUrl) {
+        super(htmlContext, crawlerContext);
         this.sourceUrl = sourceUrl;
     }
 

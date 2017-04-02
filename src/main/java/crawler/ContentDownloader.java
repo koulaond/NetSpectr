@@ -2,15 +2,12 @@ package crawler;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import crawler.event.HtmlDownloadedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import reactor.bus.Event;
-
-import java.net.URL;
+import crawler.event.ContentToExtractEvent;
+import crawler.event.NewLinkAvailableEvent;
 
 import static java.util.Objects.requireNonNull;
 
-public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
+public class ContentDownloader extends CrawlerConsumer<NewLinkAvailableEvent> {
 
     private static final String ACCEPT = "accept";
     private static final String TEXT_CSS = "text/css";
@@ -21,7 +18,7 @@ public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
     }
 
     @Override
-    public void accept(Event<URL> event) {
+    public void accept(NewLinkAvailableEvent event) {
         requireNonNull(event.getData());
         String content = null;
         try {
@@ -34,7 +31,7 @@ public class ContentDownloader extends CrawlerConsumer<Event<URL>> {
         }
 
         if (content != null) {
-            publisher.publish(new HtmlDownloadedEvent(content, crawlerContext, event.getData()));
+            publisher.publish(new ContentToExtractEvent(content, crawlerContext, event.getData()));
         }
     }
 }
