@@ -6,11 +6,11 @@ import reactor.fn.Consumer;
 
 public abstract class CrawlerConsumer<T> implements Consumer<T> {
     protected Logger logger;
-    protected CrawlerContext crawlerContext;
+    protected CrawlerRunner crawlerContext;
 
     protected CrawlerEventPublisher publisher;
 
-    public CrawlerConsumer(CrawlerContext crawlerContext, CrawlerEventPublisher publisher) {
+    public CrawlerConsumer(CrawlerRunner crawlerContext, CrawlerEventPublisher publisher) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.crawlerContext = crawlerContext;
         this.publisher = publisher;

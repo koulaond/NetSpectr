@@ -13,8 +13,8 @@ public class ContentDownloader extends CrawlerConsumer<NewLinkAvailableEvent> {
     private static final String TEXT_CSS = "text/css";
     private static final String ERROR_MESSAGE = "An error occurred during content downloading. ";
 
-    public ContentDownloader(CrawlerContext crawlerContext, CrawlerEventPublisher publisher) {
-        super(crawlerContext, publisher);
+    public ContentDownloader(CrawlerRunner runner, CrawlerEventPublisher publisher) {
+        super(runner, publisher);
     }
 
     @Override

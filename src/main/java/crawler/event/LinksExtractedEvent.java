@@ -1,6 +1,6 @@
 package crawler.event;
 
-import crawler.CrawlerContext;
+import crawler.CrawlerRunner;
 
 import java.net.URL;
 import java.util.Set;
@@ -9,12 +9,16 @@ public class LinksExtractedEvent extends CrawlerEvent<Set<URL>> {
 
     private String sourceHtml;
 
-    public LinksExtractedEvent(Set<URL> extractedLinks, CrawlerContext crawlerContext, String sourceHtml) {
+    private LinksExtractedEvent(Set<URL> extractedLinks, CrawlerRunner crawlerContext, String sourceHtml) {
         super(extractedLinks, crawlerContext);
         this.sourceHtml = sourceHtml;
     }
 
     public String getSourceHtml() {
         return sourceHtml;
+    }
+
+    public static LinksExtractedEvent instance(Set<URL> extractedLinks, CrawlerRunner crawlerContext, String sourceHtml){
+        return new LinksExtractedEvent(extractedLinks, crawlerContext, sourceHtml);
     }
 }

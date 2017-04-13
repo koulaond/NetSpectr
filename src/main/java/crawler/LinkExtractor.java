@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 public class LinkExtractor extends CrawlerConsumer<ContentToExtractEvent> {
     private static final String HREF = "href";
 
-    public LinkExtractor(CrawlerContext crawlerContext, CrawlerEventPublisher publisher) {
+    public LinkExtractor(CrawlerRunner crawlerContext, CrawlerEventPublisher publisher) {
         super(crawlerContext, publisher);
     }
 
