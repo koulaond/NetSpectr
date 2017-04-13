@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
 
-public class EventPublisher {
+public class CrawlerEventPublisher {
 
     @Autowired
     private EventBus eventBus;

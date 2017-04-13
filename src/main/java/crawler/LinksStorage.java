@@ -13,19 +13,19 @@ public class LinksStorage {
         this.urlsToProcess = new ConcurrentLinkedQueue<>();
     }
 
-    void add(URL url){
+    public void add(URL url){
         this.urlsToProcess.add(url);
     }
 
-    boolean isProcessed(URL url) {
+    public boolean isProcessed(URL url) {
         return this.processedUrls.contains(url);
     }
 
-    boolean isQueued(URL url){
+    public boolean isQueued(URL url){
         return urlsToProcess.contains(url);
     }
 
-    void setProcessed(URL url){
+    public void setProcessed(URL url){
         this.processedUrls.add(url);
     }
 }

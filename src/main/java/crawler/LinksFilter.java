@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.Set;
 
 public class LinksFilter extends CrawlerConsumer<LinksExtractedEvent>{
-    public LinksFilter(CrawlerContext crawlerContext, EventPublisher publisher) {
+    public LinksFilter(CrawlerContext crawlerContext, CrawlerEventPublisher publisher) {
         super(crawlerContext, publisher);
     }
 

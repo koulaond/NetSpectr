@@ -2,19 +2,20 @@ package crawler;
 
 
 import java.net.URL;
+import java.util.UUID;
 
 public class CrawlerContext {
-    private Long id;
+    private UUID id;
     private URL baseUrl;
     private LinksStorage linksStorage;
 
-    public CrawlerContext(Long id, URL baseUrl, LinksStorage linksStorage) {
+    public CrawlerContext(UUID id, URL baseUrl, LinksStorage linksStorage) {
         this.id = id;
         this.baseUrl = baseUrl;
         this.linksStorage = linksStorage;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
