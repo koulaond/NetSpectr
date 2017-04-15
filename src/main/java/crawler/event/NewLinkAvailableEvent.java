@@ -8,8 +8,8 @@ public class NewLinkAvailableEvent extends CrawlerEvent<URL> {
 
     private String sourceHtml;
 
-    private NewLinkAvailableEvent(URL data, CrawlerRunner crawlerContext, String sourceHtml) {
-        super(data, crawlerContext);
+    private NewLinkAvailableEvent(URL data, CrawlerRunner runner, String sourceHtml) {
+        super(data, runner);
         this.sourceHtml = sourceHtml;
     }
 

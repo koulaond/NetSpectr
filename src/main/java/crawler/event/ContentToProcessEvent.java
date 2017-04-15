@@ -9,8 +9,8 @@ public class ContentToProcessEvent extends CrawlerEvent<String> {
 
     private URL sourceUrl;
 
-    private ContentToProcessEvent(String htmlContext, CrawlerRunner crawlerContext, URL sourceUrl) {
-        super(htmlContext, crawlerContext);
+    private ContentToProcessEvent(String htmlContext, CrawlerRunner runner, URL sourceUrl) {
+        super(htmlContext, runner);
         this.sourceUrl = sourceUrl;
     }
 

@@ -9,8 +9,8 @@ public class LinksExtractedEvent extends CrawlerEvent<Set<URL>> {
 
     private String sourceHtml;
 
-    private LinksExtractedEvent(Set<URL> extractedLinks, CrawlerRunner crawlerContext, String sourceHtml) {
-        super(extractedLinks, crawlerContext);
+    private LinksExtractedEvent(Set<URL> extractedLinks, CrawlerRunner runner, String sourceHtml) {
+        super(extractedLinks, runner);
         this.sourceHtml = sourceHtml;
     }
 
