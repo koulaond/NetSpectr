@@ -1,6 +1,6 @@
 package crawler;
 
-import crawler.event.ContentToExtractEvent;
+import crawler.event.ContentToProcessEvent;
 import crawler.event.LinksExtractedEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,15 +13,15 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class LinkExtractor extends CrawlerConsumer<ContentToExtractEvent> {
+public class LinkExtractor extends CrawlerConsumer<ContentToProcessEvent> {
     private static final String HREF = "href";
 
-    public LinkExtractor(CrawlerRunner crawlerContext, CrawlerEventPublisher publisher) {
-        super(crawlerContext, publisher);
+    public LinkExtractor(CrawlerRunner runner) {
+        super(runner);
     }
 
     @Override
-    public void accept(ContentToExtractEvent event) {
+    public void accept(ContentToProcessEvent event) {
         requireNonNull(event.getData());
         String html = event.getData();
         Document htmlDocument = Jsoup.parse(html);
@@ -32,17 +32,30 @@ public class LinkExtractor extends CrawlerConsumer<ContentToExtractEvent> {
             String hrefValue = element.attr(HREF);
             URL url = null;
             try {
-                url = new URL(crawlerContext.getBaseUrl().getProtocol(), crawlerContext.getBaseUrl().getHost(), hrefValue);
+                url = buildLink(hrefValue);
             } catch (MalformedURLException e) {
                 logger.info(String.format("Cannot parse URL %s", hrefValue), e.getMessage());
             }
-            if (url != null) {
+            if (url != null && isOnDomain(url)) {
                 extractedLinks.add(url);
             }
         });
 
         if(!extractedLinks.isEmpty()){
-            publisher.publish(new LinksExtractedEvent(extractedLinks, crawlerContext, html));
+            runner.getPublisher().publish(LinksExtractedEvent.instance(extractedLinks, runner, html));
         }
+    }
+
+    private URL buildLink(String path) throws MalformedURLException {
+        if(path.startsWith("http")){
+            return new URL(path);
+        }else{
+            URL baseUrl = runner.getBaseUrl();
+            return new URL(baseUrl.getProtocol(), baseUrl.getHost(), path);
+        }
+    }
+
+    private boolean isOnDomain(URL url){
+        return url.getHost().equals(runner.getBaseUrl().getHost());
     }
 }

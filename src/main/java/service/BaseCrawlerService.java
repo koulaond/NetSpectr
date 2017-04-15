@@ -1,7 +1,18 @@
 package service;
 
-/**
- * Created by Koula on 13.4.2017.
- */
-public class BaseCrawlerService {
+import crawler.CrawlerEngine;
+
+import java.net.URL;
+
+public class BaseCrawlerService implements CrawlerService{
+
+    private CrawlerEngine engine;
+
+    public BaseCrawlerService() {
+        this.engine = new CrawlerEngine();
+    }
+
+    public void startNewCrawler(URL startUrl){
+        engine.startNewRunner(startUrl);
+    }
 }

@@ -1,37 +1,32 @@
 package crawler;
 
 import crawler.event.CrawlerEvent;
-import crawler.event.NewLinkAvailableEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ResolvableType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
-import reactor.bus.selector.ObjectSelector;
+import reactor.bus.selector.Selectors;
+
+import java.util.Map;
 
 public class CrawlerEventPublisher {
 
     private EventBus eventBus;
     private CrawlerRunner runner;
+    protected Logger logger;
 
     public CrawlerEventPublisher(EventBus eventBus, CrawlerRunner runner) {
         this.eventBus = eventBus;
         this.runner = runner;
-        eventBus.on(ObjectSelector.objectSelector(NewLinkAvailableEvent.instance()), new ContentDownloader(runner, this));
+        this.logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    void init(Map<Class<? extends CrawlerEvent>, CrawlerConsumer> eventMap){
+        eventMap.keySet().forEach(eventClass -> eventBus.on(Selectors.type(eventClass), eventMap.get(eventClass)));
     }
 
     public void publish(Event event) {
-        eventBus.notify(event.getData().getClass(), event);
-    }
-
-    private class EventSelector extends ObjectSelector<Class<CrawlerEvent>, Class<CrawlerEvent>> {
-
-        public EventSelector(Class<CrawlerEvent> clazz) {
-            super(clazz);
-        }
-
-        @Override
-        public boolean matches(Class<CrawlerEvent> key) {
-            return !(getObject() == null && key != null) && (getObject() != null && getObject().isAssignableFrom(key));
-        }
+        logger.info(String.format("Publishing event %s with data of type %s", event.getClass(), event.getData().getClass()));
+        eventBus.notify(event.getClass(), event);
     }
 }
