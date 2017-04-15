@@ -21,7 +21,8 @@ public class CrawlerEventPublisher {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    void init(Map<Class<? extends CrawlerEvent>, CrawlerConsumer> eventMap){
+    public CrawlerEventPublisher(EventBus eventBus, CrawlerRunner runner, Map<Class<? extends CrawlerEvent>, CrawlerConsumer> eventMap){
+        this(eventBus, runner);
         eventMap.keySet().forEach(eventClass -> eventBus.on(Selectors.type(eventClass), eventMap.get(eventClass)));
     }
 

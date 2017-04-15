@@ -25,11 +25,10 @@ public class CrawlerRunner implements Runnable {
         this.baseUrl = baseUrl;
         this.linksStorage = new LinksStorage();
         this.id = UUID.randomUUID();
-        this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
         this.contentDownloader = new ContentDownloader(this);
         this.linkExtractor = new LinkExtractor(this);
         this.linksFilter = new LinksFilter(this);
-        this.publisher.init(createEventMap());
+        this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this, createEventMap());
     }
 
     private Map<Class<? extends CrawlerEvent>, CrawlerConsumer> createEventMap(){
