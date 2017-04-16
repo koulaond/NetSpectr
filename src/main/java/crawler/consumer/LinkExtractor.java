@@ -1,5 +1,7 @@
-package crawler;
+package crawler.consumer;
 
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
 import crawler.event.ContentToProcessEvent;
 import crawler.event.LinksExtractedEvent;
 import org.jsoup.Jsoup;

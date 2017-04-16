@@ -1,16 +1,16 @@
-package crawler;
+package crawler.api;
 
-import crawler.event.CrawlerEvent;
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
 import reactor.bus.selector.Selector;
-import reactor.bus.selector.Selectors;
 
 import java.util.Map;
 
-public class CrawlerEventPublisher {
+public final class CrawlerEventPublisher {
 
     private EventBus eventBus;
     private CrawlerRunner runner;

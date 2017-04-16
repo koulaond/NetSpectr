@@ -1,7 +1,9 @@
-package crawler;
+package crawler.consumer;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
 import crawler.event.ContentToProcessEvent;
 import crawler.event.NewLinkAvailableEvent;
 

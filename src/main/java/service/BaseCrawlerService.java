@@ -1,6 +1,6 @@
 package service;
 
-import crawler.CrawlerEngine;
+import crawler.api.CrawlerEngine;
 
 import java.net.URL;
 
@@ -13,6 +13,6 @@ public class BaseCrawlerService implements CrawlerService{
     }
 
     public void startNewCrawler(URL startUrl){
-        engine.startNewRunner(startUrl);
+        engine.startDefaultRunner(startUrl);
     }
 }

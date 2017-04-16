@@ -1,12 +1,15 @@
-package crawler;
+package crawler.consumer;
 
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
+import crawler.api.LinksStorage;
 import crawler.event.LinksExtractedEvent;
 import crawler.event.NewLinkAvailableEvent;
 
 import java.net.URL;
 import java.util.Set;
 
-public class LinksFilter extends CrawlerConsumer<LinksExtractedEvent>{
+public class LinksFilter extends CrawlerConsumer<LinksExtractedEvent> {
     public LinksFilter(CrawlerRunner runner) {
         super(runner);
     }

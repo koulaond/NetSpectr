@@ -1,14 +1,17 @@
-package crawler;
+package crawler.api;
 
+import crawler.consumer.ContentDownloader;
+import crawler.consumer.LinkExtractor;
+import crawler.consumer.LinksFilter;
+import crawler.event.ContentToProcessEvent;
+import crawler.event.LinksExtractedEvent;
 import crawler.event.NewLinkAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.Selector;
+import reactor.bus.selector.Selectors;
 import reactor.bus.spec.EventBusSpec;
-import reactor.fn.Consumer;
-
 import java.net.URL;
-import java.util.Map;
 import java.util.UUID;
 
 public class CrawlerRunner implements Runnable {
@@ -22,8 +25,14 @@ public class CrawlerRunner implements Runnable {
         this.linksStorage = new LinksStorage();
         this.id = UUID.randomUUID();
         this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
+        subscribeDefaultConsumers();
     }
 
+    private void subscribeDefaultConsumers(){
+        subscribe(Selectors.type(ContentToProcessEvent.class), new LinkExtractor(this));
+        subscribe(Selectors.type(NewLinkAvailableEvent.class), new ContentDownloader(this));
+        subscribe(Selectors.type(LinksExtractedEvent.class), new LinksFilter(this));
+    }
 
     private EventBus createEventBus(Environment environment) {
         EventBus eventBus = new EventBusSpec()
@@ -59,7 +68,7 @@ public class CrawlerRunner implements Runnable {
         return linksStorage;
     }
 
-    CrawlerEventPublisher getPublisher(){
+    public CrawlerEventPublisher getPublisher(){
         return publisher;
     }
 
