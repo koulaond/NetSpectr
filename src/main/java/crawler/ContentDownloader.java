@@ -31,7 +31,7 @@ public class ContentDownloader extends CrawlerConsumer<NewLinkAvailableEvent> {
         }
 
         if (content != null) {
-            runner.getPublisher().publish(ContentToProcessEvent.instance(content, runner, event.getData()));
+            runner.getPublisher().publish(ContentToProcessEvent.instance(content, event.getData()));
         }
     }
 

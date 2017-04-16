@@ -8,8 +8,8 @@ public class NewLinkAvailableEvent extends CrawlerEvent<URL> {
 
     private String sourceHtml;
 
-    private NewLinkAvailableEvent(URL data, CrawlerRunner runner, String sourceHtml) {
-        super(data, runner);
+    private NewLinkAvailableEvent(URL data, String sourceHtml) {
+        super(data);
         this.sourceHtml = sourceHtml;
     }
 
@@ -17,7 +17,7 @@ public class NewLinkAvailableEvent extends CrawlerEvent<URL> {
         return sourceHtml;
     }
 
-    public static NewLinkAvailableEvent instance(URL data, CrawlerRunner crawlerContext, String sourceHtml){
-        return new NewLinkAvailableEvent(data, crawlerContext, sourceHtml);
+    public static NewLinkAvailableEvent instance(URL data, String sourceHtml){
+        return new NewLinkAvailableEvent(data, sourceHtml);
     }
 }

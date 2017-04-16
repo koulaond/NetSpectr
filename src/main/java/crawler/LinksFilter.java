@@ -7,8 +7,8 @@ import java.net.URL;
 import java.util.Set;
 
 public class LinksFilter extends CrawlerConsumer<LinksExtractedEvent>{
-    public LinksFilter(CrawlerRunner crawlerContext) {
-        super(crawlerContext);
+    public LinksFilter(CrawlerRunner runner) {
+        super(runner);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class LinksFilter extends CrawlerConsumer<LinksExtractedEvent>{
         urls.forEach(url -> {
             if(!storage.isProcessed(url) && !storage.isQueued(url)){
                 storage.add(url);
-                runner.getPublisher().publish(NewLinkAvailableEvent.instance(url, runner, event.getSourceHtml()));
+                runner.getPublisher().publish(NewLinkAvailableEvent.instance(url, event.getSourceHtml()));
             }
         });
     }

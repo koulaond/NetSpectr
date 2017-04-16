@@ -9,7 +9,6 @@ public abstract class CrawlerConsumer<T extends CrawlerEvent> implements Consume
     protected Logger logger;
     protected CrawlerRunner runner;
 
-
     public CrawlerConsumer(CrawlerRunner runner) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.runner = runner;

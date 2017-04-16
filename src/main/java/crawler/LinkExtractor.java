@@ -42,7 +42,7 @@ public class LinkExtractor extends CrawlerConsumer<ContentToProcessEvent> {
         });
 
         if(!extractedLinks.isEmpty()){
-            runner.getPublisher().publish(LinksExtractedEvent.instance(extractedLinks, runner, html));
+            runner.getPublisher().publish(LinksExtractedEvent.instance(extractedLinks, html));
         }
     }
 
