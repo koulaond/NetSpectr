@@ -8,6 +8,8 @@ public class Graph {
     private Node rootNode;
     private HashSet<Node> nodeIndex;
 
+    // TODO
+
     private class BaseNode implements Node {
         private Graph graph;
         private UUID id;
@@ -15,6 +17,7 @@ public class Graph {
         private Set<Node> incomes, outcomes;
 
         public BaseNode() {
+            this.id = UUID.randomUUID();
             this.incomes = new HashSet<>();
             this.outcomes = new HashSet<>();
         }
@@ -66,6 +69,19 @@ public class Graph {
         public BaseNode setOutcomes(Set<Node> outcomes) {
             this.outcomes = outcomes;
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            BaseNode other = (BaseNode) o;
+            return this.getId().equals(other.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * id.hashCode() + url.hashCode();
         }
     }
 }
