@@ -89,6 +89,12 @@
             <version>4.3.7.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>
+            <version>4.2.1.RELEASE</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.projectreactor/reactor-bus -->
         <dependency>
             <groupId>io.projectreactor</groupId>
