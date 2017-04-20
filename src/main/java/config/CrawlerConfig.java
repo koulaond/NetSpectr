@@ -1,9 +1,9 @@
-package crawler.config;
+package config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import rest.CrawlerController;
-import service.BaseCrawlerService;
+import service.impl.BaseCrawlerService;
 import service.CrawlerService;
 
 @Configuration

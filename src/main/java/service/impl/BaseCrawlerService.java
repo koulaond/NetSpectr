@@ -1,10 +1,11 @@
-package service;
+package service.impl;
 
 import crawler.api.CrawlerEngine;
+import service.CrawlerService;
 
 import java.net.URL;
 
-public class BaseCrawlerService implements CrawlerService{
+public class BaseCrawlerService implements CrawlerService {
 
     private CrawlerEngine engine;
 

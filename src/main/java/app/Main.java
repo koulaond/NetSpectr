@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.util.Arrays;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"app", "crawler", "rest"})
+@ComponentScan(basePackages = {"app", "crawler", "rest", "config", "repository", "service"})
 public class Main {
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
