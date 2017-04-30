@@ -1,7 +1,6 @@
 package service;
 
-import java.net.URL;
+import repository.CrawlerRepository;
 
-public interface CrawlerService {
-    void startNewCrawler(URL startUrl);
+public class CrawlerService extends RepositoryService<CrawlerRepository> {
 }

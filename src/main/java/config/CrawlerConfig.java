@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import rest.CrawlerController;
 import service.impl.BaseCrawlerService;
-import service.CrawlerService;
 
 @Configuration
 public class CrawlerConfig {

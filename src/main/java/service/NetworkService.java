@@ -5,13 +5,8 @@ import dto.NetworkDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import repository.NetworkRepository;
 
-public class NetworkService {
+public class NetworkService extends RepositoryService<NetworkRepository>{
 
-    @Autowired
-    private NetworkRepository networkRepository;
 
-    public void insertNetwork(NetworkDTO network){
-        networkRepository.save(Network.of(network));
-        System.out.println("network saved");
-    }
+
 }

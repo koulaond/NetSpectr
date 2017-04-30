@@ -11,9 +11,9 @@ public interface WebsiteRepository extends GraphRepository<Website> {
     @Query("MATCH (w:Website)-[:BELONGS_TO]->({network}) RETURN w")
     Iterable<Website> findWebsitesBelongingToNetwork(@Param("network")Network network);
 
-    @Query("MATCH (w:Website)<-[REFERS_TO]-({website}) RETURN w")
+    @Query("MATCH (w:Website)<-[:REFERS_TO]-({website}) RETURN w")
     Iterable<Website> findReferredWebsitesFrom(@Param("website") Website website);
 
-    @Query("MATCH (w:Website)-[REFERS_TO]->({website}) RETURN w")
+    @Query("MATCH (w:Website)-[:REFERS_TO]->({website}) RETURN w")
     Iterable<Website> findReferringWebsitesTo(@Param("website") Website website);
 }

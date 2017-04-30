@@ -2,6 +2,7 @@ package dto;
 
 
 public class NetworkDTO {
+
     private Long id;
     private String host;
 
