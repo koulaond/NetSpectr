@@ -8,4 +8,5 @@ public abstract class RepositoryService<T extends GraphRepository<? extends Enti
 
     @Autowired
     protected T repository;
+
 }

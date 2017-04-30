@@ -20,6 +20,12 @@ public class Website extends Entity {
     @Relationship(type = "REFERS_TO", direction = Relationship.OUTGOING)
     private Set<Website> outcomes;
 
+    public static Website of(Long id) {
+        Website website = new Website();
+        website.setId(id);
+        return website;
+    }
+
     public Network getNetwork() {
         return network;
     }

@@ -13,11 +13,17 @@ public class Network extends Entity {
     @Index(unique = true)
     private String host;
 
-    public static Network of(NetworkDTO dto){
+    public static Network of(NetworkDTO dto) {
         requireNonNull(dto);
         Network network = new Network();
         network.setId(dto.getId());
         network.setHost(dto.getHost());
+        return network;
+    }
+
+    public static Network of(Long id) {
+        Network network = new Network();
+        network.setId(id);
         return network;
     }
 
