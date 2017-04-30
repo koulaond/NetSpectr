@@ -9,11 +9,11 @@ import org.springframework.data.repository.query.Param;
 public interface WebsiteRepository extends GraphRepository<Website> {
 
     @Query("MATCH (w:Website)-[:BELONGS_TO]->({network}) RETURN w")
-    Website getWebsiteBelongingToNetwork(@Param("network")Network network);
+    Iterable<Website> findWebsitesBelongingToNetwork(@Param("network")Network network);
 
     @Query("MATCH (w:Website)<-[REFERS_TO]-({website}) RETURN w")
-    Iterable<Website> getReferredWebsitesFrom(@Param("website") Website website);
+    Iterable<Website> findReferredWebsitesFrom(@Param("website") Website website);
 
     @Query("MATCH (w:Website)-[REFERS_TO]->({website}) RETURN w")
-    Iterable<Website> getReferringWebsitesTo(@Param("website") Website website);
+    Iterable<Website> findReferringWebsitesTo(@Param("website") Website website);
 }

@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 public interface NetworkRepository extends GraphRepository<Network> {
 
     @Query("MATCH (n:Network)<-[:BELONGS_TO]-({website}) RETURN n")
-    Network getNetworkByWebsite(@Param("website") Website website);
+    Network findNetworkByWebsite(@Param("website") Website website);
 
     @Query("MATCH (n:Network {host={host}}) RETURN n")
-    Network getNetworkByHost(@Param("host") String host);
+    Network findNetworkByHost(@Param("host") String host);
 
 }

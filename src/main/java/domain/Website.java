@@ -1,16 +1,20 @@
 package domain;
 
+import org.neo4j.ogm.annotation.Index;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.Set;
 
 @NodeEntity
-public class Website extends Node{
+public class Website extends Entity {
 
     @Relationship(type = "BELONGS_TO", direction = Relationship.OUTGOING)
     private Network network;
+
+    @Index(unique = true)
     private String url;
+
     private String htmlContent;
 
     @Relationship(type = "REFERS_TO", direction = Relationship.OUTGOING)

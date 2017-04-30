@@ -2,6 +2,7 @@ package rest;
 
 import domain.Network;
 import dto.CrawlerDTO;
+import dto.NetworkDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class RepositoryController {
     private NetworkService networkService;
 
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
-    public ResponseEntity<?> startNewCrawler(@RequestBody Network network) {
+    public ResponseEntity<?> startNewCrawler(@RequestBody NetworkDTO network) {
         networkService.insertNetwork(network);
         return new ResponseEntity<>(HttpStatus.OK);
     }

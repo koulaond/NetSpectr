@@ -1,12 +1,10 @@
 package config;
 
 import org.neo4j.ogm.session.SessionFactory;
-import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import rest.RepositoryController;
 import service.NetworkService;
@@ -14,20 +12,35 @@ import service.NetworkService;
 @Configuration
 @EnableTransactionManagement
 @EnableNeo4jRepositories("repository")
-public class RepositoryConfig extends Neo4jConfiguration{
+public class RepositoryConfig {
 
     @Bean
-    public RepositoryController repositoryController(){
+    public RepositoryController repositoryController() {
         return new RepositoryController();
     }
 
     @Bean
-    public NetworkService networkService(){
+    public NetworkService networkService() {
         return new NetworkService();
     }
 
-    @Override
-    public SessionFactory getSessionFactory() {
-        return new SessionFactory("domain");
+    @Bean
+    public org.neo4j.ogm.config.Configuration configuration() {
+        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
+        configuration.driverConfiguration()
+                .setDriverClassName("org.neo4j.ogm.drivers.http.driver.HttpDriver")
+                .setURI("http://user:password@localhost:7474")
+                .setCredentials("neo4j", "koulik");
+        return configuration;
+    }
+
+    @Bean
+    public SessionFactory sessionFactory() {
+        return new SessionFactory(configuration(), "domain");
+    }
+
+    @Bean
+    public Neo4jTransactionManager transactionManager() {
+        return new Neo4jTransactionManager(sessionFactory());
     }
 }
