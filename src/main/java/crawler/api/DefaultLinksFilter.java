@@ -15,10 +15,10 @@ public class DefaultLinksFilter implements LinksFilter<URL>{
 
     @Override
     public Iterable<URL> filterLinks(Iterable<URL> toFilter) {
-        Iterable<URL> filtered = new HashSet<>();
+        HashSet<URL> filtered = new HashSet<>();
         toFilter.forEach(url -> {
             if(!storage.isProcessed(url) && !storage.isQueued(url)){
-                storage.add(url);
+                filtered.add(url);
             }
         });
 

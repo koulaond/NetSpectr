@@ -18,9 +18,13 @@ public class LinksStorage {
         this.urlsToProcess.add(url);
     }
 
+    public void add(Iterable<URL> urls){
+        urls.forEach(url -> add(url));
+    }
+
     public boolean isProcessed(URL url) {
         return this.processedUrls.contains(url);
-    }
+}
 
     public boolean isQueued(URL url){
         return urlsToProcess.contains(url);
@@ -28,5 +32,13 @@ public class LinksStorage {
 
     public void setProcessed(URL url){
         this.processedUrls.add(url);
+    }
+
+    public boolean hasNext(){
+        return !urlsToProcess.isEmpty();
+    }
+
+    public URL next(){
+        return urlsToProcess.poll();
     }
 }

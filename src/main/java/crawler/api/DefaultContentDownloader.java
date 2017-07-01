@@ -3,10 +3,6 @@ package crawler.api;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import crawler.ContentDownloader;
-import crawler.api.CrawlerConsumer;
-import crawler.api.CrawlerRunner;
-import crawler.event.ContentToProcessEvent;
-import crawler.event.NewLinkAvailableEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
