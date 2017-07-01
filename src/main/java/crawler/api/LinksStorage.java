@@ -3,13 +3,14 @@ package crawler.api;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class LinksStorage {
     private Set<URL> processedUrls;
     private Queue<URL> urlsToProcess;
 
     public LinksStorage() {
-        this.processedUrls = new HashSet<URL>();
+        this.processedUrls = new ConcurrentSkipListSet<>();
         this.urlsToProcess = new ConcurrentLinkedQueue<>();
     }
 

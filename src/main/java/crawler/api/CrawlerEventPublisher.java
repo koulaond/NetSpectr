@@ -1,7 +1,5 @@
 package crawler.api;
 
-import crawler.api.CrawlerConsumer;
-import crawler.api.CrawlerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.bus.Event;

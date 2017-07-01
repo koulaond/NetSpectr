@@ -1,40 +1,44 @@
-package crawler.consumer;
+package crawler.api;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import crawler.ContentDownloader;
 import crawler.api.CrawlerConsumer;
 import crawler.api.CrawlerRunner;
 import crawler.event.ContentToProcessEvent;
 import crawler.event.NewLinkAvailableEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
 
 import static java.util.Objects.requireNonNull;
 
-public class ContentDownloader extends CrawlerConsumer<NewLinkAvailableEvent> {
+public class DefaultContentDownloader implements ContentDownloader<URL, String>{
 
     private static final String ACCEPT = "accept";
     private static final String TEXT_CSS = "text/css";
     private static final String ERROR_MESSAGE = "An error occurred during content downloading. ";
 
-    public ContentDownloader(CrawlerRunner runner) {
-        super(runner);
+    private final Logger LOGGER;
+
+    public DefaultContentDownloader() {
+        this.LOGGER = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
-    public void accept(NewLinkAvailableEvent event) {
-        requireNonNull(event.getData());
+    public String downloadContent(URL url) {
+        requireNonNull(url);
         String content = null;
         try {
-            content = Unirest.get(event.getData().toExternalForm())
+            content = Unirest.get(url.toExternalForm())
                     .header(ACCEPT, TEXT_CSS)
                     .asObject(String.class)
                     .getBody();
         } catch (UnirestException e) {
-            this.logger.error(ERROR_MESSAGE, event.getData().getPath(), e);
+            this.LOGGER.error(ERROR_MESSAGE, url.getPath(), e);
         }
-
-        if (content != null) {
-            runner.getPublisher().publish(ContentToProcessEvent.instance(content, event.getData()));
-        }
+        return content;
     }
 
 }

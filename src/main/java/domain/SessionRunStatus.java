@@ -1,6 +1,6 @@
 package domain;
 
-public enum CrawlingStatus {
+public enum SessionRunStatus {
     NEW,
     RUNNING,
     STOPPED,

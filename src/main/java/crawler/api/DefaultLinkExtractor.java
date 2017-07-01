@@ -1,31 +1,38 @@
-package crawler.consumer;
+package crawler.api;
 
+import crawler.LinkExtractor;
 import crawler.api.CrawlerConsumer;
 import crawler.api.CrawlerRunner;
 import crawler.event.ContentToProcessEvent;
 import crawler.event.LinksExtractedEvent;
+import domain.Crawler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class LinkExtractor extends CrawlerConsumer<ContentToProcessEvent> {
+public class DefaultLinkExtractor implements LinkExtractor<String, URL> {
     private static final String HREF = "href";
+    private final Logger LOGGER;
+    private CrawlerRunner runner;
 
-    public LinkExtractor(CrawlerRunner runner) {
-        super(runner);
+    public DefaultLinkExtractor(CrawlerRunner runner) {
+        this.LOGGER = LoggerFactory.getLogger(this.getClass());
+        this.runner  = runner;
     }
 
     @Override
-    public void accept(ContentToProcessEvent event) {
-        requireNonNull(event.getData());
-        String html = event.getData();
+    public Iterable<URL> extractLinks(String html) {
+        requireNonNull(html);
         Document htmlDocument = Jsoup.parse(html);
         Elements links = htmlDocument.getElementsByAttribute(HREF);
         Set<URL> extractedLinks = new HashSet<>();
@@ -36,16 +43,13 @@ public class LinkExtractor extends CrawlerConsumer<ContentToProcessEvent> {
             try {
                 url = buildLink(hrefValue);
             } catch (MalformedURLException e) {
-                logger.info(String.format("Cannot parse URL %s", hrefValue), e.getMessage());
+                LOGGER.info(String.format("Cannot parse URL %s", hrefValue), e.getMessage());
             }
             if (url != null && isOnDomain(url)) {
                 extractedLinks.add(url);
             }
         });
-
-        if(!extractedLinks.isEmpty()){
-            runner.getPublisher().publish(LinksExtractedEvent.instance(extractedLinks, html));
-        }
+        return extractedLinks;
     }
 
     private URL buildLink(String path) throws MalformedURLException {

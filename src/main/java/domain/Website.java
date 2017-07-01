@@ -9,9 +9,9 @@ import java.util.Set;
 @NodeEntity
 public class Website extends Entity {
 
+
     @Relationship(type = "BELONGS_TO", direction = Relationship.OUTGOING)
     private Network network;
-
     @Index(unique = true)
     private String url;
 
