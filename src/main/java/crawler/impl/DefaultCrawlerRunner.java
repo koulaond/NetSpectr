@@ -5,6 +5,8 @@ import crawler.event.ContentToProcessEvent;
 import crawler.event.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
+import reactor.bus.selector.ClassSelector;
+import reactor.bus.selector.Selector;
 import reactor.bus.spec.EventBusSpec;
 
 import java.net.URL;
@@ -65,14 +67,22 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         return Environment.initializeIfEmpty().assignErrorJournal();
     }
 
+    @Override
+    public void subscribe(Class<? extends CrawlerEvent> clazz, CrawlerConsumer consumer) {
+        this.publisher.subscribe(new ClassSelector(clazz), consumer);
+    }
+
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public URL getBaseUrl() {
         return baseUrl;
     }
 
+    @Override
     public LinksStorage<URL> getLinksStorage() {
         return linksStorage;
     }

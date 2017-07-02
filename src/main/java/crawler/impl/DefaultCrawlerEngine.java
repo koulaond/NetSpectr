@@ -1,5 +1,6 @@
 package crawler.impl;
 
+import crawler.CrawlerEngine;
 import crawler.CrawlerRunner;
 import crawler.LinksStorage;
 import crawler.impl.DefaultCrawlerRunner;
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DefaultCrawlerEngine {
+public class DefaultCrawlerEngine implements CrawlerEngine<URL>{
     private ExecutorService executorService;
     private Map<URL, CrawlerRunner> runners;
 
@@ -20,10 +21,13 @@ public class DefaultCrawlerEngine {
         this.runners = new ConcurrentHashMap<>();
     }
 
+    @Override
     public void startCrawling(URL startUrl){
         LinksStorage<URL> linksStorage = new DefaultLinksStorage();
         CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startUrl, linksStorage);
         this.runners.put(startUrl, runner);
         executorService.submit(runner);
     }
+
+
 }
