@@ -1,4 +1,4 @@
-package crawler.api;
+package crawler.impl;
 
 import crawler.LinkExtractor;
 import org.jsoup.Jsoup;
@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,11 +17,11 @@ import static java.util.Objects.requireNonNull;
 public class DefaultLinkExtractor implements LinkExtractor<String, URL> {
     private static final String HREF = "href";
     private final Logger LOGGER;
-    private CrawlerRunner runner;
+    private final URL baseUrl;
 
-    public DefaultLinkExtractor(CrawlerRunner runner) {
+    public DefaultLinkExtractor(URL baseUrl) {
         this.LOGGER = LoggerFactory.getLogger(this.getClass());
-        this.runner  = runner;
+        this.baseUrl = baseUrl;
     }
 
     @Override
@@ -51,12 +50,11 @@ public class DefaultLinkExtractor implements LinkExtractor<String, URL> {
         if(path.startsWith("http")){
             return new URL(path);
         }else{
-            URL baseUrl = runner.getBaseUrl();
             return new URL(baseUrl.getProtocol(), baseUrl.getHost(), path);
         }
     }
 
     private boolean isOnDomain(URL url){
-        return url.getHost().equals(runner.getBaseUrl().getHost());
+        return url.getHost().equals(baseUrl.getHost());
     }
 }

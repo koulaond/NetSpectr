@@ -1,4 +1,4 @@
-package crawler.api;
+package crawler.impl;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;

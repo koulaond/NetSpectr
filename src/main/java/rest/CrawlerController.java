@@ -17,14 +17,11 @@ import java.util.List;
 @RequestMapping(value = "/crawler")
 public class CrawlerController {
 
-    @Autowired
-    private CrawlerService crawlerService;
-
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public ResponseEntity<CrawlerDTO> startNewCrawler(@RequestBody String url) {
         try {
             URL startUrl = new URL(url);
-            this.crawlerService.startNewCrawler(startUrl);
+            ////////////
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

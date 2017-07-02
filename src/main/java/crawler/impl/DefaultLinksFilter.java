@@ -1,15 +1,16 @@
-package crawler.api;
+package crawler.impl;
 
 import crawler.LinksFilter;
+import crawler.LinksStorage;
 
 import java.net.URL;
 import java.util.HashSet;
 
 public class DefaultLinksFilter implements LinksFilter<URL>{
 
-    private LinksStorage storage;
+    private LinksStorage<URL> storage;
 
-    public DefaultLinksFilter(LinksStorage storage) {
+    public DefaultLinksFilter(LinksStorage<URL> storage) {
         this.storage = storage;
     }
 
@@ -21,7 +22,6 @@ public class DefaultLinksFilter implements LinksFilter<URL>{
                 filtered.add(url);
             }
         });
-
         return filtered;
     }
 }

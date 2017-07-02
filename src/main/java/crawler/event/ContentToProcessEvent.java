@@ -1,6 +1,6 @@
 package crawler.event;
 
-import crawler.api.CrawlerEvent;
+import crawler.CrawlerEvent;
 
 import java.net.URL;
 

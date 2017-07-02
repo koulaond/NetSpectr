@@ -1,4 +1,4 @@
-package crawler.api;
+package crawler.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,16 +11,16 @@ import java.util.Map;
 public final class CrawlerEventPublisher {
 
     private EventBus eventBus;
-    private CrawlerRunner runner;
+    private DefaultCrawlerRunner runner;
     protected Logger logger;
 
-    public CrawlerEventPublisher(EventBus eventBus, CrawlerRunner runner) {
+    public CrawlerEventPublisher(EventBus eventBus, DefaultCrawlerRunner runner) {
         this.eventBus = eventBus;
         this.runner = runner;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public CrawlerEventPublisher(EventBus eventBus, CrawlerRunner runner, Map<Selector, CrawlerConsumer> subscribers){
+    public CrawlerEventPublisher(EventBus eventBus, DefaultCrawlerRunner runner, Map<Selector, CrawlerConsumer> subscribers){
         this(eventBus, runner);
         subscribers.forEach((selector, crawlerConsumer) -> subscribe(selector, crawlerConsumer));
     }
