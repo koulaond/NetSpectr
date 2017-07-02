@@ -1,11 +1,6 @@
 package crawler.api;
 
 import crawler.LinkExtractor;
-import crawler.api.CrawlerConsumer;
-import crawler.api.CrawlerRunner;
-import crawler.event.ContentToProcessEvent;
-import crawler.event.LinksExtractedEvent;
-import domain.Crawler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

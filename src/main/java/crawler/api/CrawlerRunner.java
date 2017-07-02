@@ -4,16 +4,12 @@ import crawler.ContentDownloader;
 import crawler.LinkExtractor;
 import crawler.LinksFilter;
 import crawler.event.ContentToProcessEvent;
-import crawler.event.LinksExtractedEvent;
-import crawler.event.NewLinkAvailableEvent;
+import crawler.event.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.spec.EventBusSpec;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class CrawlerRunner implements Runnable {
@@ -46,7 +42,10 @@ public class CrawlerRunner implements Runnable {
             if (content != null) {
                 this.publisher.publish(new ContentToProcessEvent(content, next));
                 Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content));
-                this.linksStorage.add(urlsToProcess);
+                if(!urlsToProcess.iterator().hasNext()) {
+                    this.linksStorage.add(urlsToProcess);
+                    this.publisher.publish(new NewLinksAvailableEvent(urlsToProcess, content));
+                }
             }
         }
     }
