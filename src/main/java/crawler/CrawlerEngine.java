@@ -6,6 +6,8 @@ import java.util.UUID;
 public interface CrawlerEngine<T> {
     void startCrawling(T startPoint);
 
+    void startCrawling(T startPoint, Map<Class<? extends CrawlerEvent>, CrawlerConsumer> subscribers);
+
     void stopCrawling(UUID uuid);
 
     void stopCrawling(T startPoint);
