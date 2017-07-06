@@ -1,11 +1,11 @@
-package crawler.event;
+package crawler;
 
 import crawler.CrawlerEvent;
 
 import java.net.URL;
 
 
-public class ContentToProcessEvent extends CrawlerEvent<String> {
+public final class ContentToProcessEvent extends CrawlerEvent<String> {
 
     private URL sourceUrl;
 

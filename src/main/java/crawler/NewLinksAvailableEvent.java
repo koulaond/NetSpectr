@@ -1,10 +1,10 @@
-package crawler.event;
+package crawler;
 
 import crawler.CrawlerEvent;
 
 import java.net.URL;
 
-public class NewLinksAvailableEvent extends CrawlerEvent<Iterable<URL>> {
+public final class NewLinksAvailableEvent extends CrawlerEvent<Iterable<URL>> {
 
     private String sourceHtml;
 

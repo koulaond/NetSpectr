@@ -1,12 +1,12 @@
 package crawler.impl;
 
 import crawler.*;
-import crawler.event.ContentToProcessEvent;
-import crawler.event.NewLinksAvailableEvent;
+import crawler.ContentToProcessEvent;
+import crawler.event.CrawlerEvent;
+import crawler.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
-import reactor.bus.selector.Selector;
 import reactor.bus.spec.EventBusSpec;
 
 import java.net.URL;
