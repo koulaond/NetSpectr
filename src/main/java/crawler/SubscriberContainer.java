@@ -5,16 +5,12 @@ import java.util.*;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
-public class SubscriberContainer {
+public final class SubscriberContainer {
 
     private Map<Class<? extends CrawlerEvent>, Subscribers> subscriberContainer;
 
     private SubscriberContainer(Map<Class<? extends CrawlerEvent>, Subscribers> subscriberContainer) {
         this.subscriberContainer = subscriberContainer;
-    }
-
-    public static SubscriberContainerBuilder builder(){
-        return new SubscriberContainerBuilder();
     }
 
     public Set<CrawlerConsumer> getSubscribersFor(Class<? extends CrawlerEvent> event){
@@ -31,6 +27,10 @@ public class SubscriberContainer {
 
     public Set<Class<? extends CrawlerEvent>> getEvents(){
         return subscriberContainer.keySet();
+    }
+
+    public static SubscriberContainerBuilder builder(){
+        return new SubscriberContainerBuilder();
     }
 
     private static class SubscriberContainerBuilder {

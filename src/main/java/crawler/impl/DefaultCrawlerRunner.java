@@ -88,6 +88,11 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
+    public void setLinksStorage(LinksStorage<URL> linksStorage) {
+
+    }
+
+    @Override
     public void pause() {
 
     }

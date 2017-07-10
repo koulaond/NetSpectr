@@ -4,13 +4,19 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface CrawlerEngine<T> {
-    void startCrawling(T startPoint);
+    UUID createNewCrawler(T startPoint);
 
-    void startCrawling(T startPoint, LinksStorage<T> linksStorage);
+    UUID createNewCrawler(T startPoint, LinksStorage<T> linksStorage);
 
-    void startCrawling(T startPoint, SubscriberContainer subscribers);
+    UUID createNewCrawler(T startPoint, SubscriberContainer subscribers);
 
-    void startCrawling(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
+    UUID createNewCrawler(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
+
+    void subscribeFor(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer);
+
+    void getSubscribersForCrawler(T startPoint);
+
+    void getSubscribersForCrawler(UUID uuid);
 
     void stopCrawling(UUID uuid);
 
@@ -28,7 +34,11 @@ public interface CrawlerEngine<T> {
 
     void restartCrawling(T startPoint);
 
-    Map<UUID, T> getCrawlers();
+    Map<UUID, T> getAllCrawlers();
+
+    Map<UUID, T> getCrawlersByState();
+
+    CrawlerState getStateForCrawler(UUID uuid);
 
     boolean isCrawled(T startPoint);
 }
