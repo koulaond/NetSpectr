@@ -15,11 +15,6 @@ import service.NetworkService;
 public class RepositoryConfig {
 
     @Bean
-    public RepositoryController repositoryController() {
-        return new RepositoryController();
-    }
-
-    @Bean
     public NetworkService networkService() {
         return new NetworkService();
     }

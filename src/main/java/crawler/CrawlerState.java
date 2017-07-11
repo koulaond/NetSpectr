@@ -1,6 +1,6 @@
 package crawler;
 
-enum CrawlerState{
+public enum CrawlerState{
     NEW,
     RUNNING,
     PENDING,

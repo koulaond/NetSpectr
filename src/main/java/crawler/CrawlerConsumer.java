@@ -12,4 +12,7 @@ public abstract class CrawlerConsumer<T extends CrawlerEvent> implements Consume
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.runner = runner;
     }
+
+    @Override
+    public abstract void accept(T t);
 }

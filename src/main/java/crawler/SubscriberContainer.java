@@ -33,7 +33,7 @@ public final class SubscriberContainer {
         return new SubscriberContainerBuilder();
     }
 
-    private static class SubscriberContainerBuilder {
+    public static final class SubscriberContainerBuilder {
         private Map<Class<? extends CrawlerEvent>, Subscribers> subscriberContainer;
 
         private SubscriberContainerBuilder(){

@@ -2,7 +2,6 @@ package crawler.impl;
 
 import crawler.*;
 import crawler.ContentToProcessEvent;
-import crawler.event.CrawlerEvent;
 import crawler.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
@@ -80,6 +79,11 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     @Override
     public URL getBaseUrl() {
         return baseUrl;
+    }
+
+    @Override
+    public CrawlerState getState() {
+        return null;
     }
 
     @Override
