@@ -14,7 +14,7 @@ public class DefaultContentDownloader implements ContentDownloader<URL, String>{
 
     private static final String ACCEPT = "accept";
     private static final String TEXT_CSS = "text/css";
-    private static final String ERROR_MESSAGE = "An error occurred during content downloading. ";
+    private static final String ERROR_MESSAGE = "An error occurred during content downloading.";
 
     private final Logger LOGGER;
 
