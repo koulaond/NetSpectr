@@ -3,38 +3,36 @@ package crawler.impl;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import crawler.ContentDownloader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
-import static java.util.Objects.requireNonNull;
+public class DefaultContentDownloader implements ContentDownloader<URL, String> {
 
-public class DefaultContentDownloader implements ContentDownloader<URL, String>{
-
-    private static final String ACCEPT = "accept";
-    private static final String TEXT_CSS = "text/css";
-    private static final String ERROR_MESSAGE = "An error occurred during content downloading.";
-
-    private final Logger LOGGER;
-
-    public DefaultContentDownloader() {
-        this.LOGGER = LoggerFactory.getLogger(this.getClass());
-    }
+    private static final String HEADER_ACCEPT_KEY = "accept";
+    private static final String HEADER_ACCEPT_VALUE = "text/css";
 
     @Override
     public String downloadContent(URL url) {
-        requireNonNull(url);
-        String content = null;
+        if (url == null) {
+            throw new IllegalStateException("Source URL object is null.");
+        }
+
+        String protocol = url.getProtocol();
+        if (!protocol.equals("http") && !protocol.equals("https")) {
+            throw new IllegalStateException("Unsupported protocol: " + protocol);
+        }
+
+        if (url.getHost() == null || url.getHost().isEmpty()) {
+            throw new IllegalStateException("Host is missing.");
+        }
+
         try {
-            content = Unirest.get(url.toExternalForm())
-                    .header(ACCEPT, TEXT_CSS)
+            return Unirest.get(url.toExternalForm())
+                    .header(HEADER_ACCEPT_KEY, HEADER_ACCEPT_VALUE)
                     .asObject(String.class)
                     .getBody();
         } catch (UnirestException e) {
-            this.LOGGER.error(ERROR_MESSAGE, url.getPath(), e);
+            throw new IllegalStateException("An error occurred during URL access. Error cause: " + e.getMessage());
         }
-        return content;
     }
-
 }
