@@ -33,12 +33,7 @@ public class DefaultLinkExtractor implements LinkExtractor<String, URL> {
 
         links.forEach(element -> {
             String hrefValue = element.attr(HREF);
-            URL url = null;
-            try {
-                url = buildLink(hrefValue);
-            } catch (MalformedURLException e) {
-                LOGGER.info(String.format("Cannot parse URL %s", hrefValue), e.getMessage());
-            }
+            URL url = buildLink(hrefValue);
             if (url != null && isOnDomain(url)) {
                 extractedLinks.add(url);
             }
@@ -46,15 +41,19 @@ public class DefaultLinkExtractor implements LinkExtractor<String, URL> {
         return extractedLinks;
     }
 
-    private URL buildLink(String path) throws MalformedURLException {
-        if(path.startsWith("http")){
-            return new URL(path);
-        }else{
-            return new URL(baseUrl.getProtocol(), baseUrl.getHost(), path);
+    private URL buildLink(String path) {
+        try {
+            if (path.startsWith("http")) {
+                return new URL(path);
+            } else {
+                return new URL(baseUrl.getProtocol(), baseUrl.getHost(), path);
+            }
+        }catch(MalformedURLException ex){
+            return null;
         }
     }
 
     private boolean isOnDomain(URL url){
-        return url.getHost().equals(baseUrl.getHost());
+        return !url.getHost().isEmpty() && url.getHost().equals(baseUrl.getHost());
     }
 }

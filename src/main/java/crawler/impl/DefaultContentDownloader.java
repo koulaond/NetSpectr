@@ -13,19 +13,13 @@ public class DefaultContentDownloader implements ContentDownloader<URL, String> 
 
     @Override
     public String downloadContent(URL url) {
-        if (url == null) {
-            throw new IllegalStateException("Source URL object is null.");
-        }
-
         String protocol = url.getProtocol();
         if (!protocol.equals("http") && !protocol.equals("https")) {
             throw new IllegalStateException("Unsupported protocol: " + protocol);
         }
-
         if (url.getHost() == null || url.getHost().isEmpty()) {
             throw new IllegalStateException("Host is missing.");
         }
-
         try {
             return Unirest.get(url.toExternalForm())
                     .header(HEADER_ACCEPT_KEY, HEADER_ACCEPT_VALUE)
