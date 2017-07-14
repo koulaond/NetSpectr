@@ -1,8 +1,6 @@
 package crawler.impl;
 
 import crawler.*;
-import crawler.ContentToProcessEvent;
-import crawler.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
@@ -18,13 +16,13 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     protected final CrawlerEventPublisher publisher;
     protected final ContentDownloader<URL, String> downloader;
     protected final LinkExtractor<String, URL> extractor;
-    protected final LinksFilter<URL> filter;
+    protected final LinksFilter<URL, LinksStorage<URL>> filter;
 
     public DefaultCrawlerRunner(URL baseUrl,
                                 LinksStorage<URL> linksStorage,
                                 ContentDownloader<URL, String> downloader,
                                 LinkExtractor<String, URL> extractor,
-                                LinksFilter<URL> filter) {
+                                LinksFilter<URL, LinksStorage<URL>> filter) {
         this.id = UUID.randomUUID();
         this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
 
@@ -44,7 +42,7 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
             String content = downloader.downloadContent(next);
             if (content != null) {
                 this.publisher.publish(new ContentToProcessEvent(content, next));
-                Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content));
+                Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content), linksStorage);
                 if (!urlsToProcess.iterator().hasNext()) {
                     this.linksStorage.add(urlsToProcess);
                     this.publisher.publish(new NewLinksAvailableEvent(urlsToProcess, content));
