@@ -9,14 +9,14 @@ import reactor.bus.spec.EventBusSpec;
 import java.net.URL;
 import java.util.UUID;
 
-public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
-    protected final UUID id;
-    protected final URL baseUrl;
-    protected final LinksStorage<URL> linksStorage;
-    protected final CrawlerEventPublisher publisher;
-    protected final ContentDownloader<URL, String> downloader;
-    protected final LinkExtractor<String, URL> extractor;
-    protected final LinksFilter<URL, LinksStorage<URL>> filter;
+public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
+    private final UUID id;
+    private final URL baseUrl;
+    private final LinksStorage<URL> linksStorage;
+    private final CrawlerEventPublisher publisher;
+    private final ContentDownloader<URL, String> downloader;
+    private final LinkExtractor<String, URL> extractor;
+    private final LinksFilter<URL, LinksStorage<URL>> filter;
 
     public DefaultCrawlerRunner(URL baseUrl,
                                 LinksStorage<URL> linksStorage,
@@ -89,10 +89,6 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         return linksStorage;
     }
 
-    @Override
-    public void setLinksStorage(LinksStorage<URL> linksStorage) {
-
-    }
 
     @Override
     public void pause() {

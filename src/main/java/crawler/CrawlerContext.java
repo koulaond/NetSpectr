@@ -30,6 +30,8 @@ public interface CrawlerContext<T> {
 
     void restartCrawler(UUID uuid);
 
+    CrawlerInfo<T> getCrawler(UUID uuid);
+
     Map<UUID, CrawlerInfo<T>> getAllCrawlers();
 
     Map<UUID, CrawlerInfo<T>> getNewCrawlers();
@@ -42,8 +44,6 @@ public interface CrawlerContext<T> {
 
     Map<UUID, CrawlerInfo<T>> getCrawlersByState(CrawlerState state);
 
-    CrawlerState getStateForCrawler(UUID uuid);
-
     boolean isCrawled(T startPoint);
 
     interface CrawlerInfo<T> {
@@ -54,5 +54,7 @@ public interface CrawlerContext<T> {
         CrawlerState getState();
 
         SubscriberContainer getSubscribers();
+
+        LinksStorage<T> getLinksStorage();
     }
 }

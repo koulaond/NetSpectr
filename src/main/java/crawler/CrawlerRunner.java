@@ -15,8 +15,6 @@ public interface CrawlerRunner<T> extends Runnable {
 
     LinksStorage<T> getLinksStorage();
 
-    void setLinksStorage(LinksStorage<T> linksStorage);
-
     void pause();
 
     void stop();
