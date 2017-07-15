@@ -1,15 +1,22 @@
 package crawler.impl;
 
+import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
 public class DefaultLinkExtractorTest {
+    private static final String BASE_URL_DEF = "https://www.test.domain.com";
+    private static URL BASE_URL;
+
     private static final String HTML = "<html>\n" +
             "<head></head>\n" +
             "<body>\n" +
@@ -26,21 +33,35 @@ public class DefaultLinkExtractorTest {
             "</body>\n" +
             "</html>";
 
-    private static URL BASE_URL;
+    private static final String[] EXPECTED_URLS = {
+            "/business",
+            "/organisation",
+            "/products/network",
+            "/products/network/inprogress"
+    };
+    private static List<URL> EXPECTED_URLS_COLLECTION;
 
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
+        EXPECTED_URLS_COLLECTION = new ArrayList<>();
         try {
-            BASE_URL = new URL("https://www.test.domain.com");
+            BASE_URL = new URL(BASE_URL_DEF);
         } catch (MalformedURLException e) {
-            Assert.fail("Cannot set testing URLs due to: " + e.getMessage());
+            Assert.fail("Cannot set Base URL due to: " + e.getMessage());
         }
+
+        Stream.of(EXPECTED_URLS).forEach(url -> {
+            try {
+                EXPECTED_URLS_COLLECTION.add(new URL(BASE_URL_DEF + url));
+            } catch (MalformedURLException e) {
+                Assert.fail("Cannot set testing URLs due to: " + e.getMessage());
+            }
+        });
     }
+
     @Test
     public void testExtractLinks() throws Exception {
         DefaultLinkExtractor extractor = new DefaultLinkExtractor(BASE_URL);
-        Iterable<URL> urls = extractor.extractLinks(HTML);
-        // TODO
+        extractor.extractLinks(HTML).forEach(url -> Assert.assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
     }
-
 }
