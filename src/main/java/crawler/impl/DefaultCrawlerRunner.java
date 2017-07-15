@@ -1,8 +1,6 @@
 package crawler.impl;
 
 import crawler.*;
-import crawler.ContentToProcessEvent;
-import crawler.NewLinksAvailableEvent;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
@@ -11,20 +9,20 @@ import reactor.bus.spec.EventBusSpec;
 import java.net.URL;
 import java.util.UUID;
 
-public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
-    protected final UUID id;
-    protected final URL baseUrl;
-    protected final LinksStorage<URL> linksStorage;
-    protected final CrawlerEventPublisher publisher;
-    protected final ContentDownloader<URL, String> downloader;
-    protected final LinkExtractor<String, URL> extractor;
-    protected final LinksFilter<URL> filter;
+public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
+    private final UUID id;
+    private final URL baseUrl;
+    private final LinksStorage<URL> linksStorage;
+    private final CrawlerEventPublisher publisher;
+    private final ContentDownloader<URL, String> downloader;
+    private final LinkExtractor<String, URL> extractor;
+    private final LinksFilter<URL, LinksStorage<URL>> filter;
 
     public DefaultCrawlerRunner(URL baseUrl,
                                 LinksStorage<URL> linksStorage,
                                 ContentDownloader<URL, String> downloader,
                                 LinkExtractor<String, URL> extractor,
-                                LinksFilter<URL> filter) {
+                                LinksFilter<URL, LinksStorage<URL>> filter) {
         this.id = UUID.randomUUID();
         this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
 
@@ -44,7 +42,7 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
             String content = downloader.downloadContent(next);
             if (content != null) {
                 this.publisher.publish(new ContentToProcessEvent(content, next));
-                Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content));
+                Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content), linksStorage);
                 if (!urlsToProcess.iterator().hasNext()) {
                     this.linksStorage.add(urlsToProcess);
                     this.publisher.publish(new NewLinksAvailableEvent(urlsToProcess, content));
@@ -91,10 +89,6 @@ public class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         return linksStorage;
     }
 
-    @Override
-    public void setLinksStorage(LinksStorage<URL> linksStorage) {
-
-    }
 
     @Override
     public void pause() {
