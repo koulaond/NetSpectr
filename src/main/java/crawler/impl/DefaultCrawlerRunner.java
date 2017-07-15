@@ -7,6 +7,7 @@ import reactor.bus.selector.ClassSelector;
 import reactor.bus.spec.EventBusSpec;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.UUID;
 
 public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
@@ -17,36 +18,71 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private final ContentDownloader<URL, String> downloader;
     private final LinkExtractor<String, URL> extractor;
     private final LinksFilter<URL, LinksStorage<URL>> filter;
+    private CrawlerState state;
 
     public DefaultCrawlerRunner(URL baseUrl,
-                                LinksStorage<URL> linksStorage,
-                                ContentDownloader<URL, String> downloader,
-                                LinkExtractor<String, URL> extractor,
-                                LinksFilter<URL, LinksStorage<URL>> filter) {
+                                LinksStorage<URL> linksStorage) {
         this.id = UUID.randomUUID();
         this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
 
         this.baseUrl = baseUrl;
         this.linksStorage = linksStorage;
 
-        this.downloader = downloader;
-        this.extractor = extractor;
-        this.filter = filter;
+        this.downloader = new DefaultContentDownloader();
+        this.extractor = new DefaultLinkExtractor(baseUrl);
+        this.filter = new DefaultLinksFilter();
+        setState(CrawlerState.NEW);
     }
 
     @Override
     public void run() {
-        linksStorage.add(baseUrl);
+        setState(CrawlerState.RUNNING);
+        linksStorage.toQueue(baseUrl);
         while (!linksStorage.isEmpty()) {
-            URL next = linksStorage.poll();
-            String content = downloader.downloadContent(next);
-            if (content != null) {
-                this.publisher.publish(new ContentToProcessEvent(content, next));
-                Iterable<URL> urlsToProcess = filter.filterLinks(extractor.extractLinks(content), linksStorage);
-                if (!urlsToProcess.iterator().hasNext()) {
-                    this.linksStorage.add(urlsToProcess);
-                    this.publisher.publish(new NewLinksAvailableEvent(urlsToProcess, content));
+            tryPending();
+            if (CrawlerState.STOPPED.equals(getState())) {
+                break;
+            }
+            URL url = linksStorage.nextQueued();
+            if (url == null) {
+                break;
+            }
+            linksStorage.processed(url);
+            String content;
+            try {
+                content = downloader.downloadContent(url);
+            } catch (IllegalStateException ex) {
+                setState(CrawlerState.ERROR);
+                break;
+            }
+            this.publisher.publish(new ContentToProcessEvent(content, url));
+            tryPending();
+            if (CrawlerState.STOPPED.equals(getState())) {
+                break;
+            }
+            Iterable<URL> extractedLinks = extractor.extractLinks(content);
+            tryPending();
+            if (CrawlerState.STOPPED.equals(getState())) {
+                break;
+            }
+            Iterable<URL> urlsToQueue = filter.filterLinks(extractedLinks, linksStorage);
+            urlsToQueue.forEach(toQueue -> {
+                if (!linksStorage.isQueued(toQueue) && !linksStorage.isProcessed(toQueue)) {
+                    linksStorage.toQueue(toQueue);
                 }
+            });
+        }
+        if (!CrawlerState.ERROR.equals(getState()) && !CrawlerState.STOPPED.equals(getState())) {
+            setState(CrawlerState.FINISHED);
+        }
+    }
+
+    private void tryPending() {
+        while (CrawlerState.PENDING.equals(getState())) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -55,7 +91,6 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         EventBus eventBus = new EventBusSpec()
                 .env(environment)
                 .dispatcher(Environment.THREAD_POOL)
-//              .dispatchErrorHandler().uncaughtErrorHandler().consumerNotFoundHandler()
                 .get();
         return eventBus;
     }
@@ -80,8 +115,14 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
-    public CrawlerState getState() {
-        return null;
+    public synchronized CrawlerState getState() {
+        return state;
+    }
+
+    private synchronized void setState(CrawlerState newState) {
+        CrawlerState oldState = getState();
+        this.state = newState;
+        this.publisher.publish(new CrawlerStateChangedEvent(id, oldState, newState));
     }
 
     @Override
@@ -89,19 +130,18 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         return linksStorage;
     }
 
-
     @Override
     public void pause() {
-
+        setState(CrawlerState.PENDING);
     }
 
     @Override
     public void stop() {
-
+        setState(CrawlerState.STOPPED);
     }
 
     @Override
     public void reset() {
-
+        // TODO
     }
 }

@@ -1,20 +1,24 @@
 package crawler;
 
-import java.net.URL;
+public interface LinksStorage<T> {
 
-public interface LinksStorage<T> extends Iterable<T> {
+    void toQueue(T item);
 
-    void add(T item);
+    void processed(T item);
 
-    void add(Iterable<T> items);
+    T nextQueued();
 
-    T poll();
-
-    void setProcessed(T item);
-
-    boolean isProcessed(T item);
+    LinkState getStateFor(T item);
 
     boolean isQueued(T item);
 
+    boolean isProcessed(T item);
+
     boolean isEmpty();
+
+    Iterable<T> getAllLinks();
+
+    enum LinkState{
+        QUEUED, PROCESSED;
+    }
 }

@@ -8,51 +8,81 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DefaultLinksStorage implements LinksStorage<URL> {
-    private Set<URL> processedUrls;
-    private Queue<URL> urlsToProcess;
+
+    private Map<URL, LinkState> links;
 
     public DefaultLinksStorage() {
-        this.processedUrls = new ConcurrentSkipListSet<>();
-        this.urlsToProcess = new ConcurrentLinkedQueue<>();
+        links = new HashMap<>();
     }
 
     @Override
-    public void add(URL url){
-        this.urlsToProcess.add(url);
+    public synchronized void toQueue(URL url) {
+        LinkState state = getStateFor(url);
+        if (state == null) {
+            links.put(url, LinkState.QUEUED);
+        } else if (LinkState.PROCESSED.equals(state)) {
+            throw new IllegalStateException("URL " + url.toExternalForm() + " is already processed.");
+        }
     }
 
     @Override
-    public void add(Iterable<URL> urls){
-        urls.forEach(url -> add(url));
+    public synchronized void processed(URL url) {
+        LinkState state = getStateFor(url);
+        if (state == null) {
+            throw new IllegalStateException("URL " + url.toExternalForm() + " is not queued in storage.");
+        } else if (LinkState.QUEUED.equals(state)) {
+            links.put(url, LinkState.PROCESSED);
+        }
     }
 
     @Override
-    public URL poll() {
-        return urlsToProcess.poll();
+    public synchronized URL nextQueued() {
+        final URL[] url = {null};
+        Iterator<URL> keys = getAllLinks().iterator();
+        while(keys.hasNext()) {
+            URL next = keys.next();
+            if(LinkState.QUEUED.equals(getStateFor(next))){
+                url[0] = next;
+                break;
+            }
+        }
+        return url[0];
     }
 
     @Override
-    public boolean isProcessed(URL url) {
-        return this.processedUrls.contains(url);
-}
-
-    @Override
-    public boolean isQueued(URL url){
-        return urlsToProcess.contains(url);
+    public synchronized LinkState getStateFor(URL url) {
+        return links.get(url);
     }
 
     @Override
-    public boolean isEmpty() {
-        return urlsToProcess.isEmpty();
+    public synchronized boolean isProcessed(URL url) {
+        return equalsToState(url, LinkState.PROCESSED);
     }
 
     @Override
-    public void setProcessed(URL url){
-        this.processedUrls.add(url);
+    public synchronized boolean isQueued(URL url) {
+        return equalsToState(url, LinkState.QUEUED);
+    }
+
+    private boolean equalsToState(URL url, LinkState state) {
+        LinkState stateInStorage = getStateFor(url);
+        if (stateInStorage == null) {
+            return false;
+        }
+        return state.equals(stateInStorage);
     }
 
     @Override
-    public Iterator<URL> iterator() {
-        return urlsToProcess.iterator();
+    public synchronized boolean isEmpty() {
+        return !getAllLinks().iterator().hasNext();
+    }
+
+    @Override
+    public synchronized Iterable<URL> getAllLinks() {
+        return links.keySet();
+    }
+
+    public synchronized void clear(){
+        this.links = new HashMap<>();
     }
 }

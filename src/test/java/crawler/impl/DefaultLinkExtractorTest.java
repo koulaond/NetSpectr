@@ -1,7 +1,5 @@
 package crawler.impl;
 
-import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,14 +45,14 @@ public class DefaultLinkExtractorTest {
         try {
             BASE_URL = new URL(BASE_URL_DEF);
         } catch (MalformedURLException e) {
-            Assert.fail("Cannot set Base URL due to: " + e.getMessage());
+            fail("Cannot set Base URL due to: " + e.getMessage());
         }
 
         Stream.of(EXPECTED_URLS).forEach(url -> {
             try {
                 EXPECTED_URLS_COLLECTION.add(new URL(BASE_URL_DEF + url));
             } catch (MalformedURLException e) {
-                Assert.fail("Cannot set testing URLs due to: " + e.getMessage());
+                fail("Cannot set testing URLs due to: " + e.getMessage());
             }
         });
     }
@@ -62,6 +60,6 @@ public class DefaultLinkExtractorTest {
     @Test
     public void testExtractLinks() throws Exception {
         DefaultLinkExtractor extractor = new DefaultLinkExtractor(BASE_URL);
-        extractor.extractLinks(HTML).forEach(url -> Assert.assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
+        extractor.extractLinks(HTML).forEach(url -> assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
     }
 }

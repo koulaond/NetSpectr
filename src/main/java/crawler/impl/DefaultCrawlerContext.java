@@ -77,6 +77,11 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
     }
 
     @Override
+    public CrawlerInfo<URL> getCrawler(UUID uuid) {
+        return null;
+    }
+
+    @Override
     public Map<UUID, CrawlerInfo<URL>> getAllCrawlers() {
         return null;
     }
@@ -103,11 +108,6 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
     @Override
     public Map<UUID, CrawlerInfo<URL>> getCrawlersByState(CrawlerState state) {
-        return null;
-    }
-
-    @Override
-    public CrawlerState getStateForCrawler(UUID uuid) {
         return null;
     }
 
