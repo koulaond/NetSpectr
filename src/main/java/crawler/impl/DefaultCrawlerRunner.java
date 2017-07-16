@@ -131,17 +131,35 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
-    public void pause() {
-        setState(CrawlerState.PENDING);
+    public synchronized void pause() {
+        CrawlerState actualState = getState();
+        if (CrawlerState.RUNNING.equals(actualState)) {
+            setState(CrawlerState.PENDING);
+        } else {
+            throw new IllegalStateException("Crawler is not running. Actual state is " + actualState);
+        }
     }
 
     @Override
-    public void stop() {
-        setState(CrawlerState.STOPPED);
+    public synchronized void stop() {
+        CrawlerState actualState = getState();
+        if (CrawlerState.RUNNING.equals(actualState) || CrawlerState.PENDING.equals(actualState)) {
+            setState(CrawlerState.STOPPED);
+        } else {
+            throw new IllegalStateException("Crawler is not in RUNNING nor PENDING state. Actual state is " + actualState);
+        }
     }
 
     @Override
-    public void reset() {
-        // TODO
+    public synchronized void reset() {
+        CrawlerState actualState = getState();
+        if (CrawlerState.RUNNING.equals(actualState) || CrawlerState.PENDING.equals(actualState)) {
+            this.linksStorage.clear();
+            if (CrawlerState.PENDING.equals(actualState)) {
+                setState(CrawlerState.RUNNING);
+            }
+        } else {
+            throw new IllegalStateException("Reset cannot be performed because the crawler is not in RUNNING nor PENDING state. Actual state is " + actualState);
+        }
     }
 }

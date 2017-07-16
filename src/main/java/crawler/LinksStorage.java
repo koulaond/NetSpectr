@@ -18,6 +18,8 @@ public interface LinksStorage<T> {
 
     Iterable<T> getAllLinks();
 
+    void clear();
+
     enum LinkState{
         QUEUED, PROCESSED;
     }

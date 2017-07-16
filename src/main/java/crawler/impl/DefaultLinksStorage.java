@@ -82,6 +82,7 @@ public class DefaultLinksStorage implements LinksStorage<URL> {
         return links.keySet();
     }
 
+    @Override
     public synchronized void clear(){
         this.links = new HashMap<>();
     }
