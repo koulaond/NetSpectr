@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -73,26 +72,31 @@ public class DefaultLinksFilterTest {
 
     private LinksStorage<URL> storage() {
         return new LinksStorage<URL>() {
-            @Override
-            public void add(URL item) {
-            }
 
-            @Override
-            public void add(Iterable<URL> items) {
-            }
-
-            @Override
-            public URL poll() {
-                return null;
-            }
-
-            @Override
-            public void setProcessed(URL item) {
-            }
 
             @Override
             public boolean isProcessed(URL item) {
                 return isContainedIn(item, IS_PROCESSED);
+            }
+
+            @Override
+            public void toQueue(URL item) {
+
+            }
+
+            @Override
+            public void processed(URL item) {
+
+            }
+
+            @Override
+            public URL nextQueued() {
+                return null;
+            }
+
+            @Override
+            public LinkState getStateFor(URL item) {
+                return null;
             }
 
             @Override
@@ -115,8 +119,13 @@ public class DefaultLinksFilterTest {
             }
 
             @Override
-            public Iterator<URL> iterator() {
+            public Iterable<URL> getAllLinks() {
                 return null;
+            }
+
+            @Override
+            public void clear() {
+
             }
         };
     }
