@@ -1,5 +1,8 @@
 package crawler.impl;
 
+import crawler.ContentToProcessEvent;
+import crawler.CrawlerConsumer;
+import crawler.CrawlerEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +60,18 @@ public class DefaultCrawlerRunnerCrawlTest {
                 j++;
             }
         }
+
+        DefaultCrawlerRunner runner = new DefaultCrawlerRunner(new URL(PROTOCOL, DOMAIN, ""));
+        runner.subscribe(ContentToProcessEvent.class, new CrawlerConsumer(runner) {
+            private int contentsCount;
+
+            @Override
+            public void accept(CrawlerEvent crawlerEvent) {
+                contentsCount++;
+            }
+
+        });
+        runner.run();
     }
 
     /**

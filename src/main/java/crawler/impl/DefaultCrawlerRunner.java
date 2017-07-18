@@ -7,7 +7,6 @@ import reactor.bus.selector.ClassSelector;
 import reactor.bus.spec.EventBusSpec;
 
 import java.net.URL;
-import java.util.Iterator;
 import java.util.UUID;
 
 public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
@@ -20,17 +19,36 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private final LinksFilter<URL, LinksStorage<URL>> filter;
     private CrawlerState state;
 
+    public DefaultCrawlerRunner(URL baseUrl){
+        this(baseUrl, null, null, null, null);
+    }
+
+    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage) {
+        this(baseUrl, linksStorage, null, null, null);
+    }
+
+    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader){
+        this(baseUrl, linksStorage, downloader, null, null);
+    }
+
+    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader, LinkExtractor<String, URL> extractor){
+        this(baseUrl, linksStorage, downloader, extractor, null);
+    }
+
     public DefaultCrawlerRunner(URL baseUrl,
-                                LinksStorage<URL> linksStorage) {
+                                LinksStorage<URL> linksStorage,
+                                ContentDownloader<URL, String> downloader,
+                                LinkExtractor<String, URL> extractor,
+                                LinksFilter<URL, LinksStorage<URL>> filter) {
         this.id = UUID.randomUUID();
         this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
 
         this.baseUrl = baseUrl;
-        this.linksStorage = linksStorage;
 
-        this.downloader = new DefaultContentDownloader();
-        this.extractor = new DefaultLinkExtractor(baseUrl);
-        this.filter = new DefaultLinksFilter();
+        this.linksStorage = linksStorage !=null ? linksStorage : new DefaultLinksStorage();
+        this.downloader = downloader != null ? downloader : new DefaultContentDownloader();
+        this.extractor = extractor != null ? extractor : new DefaultLinkExtractor(baseUrl);
+        this.filter = filter != null ? filter : new DefaultLinksFilter();
         setState(CrawlerState.NEW);
     }
 
