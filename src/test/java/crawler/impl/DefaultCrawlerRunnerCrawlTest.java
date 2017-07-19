@@ -40,7 +40,7 @@ public class DefaultCrawlerRunnerCrawlTest {
 
     @Test
     public void testCrawling() throws Exception {
-        GRAPH = new CyclicGraphCreationStrategy().createGraph(PAGES_COUNT, OUTCOMES);
+        GRAPH = new TreeGraphCreationStrategy().createGraph(PAGES_COUNT, OUTCOMES);
         for (int i = 0; i < GRAPH.length; i++) {
             Set<URL> urls = new HashSet<>();
             int[] node = GRAPH[i];
@@ -115,7 +115,7 @@ public class DefaultCrawlerRunnerCrawlTest {
             int inc = 0;
             Random random = new Random();
             for (int i = 0; i < nodes; i++) {
-                int[] node = new int[random.nextInt(maxOutcomes)+1];
+                int[] node = new int[random.nextInt(maxOutcomes) + 1];
                 for (int j = 0; j < node.length; j++) {
                     node[j] = inc;
                     inc = (++inc) % 500;
@@ -126,12 +126,23 @@ public class DefaultCrawlerRunnerCrawlTest {
         }
     }
 
-    private static class TreeGraphCreationStrategy implements GraphCreationStrategy{
+    private static class TreeGraphCreationStrategy implements GraphCreationStrategy {
 
         @Override
         public int[][] createGraph(int nodes, int outcomes) {
-
-            return new int[0][];
+            int[][] output = new int[nodes][];
+            int parentIndex = 0;
+            output[parentIndex] = new int[outcomes];
+            for (int i = 1; i < nodes; i++) {
+                if (output[i] == null) {
+                    output[i] = new int[outcomes];
+                }
+                output[parentIndex][(i - 1) % outcomes] = i;
+                if (i % outcomes == 0) {
+                    ++parentIndex;
+                }
+            }
+            return output;
         }
     }
 }
