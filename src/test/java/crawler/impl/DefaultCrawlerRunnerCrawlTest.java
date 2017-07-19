@@ -3,6 +3,7 @@ package crawler.impl;
 import crawler.ContentToProcessEvent;
 import crawler.CrawlerConsumer;
 import crawler.CrawlerEvent;
+import crawler.CrawlerState;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +40,7 @@ public class DefaultCrawlerRunnerCrawlTest {
 
     @Test
     public void testCrawling() throws Exception {
-        GRAPH = new PermutationGraphCreationStragegy().createGraph(PAGES_COUNT, OUTCOMES);
+        GRAPH = new CyclicGraphCreationStrategy().createGraph(PAGES_COUNT, OUTCOMES);
         for (int i = 0; i < GRAPH.length; i++) {
             Set<URL> urls = new HashSet<>();
             int[] node = GRAPH[i];
@@ -51,27 +53,28 @@ public class DefaultCrawlerRunnerCrawlTest {
                     Assert.fail();
                 }
             }
-            when(extractor.extractLinks(SLASH+i)).thenReturn(urls);
+            when(extractor.extractLinks(SLASH + i)).thenReturn(urls);
             int j = 0;
             Iterator<URL> iterator = urlPool.iterator();
             while (iterator.hasNext()) {
                 URL next = iterator.next();
-                when(downloader.downloadContent(next)).thenReturn(SLASH+j);
+                when(downloader.downloadContent(next)).thenReturn(SLASH + j);
                 j++;
             }
         }
-
-        DefaultCrawlerRunner runner = new DefaultCrawlerRunner(new URL(PROTOCOL, DOMAIN, ""));
+        final int[] count = {0};
+        DefaultCrawlerRunner runner = new DefaultCrawlerRunner(new URL(PROTOCOL, DOMAIN, SLASH + GRAPH[0][0]), new DefaultLinksStorage(), downloader, extractor);
         runner.subscribe(ContentToProcessEvent.class, new CrawlerConsumer(runner) {
-            private int contentsCount;
 
             @Override
             public void accept(CrawlerEvent crawlerEvent) {
-                contentsCount++;
+                count[0]++;
             }
 
         });
         runner.run();
+        assertEquals(CrawlerState.FINISHED, runner.getState());
+        assertEquals(PAGES_COUNT, count[0]);
     }
 
     /**
@@ -85,11 +88,9 @@ public class DefaultCrawlerRunnerCrawlTest {
      * Creates a connected graph using K random permutations
      */
     private static class PermutationGraphCreationStragegy implements GraphCreationStrategy {
-        private Map<Integer, Boolean> visited;
 
         @Override
         public int[][] createGraph(int nodes, int outcomes) {
-            this.visited = new HashMap<>(nodes);
             int[][] output = new int[nodes][outcomes];
 
             for (int i = 0; i < outcomes; i++) {
@@ -102,8 +103,35 @@ public class DefaultCrawlerRunnerCrawlTest {
                     output[j][i] = permutation.get(j);
                 }
             }
-
             return output;
+        }
+    }
+
+    private static class CyclicGraphCreationStrategy implements GraphCreationStrategy {
+
+        @Override
+        public int[][] createGraph(int nodes, int maxOutcomes) {
+            int[][] output = new int[nodes][];
+            int inc = 0;
+            Random random = new Random();
+            for (int i = 0; i < nodes; i++) {
+                int[] node = new int[random.nextInt(maxOutcomes)+1];
+                for (int j = 0; j < node.length; j++) {
+                    node[j] = inc;
+                    inc = (++inc) % 500;
+                }
+                output[i] = node;
+            }
+            return output;
+        }
+    }
+
+    private static class TreeGraphCreationStrategy implements GraphCreationStrategy{
+
+        @Override
+        public int[][] createGraph(int nodes, int outcomes) {
+
+            return new int[0][];
         }
     }
 }
