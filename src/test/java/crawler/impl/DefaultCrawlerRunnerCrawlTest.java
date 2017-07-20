@@ -1,9 +1,6 @@
 package crawler.impl;
 
-import crawler.ContentToProcessEvent;
-import crawler.CrawlerConsumer;
-import crawler.CrawlerEvent;
-import crawler.CrawlerState;
+import crawler.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +11,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -36,19 +35,21 @@ public class DefaultCrawlerRunnerCrawlTest {
     private static final int PAGES_COUNT = 500;
     private static final int OUTCOMES = 6;
     private static int[][] GRAPH;
-    private static final HashSet<URL> urlPool = new HashSet<>();
+    private static final List<URL> urlPool = new ArrayList<>();
 
     @Test
     public void testCrawling() throws Exception {
         GRAPH = new TreeGraphCreationStrategy().createGraph(PAGES_COUNT, OUTCOMES);
         for (int i = 0; i < GRAPH.length; i++) {
-            Set<URL> urls = new HashSet<>();
+            List<URL> urls = new ArrayList<>();
             int[] node = GRAPH[i];
             for (int j = 0; j < node.length; j++) {
                 try {
                     URL url = new URL(PROTOCOL, DOMAIN, SLASH + node[j]);
                     urls.add(url);
-                    urlPool.add(url);
+                    if (!urlPool.contains(url)) {
+                        urlPool.add(url);
+                    }
                 } catch (MalformedURLException e) {
                     Assert.fail();
                 }
@@ -63,18 +64,14 @@ public class DefaultCrawlerRunnerCrawlTest {
             }
         }
         final int[] count = {0};
+        CountDownLatch latch = new CountDownLatch(500);
         DefaultCrawlerRunner runner = new DefaultCrawlerRunner(new URL(PROTOCOL, DOMAIN, SLASH + GRAPH[0][0]), new DefaultLinksStorage(), downloader, extractor);
-        runner.subscribe(ContentToProcessEvent.class, new CrawlerConsumer(runner) {
-
-            @Override
-            public void accept(CrawlerEvent crawlerEvent) {
-                count[0]++;
-            }
-
-        });
+        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, latch));
         runner.run();
+        if(latch.await(6000, TimeUnit.MILLISECONDS) == false){
+            Assert.fail();
+        }
         assertEquals(CrawlerState.FINISHED, runner.getState());
-        assertEquals(PAGES_COUNT, count[0]);
     }
 
     /**
@@ -107,6 +104,9 @@ public class DefaultCrawlerRunnerCrawlTest {
         }
     }
 
+    /**
+     *
+     */
     private static class CyclicGraphCreationStrategy implements GraphCreationStrategy {
 
         @Override
@@ -126,17 +126,16 @@ public class DefaultCrawlerRunnerCrawlTest {
         }
     }
 
+    /**
+     *
+     */
     private static class TreeGraphCreationStrategy implements GraphCreationStrategy {
 
         @Override
         public int[][] createGraph(int nodes, int outcomes) {
-            int[][] output = new int[nodes][];
+            int[][] output = new int[nodes][outcomes];
             int parentIndex = 0;
-            output[parentIndex] = new int[outcomes];
             for (int i = 1; i < nodes; i++) {
-                if (output[i] == null) {
-                    output[i] = new int[outcomes];
-                }
                 output[parentIndex][(i - 1) % outcomes] = i;
                 if (i % outcomes == 0) {
                     ++parentIndex;
@@ -144,5 +143,21 @@ public class DefaultCrawlerRunnerCrawlTest {
             }
             return output;
         }
+    }
+
+    private static class TestConsumer extends CrawlerConsumer<ContentToProcessEvent> {
+
+        CountDownLatch latch;
+
+        public TestConsumer(CrawlerRunner runner, CountDownLatch latch) {
+            super(runner);
+            this.latch = latch;
+        }
+
+        @Override
+        public void accept(ContentToProcessEvent crawlerEvent) {
+            latch.countDown();
+        }
+
     }
 }
