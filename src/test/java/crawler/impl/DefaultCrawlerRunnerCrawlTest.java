@@ -1,5 +1,6 @@
 package crawler.impl;
 
+import com.sun.java.browser.plugin2.DOM;
 import crawler.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,10 +56,12 @@ public class DefaultCrawlerRunnerCrawlTest {
 
                 CountDownLatch latch = new CountDownLatch(PAGES_COUNT);
                 DefaultCrawlerRunner runner = null;
+                String path = SLASH + graph[0][0];
                 try {
-                    runner = new DefaultCrawlerRunner(new URL(PROTOCOL, DOMAIN, SLASH + graph[0][0]), new DefaultLinksStorage(), downloader, extractor);
+                    URL startUrl = new URL(PROTOCOL, DOMAIN, path);
+                    runner = new DefaultCrawlerRunner(startUrl, new DefaultLinksStorage(), downloader, extractor);
                 } catch (MalformedURLException e) {
-                    Assert.fail("");
+                    Assert.fail("Cannot create start URL for (protocol, domain, path) = (" + PROTOCOL + ", " + DOMAIN + ", " + path + ")");
                     e.printStackTrace();
                 }
                 runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, latch));
@@ -68,7 +71,7 @@ public class DefaultCrawlerRunnerCrawlTest {
                         Assert.fail("Bad count: " + latch.getCount() + " for class " + clazz.getSimpleName());
                     }
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    Assert.fail("An error was occurred during countdown: "+e.getMessage());
                     e.printStackTrace();
                 }
                 assertEquals(CrawlerState.FINISHED, runner.getState());
@@ -111,13 +114,13 @@ public class DefaultCrawlerRunnerCrawlTest {
         return strategy.createGraph(nodes, outcomes);
     }
 
-    private Comparator<URL> urlComparator(){
+    private Comparator<URL> urlComparator() {
         return (url1, url2) -> {
             Integer left = Integer.parseInt(url1.getPath().substring(1));
             Integer right = Integer.parseInt(url2.getPath().substring(1));
-            if(left > right){
+            if (left > right) {
                 return 1;
-            } else if(left < right){
+            } else if (left < right) {
                 return -1;
             } else return 0;
         };
