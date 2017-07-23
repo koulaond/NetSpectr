@@ -1,6 +1,6 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
-import crawler.LinkExtractor;
+import crawler.api.LinkExtractor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

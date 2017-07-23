@@ -1,5 +1,6 @@
 package crawler;
 
+import crawler.api.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class SubscriberContainerTest {
         return builder;
     }
 
-    private static class TestConsumer extends CrawlerConsumer<CrawlerEvent>{
+    private static class TestConsumer extends CrawlerConsumer<CrawlerEvent> {
 
         private Class<? extends CrawlerEvent> eventClass;
 

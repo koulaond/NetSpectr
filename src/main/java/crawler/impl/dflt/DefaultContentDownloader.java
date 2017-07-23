@@ -1,8 +1,8 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import crawler.ContentDownloader;
+import crawler.api.ContentDownloader;
 
 import java.net.URL;
 

@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 /**
  * Helper class for subscribing multiple consumers stored in {@code {@link SubscriberContainer}}

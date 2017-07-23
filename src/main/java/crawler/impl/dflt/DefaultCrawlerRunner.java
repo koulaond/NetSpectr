@@ -1,6 +1,7 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
-import crawler.*;
+import com.google.common.eventbus.Subscribe;
+import crawler.api.*;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
@@ -17,9 +18,10 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private final ContentDownloader<URL, String> downloader;
     private final LinkExtractor<String, URL> extractor;
     private final LinksFilter<URL, LinksStorage<URL>> filter;
+    private SubscriberContainer subscribers;
     private CrawlerState state;
 
-    public DefaultCrawlerRunner(URL baseUrl){
+    public DefaultCrawlerRunner(URL baseUrl) {
         this(baseUrl, null, null, null, null);
     }
 
@@ -27,11 +29,11 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this(baseUrl, linksStorage, null, null, null);
     }
 
-    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader){
+    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader) {
         this(baseUrl, linksStorage, downloader, null, null);
     }
 
-    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader, LinkExtractor<String, URL> extractor){
+    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader, LinkExtractor<String, URL> extractor) {
         this(baseUrl, linksStorage, downloader, extractor, null);
     }
 
@@ -45,7 +47,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
 
         this.baseUrl = baseUrl;
 
-        this.linksStorage = linksStorage !=null ? linksStorage : new DefaultLinksStorage();
+        this.linksStorage = linksStorage != null ? linksStorage : new DefaultLinksStorage();
         this.downloader = downloader != null ? downloader : new DefaultContentDownloader();
         this.extractor = extractor != null ? extractor : new DefaultLinkExtractor(baseUrl);
         this.filter = filter != null ? filter : new DefaultLinksFilter();
@@ -118,8 +120,20 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
-    public void subscribe(Class<? extends CrawlerEvent> clazz, CrawlerConsumer consumer) {
-        this.publisher.subscribe(new ClassSelector(clazz), consumer);
+    public void subscribe(Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer) {
+        updateSubscribers(eventClass, consumer);
+        this.publisher.subscribe(new ClassSelector(eventClass), consumer);
+    }
+
+    private void updateSubscribers(Class<? extends CrawlerEvent> newEvent, CrawlerConsumer newConsumer) {
+        SubscriberContainer.SubscriberContainerBuilder builder = SubscriberContainer.builder();
+        if (this.subscribers != null) {
+            this.subscribers.getEvents().forEach(event -> {
+                this.subscribers.getSubscribersFor(event).forEach(crawlerConsumer -> builder.add(event, crawlerConsumer));
+            });
+        }
+        builder.add(newEvent, newConsumer);
+        this.subscribers = builder.build();
     }
 
     @Override
@@ -135,6 +149,11 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     @Override
     public synchronized CrawlerState getState() {
         return state;
+    }
+
+    @Override
+    public SubscriberContainer getSubscribers() {
+        return subscribers == null ? SubscriberContainer.builder().build() : subscribers;
     }
 
     private synchronized void setState(CrawlerState newState) {

@@ -1,5 +1,6 @@
 package crawler.impl;
 
+import crawler.impl.dflt.DefaultContentDownloader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

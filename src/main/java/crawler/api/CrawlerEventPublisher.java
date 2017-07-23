@@ -1,13 +1,11 @@
-package crawler;
+package crawler.api;
 
-import crawler.impl.DefaultCrawlerRunner;
+import crawler.impl.dflt.DefaultCrawlerRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
 import reactor.bus.selector.Selector;
-
-import java.util.Map;
 
 public final class CrawlerEventPublisher {
 

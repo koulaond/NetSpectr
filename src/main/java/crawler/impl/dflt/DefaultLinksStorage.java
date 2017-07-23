@@ -1,11 +1,9 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
-import crawler.LinksStorage;
+import crawler.api.LinksStorage;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DefaultLinksStorage implements LinksStorage<URL> {
 

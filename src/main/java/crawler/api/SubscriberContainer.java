@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 import java.util.*;
 
@@ -27,6 +27,10 @@ public final class SubscriberContainer {
 
     public Set<Class<? extends CrawlerEvent>> getEvents(){
         return subscriberContainer.keySet();
+    }
+
+    public boolean isEmpty(){
+        return this.subscriberContainer.isEmpty();
     }
 
     public static SubscriberContainerBuilder builder(){

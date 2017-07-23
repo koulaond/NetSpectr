@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 /**
  * Downloader interface for getting data from specific soucre.

@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 import java.util.UUID;
 
@@ -12,6 +12,8 @@ public interface CrawlerRunner<T> extends Runnable {
     T getBaseUrl();
 
     CrawlerState getState();
+
+    SubscriberContainer getSubscribers();
 
     LinksStorage<T> getLinksStorage();
 

@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 /**
  * Interface for filtering {@code Iterable} instance containing items of {@code T} type using {@code S} arbitrator.

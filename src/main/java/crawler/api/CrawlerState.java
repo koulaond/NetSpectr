@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 public enum CrawlerState{
     NEW,

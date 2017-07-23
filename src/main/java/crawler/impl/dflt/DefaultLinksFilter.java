@@ -1,7 +1,7 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
-import crawler.LinksFilter;
-import crawler.LinksStorage;
+import crawler.api.LinksFilter;
+import crawler.api.LinksStorage;
 
 import java.net.URL;
 import java.util.HashSet;

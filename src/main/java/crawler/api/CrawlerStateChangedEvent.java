@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 import java.util.UUID;
 

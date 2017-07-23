@@ -1,4 +1,4 @@
-package crawler;
+package crawler.api;
 
 import java.util.Map;
 import java.util.UUID;
@@ -7,8 +7,6 @@ public interface CrawlerContext<T> {
     CrawlerInfo<T> createNewCrawler(T startPoint);
 
     CrawlerInfo<T> createNewCrawler(T startPoint, LinksStorage<T> linksStorage);
-
-    CrawlerInfo<T> createNewCrawler(T startPoint, SubscriberContainer subscribers);
 
     CrawlerInfo<T> createNewCrawler(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
 

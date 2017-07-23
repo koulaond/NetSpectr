@@ -1,6 +1,7 @@
 package crawler.impl;
 
-import crawler.LinksStorage;
+import crawler.api.LinksStorage;
+import crawler.impl.dflt.DefaultLinksFilter;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

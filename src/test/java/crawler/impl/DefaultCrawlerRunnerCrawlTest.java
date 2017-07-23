@@ -1,7 +1,13 @@
 package crawler.impl;
 
-import com.sun.java.browser.plugin2.DOM;
-import crawler.*;
+import crawler.api.ContentToProcessEvent;
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
+import crawler.api.CrawlerState;
+import crawler.impl.dflt.DefaultContentDownloader;
+import crawler.impl.dflt.DefaultCrawlerRunner;
+import crawler.impl.dflt.DefaultLinkExtractor;
+import crawler.impl.dflt.DefaultLinksStorage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
