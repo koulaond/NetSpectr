@@ -1,10 +1,11 @@
 package crawler.impl.dflt;
 
 import crawler.api.*;
-import domain.Crawler;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,22 +13,189 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
     private Map<URL, CrawlerRunner<URL>> crawlerPool;
 
-    private DefaultCrawlerContext(){
+    private DefaultCrawlerContext() {
         this.crawlerPool = new ConcurrentHashMap<>();
     }
 
     @Override
     public CrawlerInfo<URL> createNewCrawler(URL startPoint) {
-        if(crawlerPool.get(startPoint)!=null){
-            throw new IllegalStateException("Crawler with URL "+startPoint.toExternalForm() + " already exists.");
+        return createNewCrawler(startPoint, null, null);
+    }
+
+    @Override
+    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage) {
+        return createNewCrawler(startPoint, linksStorage, null);
+    }
+
+    @Override
+    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
+        if (crawlerPool.get(startPoint) != null) {
+            throw new IllegalStateException("Crawler with URL " + startPoint.toExternalForm() + " already exists.");
         }
-        LinksStorage<URL> storage = new DefaultLinksStorage();
-        CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startPoint, storage);
+        CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startPoint, linksStorage);
+        if (subscribers != null) {
+            SubscriberHandler handler = new SubscriberHandler();
+            handler.subscribe(runner, subscribers);
+        }
         this.crawlerPool.put(startPoint, runner);
         return createCrawlerInfo(runner);
     }
 
-    private CrawlerInfo<URL> createCrawlerInfo(CrawlerRunner<URL> crawlerRunner){
+    @Override
+    public Optional<CrawlerInfo<URL>> subscribeTo(URL url, CrawlerEvent event, CrawlerConsumer consumer) {
+        CrawlerRunner<URL> crawlerRunner = crawlerPool.get(url);
+        if (crawlerRunner != null) {
+            crawlerRunner.subscribe(event.getClass(), consumer);
+        }
+        return Optional.of(createCrawlerInfo(crawlerRunner));
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> subscribeTo(URL url, SubscriberContainer subscribers) {
+        CrawlerRunner<URL> runner = crawlerPool.get(url);
+        if (runner != null) {
+            SubscriberHandler handler = new SubscriberHandler();
+            handler.subscribe(runner, subscribers);
+        }
+        return Optional.of(createCrawlerInfo(runner));
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> subscribeTo(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer) {
+        for (CrawlerRunner<URL> crawlerRunner : this.crawlerPool.values()) {
+            if(crawlerRunner.getId().equals(uuid)){
+                crawlerRunner.subscribe(event.getClass(), consumer);
+                return Optional.of(createCrawlerInfo(crawlerRunner));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> subscribeTo(UUID uuid, SubscriberContainer subscribers) {
+        for (CrawlerRunner<URL> crawlerRunner : this.crawlerPool.values()) {
+            if(crawlerRunner.getId().equals(uuid)){
+                SubscriberHandler handler = new SubscriberHandler();
+                handler.subscribe(crawlerRunner, subscribers);
+                return Optional.of(createCrawlerInfo(crawlerRunner));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> deleteSubscribersFrom(URL url) {
+        Optional<CrawlerRunner<URL>> runner = getCrawler(url);
+        runner.ifPresent(obj -> obj.resetSubscribers());
+        return Optional.of(createCrawlerInfo(runner.get()));
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> deleteSubscribersFrom(UUID uuid) {
+        Optional<CrawlerRunner<URL>> runner = getCrawler(uuid);
+        runner.ifPresent(obj -> obj.resetSubscribers());
+        return Optional.of(createCrawlerInfo(runner.get()));
+    }
+
+    @Override
+    public Optional<SubscriberContainer> getSubscribersForCrawler(URL url) {
+        // Effectively final
+        final SubscriberContainer[] subscribers = {null};
+        getCrawler(url).ifPresent(runner -> subscribers[0] = runner.getSubscribers());
+        return Optional.of(subscribers[0]);
+    }
+
+    @Override
+    public Optional<SubscriberContainer>  getSubscribersForCrawler(UUID uuid) {
+        // Effectively final
+        final SubscriberContainer[] subscribers = {null};
+        getCrawler(uuid).ifPresent(runner -> subscribers[0] = runner.getSubscribers());
+        return Optional.of(subscribers[0]);
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> startCrawler(URL url) {
+       Optional<CrawlerRunner<URL>> runner = getCrawler(url);
+        runner.ifPresent(obj -> runCrawler(obj));
+        return Optional.of(createCrawlerInfo(runner.get()));
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> startCrawler(UUID uuid) {
+        Optional<CrawlerRunner<URL>> runner = getCrawler(uuid);
+        runner.ifPresent(obj -> runCrawler(obj));
+        return Optional.of(createCrawlerInfo(runner.get()));
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> stopCrawler(URL url) {
+        getCrawler(url).ifPresent(runner -> runner.stop());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> stopCrawler(UUID uuid) {
+        getCrawler(uuid).ifPresent(runner -> runner.stop());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> pauseCrawler(URL url) {
+        getCrawler(url).ifPresent(runner -> runner.pause());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> pauseCrawler(UUID uuid) {
+        getCrawler(uuid).ifPresent(runner -> runner.pause());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> resumeCrawler(URL url) {
+        getCrawler(url).ifPresent(runner -> runner.resume());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> resumeCrawler(UUID uuid) {
+        getCrawler(uuid).ifPresent(runner -> runner.resume());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> restartCrawler(URL url) {
+        getCrawler(url).ifPresent(runner -> runner.reset());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> restartCrawler(UUID uuid) {
+        getCrawler(uuid).ifPresent(runner -> runner.reset());
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> getCrawlerByID(UUID uuid) {
+        return null;
+    }
+
+    @Override
+    public Optional<CrawlerInfo<URL>> getCrawlerByStartPoint(URL url) {
+        return null;
+    }
+
+    @Override
+    public Set<CrawlerInfo<URL>> getAllCrawlers() {
+        return null;
+    }
+
+    @Override
+    public Set<CrawlerInfo<URL>> getCrawlersByState(CrawlerState state) {
+        return null;
+    }
+
+    @Override
+    public boolean isCrawled(URL url) {
+        return false;
+    }
+
+    private CrawlerInfo<URL> createCrawlerInfo(CrawlerRunner<URL> crawlerRunner) {
+        if(crawlerRunner == null){
+            return null;
+        }
         DefaultCrawlerInfo info = new DefaultCrawlerInfo();
         info.setState(crawlerRunner.getState());
         info.setLinksStorage(crawlerRunner.getLinksStorage());
@@ -37,103 +205,27 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         return info;
     }
 
-    @Override
-    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage) {
-        return null;
+    private Optional<CrawlerRunner<URL>> getCrawler(URL url) {
+        return Optional.of(crawlerPool.get(url));
     }
 
-
-    @Override
-    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
-        return null;
+    private Optional<CrawlerRunner<URL>> getCrawler(UUID uuid) {
+        CrawlerRunner<URL> runner = null;
+        for (CrawlerRunner<URL> crawlerRunner : crawlerPool.values()) {
+            if (crawlerRunner.getId().equals(uuid)) {
+                runner = crawlerRunner;
+                break;
+            }
+        }
+        return Optional.of(runner);
     }
 
-    @Override
-    public void subscribeTo(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer) {
-
+    private void runCrawler(CrawlerRunner<URL> runner) {
+        Thread thread = new Thread(runner);
+        thread.start();
     }
 
-    @Override
-    public void subscribeTo(UUID uuid, CrawlerEvent event, SubscriberContainer subscribers) {
-
-    }
-
-    @Override
-    public void deleteSubscribersFrom(UUID uuid) {
-
-    }
-
-    @Override
-    public SubscriberContainer getSubscribersForCrawler(UUID uuid) {
-        return null;
-    }
-
-    @Override
-    public void startCrawler(UUID uuid) {
-
-    }
-
-    @Override
-    public void stopCrawler(UUID uuid) {
-
-    }
-
-    @Override
-    public void pauseCrawler(UUID uuid) {
-
-    }
-
-    @Override
-    public void resumeCrawler(UUID uuid) {
-
-    }
-
-    @Override
-    public void restartCrawler(UUID uuid) {
-
-    }
-
-    @Override
-    public CrawlerInfo<URL> getCrawler(UUID uuid) {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getAllCrawlers() {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getNewCrawlers() {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getRunningCrawlers() {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getPausedCrawlers() {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getStoppedCrawlers() {
-        return null;
-    }
-
-    @Override
-    public Map<UUID, CrawlerInfo<URL>> getCrawlersByState(CrawlerState state) {
-        return null;
-    }
-
-    @Override
-    public boolean isCrawled(URL startPoint) {
-        return false;
-    }
-
-    private class DefaultCrawlerInfo implements CrawlerInfo<URL>{
+    private class DefaultCrawlerInfo implements CrawlerInfo<URL> {
         private URL startPoint;
         private UUID uuid;
         private CrawlerState state;

@@ -1,6 +1,7 @@
 package crawler.api;
 
-import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface CrawlerContext<T> {
@@ -10,37 +11,49 @@ public interface CrawlerContext<T> {
 
     CrawlerInfo<T> createNewCrawler(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
 
-    void subscribeTo(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer);
+    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, CrawlerEvent event, CrawlerConsumer consumer);
 
-    void subscribeTo(UUID uuid, CrawlerEvent event, SubscriberContainer subscribers);
+    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, SubscriberContainer subscribers);
 
-    void deleteSubscribersFrom(UUID uuid);
+    Optional<CrawlerInfo<T>> subscribeTo(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer);
 
-    SubscriberContainer getSubscribersForCrawler(UUID uuid);
+    Optional<CrawlerInfo<T>> subscribeTo(UUID uuid, SubscriberContainer subscribers);
 
-    void startCrawler(UUID uuid);
+    Optional<CrawlerInfo<T>> deleteSubscribersFrom(T startPoint);
 
-    void stopCrawler(UUID uuid);
+    Optional<CrawlerInfo<T>> deleteSubscribersFrom(UUID uuid);
 
-    void pauseCrawler(UUID uuid);
+    Optional<SubscriberContainer> getSubscribersForCrawler(T startPoint);
 
-    void resumeCrawler(UUID uuid);
+    Optional<SubscriberContainer> getSubscribersForCrawler(UUID uuid);
 
-    void restartCrawler(UUID uuid);
+    Optional<CrawlerInfo<T>> startCrawler(T startPoint);
 
-    CrawlerInfo<T> getCrawler(UUID uuid);
+    Optional<CrawlerInfo<T>> startCrawler(UUID uuid);
 
-    Map<UUID, CrawlerInfo<T>> getAllCrawlers();
+    Optional<CrawlerInfo<T>> stopCrawler(T startPoint);
 
-    Map<UUID, CrawlerInfo<T>> getNewCrawlers();
+    Optional<CrawlerInfo<T>> stopCrawler(UUID uuid);
 
-    Map<UUID, CrawlerInfo<T>> getRunningCrawlers();
+    Optional<CrawlerInfo<T>> pauseCrawler(T startPoint);
 
-    Map<UUID, CrawlerInfo<T>> getPausedCrawlers();
+    Optional<CrawlerInfo<T>> pauseCrawler(UUID uuid);
 
-    Map<UUID, CrawlerInfo<T>> getStoppedCrawlers();
+    Optional<CrawlerInfo<T>> resumeCrawler(T startPoint);
 
-    Map<UUID, CrawlerInfo<T>> getCrawlersByState(CrawlerState state);
+    Optional<CrawlerInfo<T>> resumeCrawler(UUID uuid);
+
+    Optional<CrawlerInfo<T>> restartCrawler(T startPoint);
+
+    Optional<CrawlerInfo<T>> restartCrawler(UUID uuid);
+
+    Optional<CrawlerInfo<T>> getCrawlerByID(UUID uuid);
+
+    Optional<CrawlerInfo<T>> getCrawlerByStartPoint(T startPoint);
+
+    Set<CrawlerInfo<T>> getAllCrawlers();
+
+    Set<CrawlerInfo<T>> getCrawlersByState(CrawlerState state);
 
     boolean isCrawled(T startPoint);
 

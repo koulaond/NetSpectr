@@ -1,6 +1,5 @@
 package crawler.impl.dflt;
 
-import com.google.common.eventbus.Subscribe;
 import crawler.api.*;
 import reactor.Environment;
 import reactor.bus.EventBus;
@@ -14,10 +13,10 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private final UUID id;
     private final URL baseUrl;
     private final LinksStorage<URL> linksStorage;
-    private final CrawlerEventPublisher publisher;
     private final ContentDownloader<URL, String> downloader;
     private final LinkExtractor<String, URL> extractor;
     private final LinksFilter<URL, LinksStorage<URL>> filter;
+    private CrawlerEventPublisher publisher;
     private SubscriberContainer subscribers;
     private CrawlerState state;
 
@@ -43,7 +42,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
                                 LinkExtractor<String, URL> extractor,
                                 LinksFilter<URL, LinksStorage<URL>> filter) {
         this.id = UUID.randomUUID();
-        this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
+        initPublisher();
 
         this.baseUrl = baseUrl;
 
@@ -52,6 +51,10 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this.extractor = extractor != null ? extractor : new DefaultLinkExtractor(baseUrl);
         this.filter = filter != null ? filter : new DefaultLinksFilter();
         setState(CrawlerState.NEW);
+    }
+
+    private void initPublisher() {
+        this.publisher = new CrawlerEventPublisher(createEventBus(createEnvironment()), this);
     }
 
     @Override
@@ -125,6 +128,12 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this.publisher.subscribe(new ClassSelector(eventClass), consumer);
     }
 
+    @Override
+    public void resetSubscribers() {
+        this.subscribers = null;
+        initPublisher();
+    }
+
     private void updateSubscribers(Class<? extends CrawlerEvent> newEvent, CrawlerConsumer newConsumer) {
         SubscriberContainer.SubscriberContainerBuilder builder = SubscriberContainer.builder();
         if (this.subscribers != null) {
@@ -156,47 +165,69 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         return subscribers == null ? SubscriberContainer.builder().build() : subscribers;
     }
 
-    private synchronized void setState(CrawlerState newState) {
-        CrawlerState oldState = getState();
-        this.state = newState;
-        this.publisher.publish(new CrawlerStateChangedEvent(id, oldState, newState));
+    @Override
+    public synchronized void setState(CrawlerState next) {
+        String message = "Bad state transition (previous; next) : (%s; %s)";
+        CrawlerState prev = getState();
+        switch (prev){
+            case NEW:
+                switch (next){
+                    case ERROR:
+                    case RUNNING:
+                        this.state = next;
+                        break;
+                    case FINISHED:
+                    case NEW:
+                    case PENDING:
+                    case STOPPED:
+                        throw new IllegalStateException(String.format(message, prev, next));
+                }
+                break;
+            case PENDING:
+                switch (next){
+                    case RUNNING:
+                    case STOPPED:
+                        this.state = next;
+                        break;
+                    case ERROR:
+                    case FINISHED:
+                    case NEW:
+                    case PENDING:
+                        throw new IllegalStateException(String.format(message, prev, next));
+                }
+                break;
+            case RUNNING:
+                switch (next){
+                    case PENDING:
+                    case STOPPED:
+                    case ERROR:
+                    case FINISHED:
+                        this.state = next;
+                        break;
+                    case RUNNING:
+                    case NEW:
+                        throw new IllegalStateException(String.format(message, prev, next));
+                }
+                break;
+            case ERROR:
+            case STOPPED:
+            case FINISHED:
+                switch (next){
+                    case ERROR:
+                    case RUNNING:
+                    case FINISHED:
+                    case NEW:
+                    case PENDING:
+                    case STOPPED:
+                        throw new IllegalStateException(String.format(message, prev, next));
+                }
+                break;
+        }
+        this.publisher.publish(new CrawlerStateChangedEvent(id, prev, next));
     }
 
     @Override
     public LinksStorage<URL> getLinksStorage() {
         return linksStorage;
-    }
-
-    @Override
-    public synchronized void pause() {
-        CrawlerState actualState = getState();
-        if (CrawlerState.RUNNING.equals(actualState)) {
-            setState(CrawlerState.PENDING);
-        } else {
-            throw new IllegalStateException("Crawler is not running. Actual state is " + actualState);
-        }
-    }
-
-    @Override
-    public synchronized void stop() {
-        CrawlerState actualState = getState();
-        if (CrawlerState.RUNNING.equals(actualState) || CrawlerState.PENDING.equals(actualState)) {
-            setState(CrawlerState.STOPPED);
-        } else {
-            throw new IllegalStateException("Crawler is not in RUNNING nor PENDING state. Actual state is " + actualState);
-        }
-    }
-
-    @Override
-    public synchronized void reset() {
-        CrawlerState actualState = getState();
-        if (CrawlerState.RUNNING.equals(actualState) || CrawlerState.PENDING.equals(actualState)) {
-            this.linksStorage.clear();
-            if (CrawlerState.PENDING.equals(actualState)) {
-                setState(CrawlerState.RUNNING);
-            }
-        } else {
-            throw new IllegalStateException("Reset cannot be performed because the crawler is not in RUNNING nor PENDING state. Actual state is " + actualState);
-        }
     }
 }

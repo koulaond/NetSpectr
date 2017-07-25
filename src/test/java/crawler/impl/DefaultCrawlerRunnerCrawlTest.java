@@ -140,7 +140,7 @@ public class DefaultCrawlerRunnerCrawlTest {
     }
 
     /**
-     * Creates a connected graph using K random permutations
+     * Strategy class that creates a connected graph using K random permutations
      */
     static class PermutationGraphCreationStragegy implements GraphCreationStrategy {
 
@@ -163,7 +163,7 @@ public class DefaultCrawlerRunnerCrawlTest {
     }
 
     /**
-     *
+     * Strategy class that generates a connected graph using cycles.
      */
     static class CyclicGraphCreationStrategy implements GraphCreationStrategy {
 
@@ -184,7 +184,7 @@ public class DefaultCrawlerRunnerCrawlTest {
     }
 
     /**
-     *
+     * Strategy class that generates a connected graph as n-nary tree.
      */
     static class TreeGraphCreationStrategy implements GraphCreationStrategy {
 
@@ -202,6 +202,9 @@ public class DefaultCrawlerRunnerCrawlTest {
         }
     }
 
+    /**
+     * Implementation of {@code CrawlerConsumer} for testing purposes.
+     */
     private static class TestConsumer extends CrawlerConsumer<ContentToProcessEvent> {
 
         CountDownLatch latch;

@@ -5,8 +5,6 @@ import java.util.UUID;
 
 public interface CrawlerRunner<T> extends Runnable {
 
-    void subscribe(Class<? extends CrawlerEvent> clazz, CrawlerConsumer consumer);
-
     UUID getId();
 
     T getBaseUrl();
@@ -17,9 +15,9 @@ public interface CrawlerRunner<T> extends Runnable {
 
     LinksStorage<T> getLinksStorage();
 
-    void pause();
+    void subscribe(Class<? extends CrawlerEvent> clazz, CrawlerConsumer consumer);
 
-    void stop();
+    void resetSubscribers();
 
-    void reset();
+    void setState(CrawlerState state);
 }
