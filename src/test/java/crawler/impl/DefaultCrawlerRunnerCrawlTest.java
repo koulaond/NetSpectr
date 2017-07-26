@@ -11,31 +11,22 @@ import crawler.impl.dflt.DefaultLinksStorage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.reflections.Reflections;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static crawler.impl.DefaultCrawlerRunnerTestUtils.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultCrawlerRunnerCrawlTest {
-
-    @InjectMocks
-    private static DefaultCrawlerRunner runner;
-
-    @Mock
-    private static DefaultContentDownloader downloader;
-
-    @Mock
-    private static DefaultLinkExtractor extractor;
 
     private static final String PROTOCOL = "https";
     private static final String DOMAIN = "test";
@@ -43,7 +34,6 @@ public class DefaultCrawlerRunnerCrawlTest {
     private static final int PAGES_COUNT = 500;
     private static final int OUTCOMES = 6;
     private static final int CYCLES = 40;
-    private static final List<URL> urlPool = new ArrayList<>();
 
     @Test
     public void testCrawling() {
@@ -52,9 +42,12 @@ public class DefaultCrawlerRunnerCrawlTest {
 
         for (int i = 0; i < CYCLES; i++) {
             classes.forEach(clazz -> {
+                DefaultContentDownloader downloader = mockDownloader();
+                DefaultLinkExtractor extractor = mockExtractor();
                 int[][] graph = null;
                 try {
-                    graph = mock(clazz);
+                    graph = createGraphByStrategy(clazz, PAGES_COUNT, OUTCOMES);
+                    mockCrawlerComponents(graph, downloader, extractor);
                 } catch (InstantiationException | IllegalAccessException e) {
                     Assert.fail("Cannot mock crawler components because there was some instantiation problem: " + e.getMessage());
                     e.printStackTrace();
@@ -77,41 +70,12 @@ public class DefaultCrawlerRunnerCrawlTest {
                         Assert.fail("Bad count: " + latch.getCount() + " for class " + clazz.getSimpleName());
                     }
                 } catch (InterruptedException e) {
-                    Assert.fail("An error was occurred during countdown: "+e.getMessage());
+                    Assert.fail("An error was occurred during countdown: " + e.getMessage());
                     e.printStackTrace();
                 }
                 assertEquals(CrawlerState.FINISHED, runner.getState());
             });
         }
-    }
-
-    private int[][] mock(Class<? extends GraphCreationStrategy> clazz) throws InstantiationException, IllegalAccessException {
-        int[][] graph = createGraphByStrategy(clazz, PAGES_COUNT, OUTCOMES);
-        for (int i = 0; i < graph.length; i++) {
-            List<URL> urls = new ArrayList<>();
-            int[] node = graph[i];
-            for (int j = 0; j < node.length; j++) {
-                try {
-                    URL url = new URL(PROTOCOL, DOMAIN, SLASH + node[j]);
-                    urls.add(url);
-                    if (!urlPool.contains(url)) {
-                        urlPool.add(url);
-                    }
-                } catch (MalformedURLException e) {
-                    Assert.fail();
-                }
-            }
-            when(extractor.extractLinks(SLASH + i)).thenReturn(urls);
-        }
-        int j = 0;
-        Collections.sort(urlPool, urlComparator());
-        Iterator<URL> iterator = urlPool.iterator();
-        while (iterator.hasNext()) {
-            URL next = iterator.next();
-            when(downloader.downloadContent(next)).thenReturn(SLASH + j);
-            j++;
-        }
-        return graph;
     }
 
     private int[][] createGraphByStrategy(Class<? extends GraphCreationStrategy> clazz, int nodes, int outcomes)
@@ -120,17 +84,6 @@ public class DefaultCrawlerRunnerCrawlTest {
         return strategy.createGraph(nodes, outcomes);
     }
 
-    private Comparator<URL> urlComparator() {
-        return (url1, url2) -> {
-            Integer left = Integer.parseInt(url1.getPath().substring(1));
-            Integer right = Integer.parseInt(url2.getPath().substring(1));
-            if (left > right) {
-                return 1;
-            } else if (left < right) {
-                return -1;
-            } else return 0;
-        };
-    }
 
     /**
      * Strategy for creating a connected graph that represents a network.

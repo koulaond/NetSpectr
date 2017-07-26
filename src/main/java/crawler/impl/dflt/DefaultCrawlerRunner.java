@@ -50,7 +50,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this.downloader = downloader != null ? downloader : new DefaultContentDownloader();
         this.extractor = extractor != null ? extractor : new DefaultLinkExtractor(baseUrl);
         this.filter = filter != null ? filter : new DefaultLinksFilter();
-        setState(CrawlerState.NEW);
+        this.state = CrawlerState.NEW;
     }
 
     private void initPublisher() {

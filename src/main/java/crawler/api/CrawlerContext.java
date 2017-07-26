@@ -43,10 +43,6 @@ public interface CrawlerContext<T> {
 
     Optional<CrawlerInfo<T>> resumeCrawler(UUID uuid);
 
-    Optional<CrawlerInfo<T>> restartCrawler(T startPoint);
-
-    Optional<CrawlerInfo<T>> restartCrawler(UUID uuid);
-
     Optional<CrawlerInfo<T>> getCrawlerByID(UUID uuid);
 
     Optional<CrawlerInfo<T>> getCrawlerByStartPoint(T startPoint);
