@@ -3,32 +3,29 @@ package crawler.impl.dflt;
 import crawler.api.*;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
-    private Map<URL, CrawlerRunner<URL>> crawlerPool;
+    private CrawlerPool crawlerPool;
 
     private DefaultCrawlerContext() {
-        this.crawlerPool = new ConcurrentHashMap<>();
+        this.crawlerPool = new CrawlerPool();
     }
 
     @Override
-    public CrawlerInfo<URL> createNewCrawler(URL startPoint) {
+    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint) {
         return createNewCrawler(startPoint, null, null);
     }
 
     @Override
-    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage) {
+    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage) {
         return createNewCrawler(startPoint, linksStorage, null);
     }
 
     @Override
-    public CrawlerInfo<URL> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
+    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
         if (crawlerPool.get(startPoint) != null) {
             throw new IllegalStateException("Crawler with URL " + startPoint.toExternalForm() + " already exists.");
         }
@@ -38,93 +35,46 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
             handler.subscribe(runner, subscribers);
         }
         this.crawlerPool.put(startPoint, runner);
-        return createCrawlerInfo(runner);
+        return createCrawlerInfo(Optional.of(runner));
     }
 
     @Override
     public Optional<CrawlerInfo<URL>> subscribeTo(URL url, CrawlerEvent event, CrawlerConsumer consumer) {
-        CrawlerRunner<URL> crawlerRunner = crawlerPool.get(url);
-        if (crawlerRunner != null) {
-            crawlerRunner.subscribe(event.getClass(), consumer);
-        }
-        return Optional.of(createCrawlerInfo(crawlerRunner));
+        Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
+        runner.ifPresent(obj -> obj.subscribe(event.getClass(), consumer));
+        return createCrawlerInfo(runner);
     }
 
     @Override
     public Optional<CrawlerInfo<URL>> subscribeTo(URL url, SubscriberContainer subscribers) {
-        CrawlerRunner<URL> runner = crawlerPool.get(url);
-        if (runner != null) {
+        Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
+        runner.ifPresent(obj -> {
             SubscriberHandler handler = new SubscriberHandler();
-            handler.subscribe(runner, subscribers);
-        }
-        return Optional.of(createCrawlerInfo(runner));
-    }
-
-    @Override
-    public Optional<CrawlerInfo<URL>> subscribeTo(UUID uuid, CrawlerEvent event, CrawlerConsumer consumer) {
-        for (CrawlerRunner<URL> crawlerRunner : this.crawlerPool.values()) {
-            if (crawlerRunner.getId().equals(uuid)) {
-                crawlerRunner.subscribe(event.getClass(), consumer);
-                return Optional.of(createCrawlerInfo(crawlerRunner));
-            }
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<CrawlerInfo<URL>> subscribeTo(UUID uuid, SubscriberContainer subscribers) {
-        for (CrawlerRunner<URL> crawlerRunner : this.crawlerPool.values()) {
-            if (crawlerRunner.getId().equals(uuid)) {
-                SubscriberHandler handler = new SubscriberHandler();
-                handler.subscribe(crawlerRunner, subscribers);
-                return Optional.of(createCrawlerInfo(crawlerRunner));
-            }
-        }
-        return Optional.empty();
+            handler.subscribe(obj, subscribers);
+        });
+        return createCrawlerInfo(runner);
     }
 
     @Override
     public Optional<CrawlerInfo<URL>> deleteSubscribersFrom(URL url) {
-        Optional<CrawlerRunner<URL>> runner = getCrawler(url);
+        Optional<CrawlerRunner<URL>> runner =  crawlerPool.get(url) ;
         runner.ifPresent(obj -> obj.resetSubscribers());
-        return Optional.of(createCrawlerInfo(runner.get()));
-    }
-
-    @Override
-    public Optional<CrawlerInfo<URL>> deleteSubscribersFrom(UUID uuid) {
-        Optional<CrawlerRunner<URL>> runner = getCrawler(uuid);
-        runner.ifPresent(obj -> obj.resetSubscribers());
-        return Optional.of(createCrawlerInfo(runner.get()));
+        return createCrawlerInfo(runner);
     }
 
     @Override
     public Optional<SubscriberContainer> getSubscribersForCrawler(URL url) {
         // Effectively final
         final SubscriberContainer[] subscribers = {null};
-        getCrawler(url).ifPresent(runner -> subscribers[0] = runner.getSubscribers());
-        return Optional.of(subscribers[0]);
-    }
-
-    @Override
-    public Optional<SubscriberContainer> getSubscribersForCrawler(UUID uuid) {
-        // Effectively final
-        final SubscriberContainer[] subscribers = {null};
-        getCrawler(uuid).ifPresent(runner -> subscribers[0] = runner.getSubscribers());
+        crawlerPool.get(url).ifPresent(obj -> subscribers[0] = obj.getSubscribers());
         return Optional.of(subscribers[0]);
     }
 
     @Override
     public Optional<CrawlerInfo<URL>> startCrawler(URL url) {
-        Optional<CrawlerRunner<URL>> runner = getCrawler(url);
+        Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
         runner.ifPresent(obj -> runCrawler(obj));
-        return Optional.of(createCrawlerInfo(runner.get()));
-    }
-
-    @Override
-    public Optional<CrawlerInfo<URL>> startCrawler(UUID uuid) {
-        Optional<CrawlerRunner<URL>> runner = getCrawler(uuid);
-        runner.ifPresent(obj -> runCrawler(obj));
-        return Optional.of(createCrawlerInfo(runner.get()));
+        return createCrawlerInfo(runner);
     }
 
     @Override
@@ -133,18 +83,8 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
     }
 
     @Override
-    public Optional<CrawlerInfo<URL>> stopCrawler(UUID uuid) {
-        return changeState(uuid, CrawlerState.STOPPED);
-    }
-
-    @Override
     public Optional<CrawlerInfo<URL>> pauseCrawler(URL url) {
         return changeState(url, CrawlerState.PENDING);
-    }
-
-    @Override
-    public Optional<CrawlerInfo<URL>> pauseCrawler(UUID uuid) {
-        return changeState(uuid, CrawlerState.PENDING);
     }
 
     @Override
@@ -152,20 +92,10 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         return changeState(url, CrawlerState.RUNNING);
     }
 
-    @Override
-    public Optional<CrawlerInfo<URL>> resumeCrawler(UUID uuid) {
-        return changeState(uuid, CrawlerState.RUNNING);
-    }
-
-    private Optional<CrawlerInfo<URL>> changeState(Object findBy, CrawlerState state) {
-        Optional<CrawlerRunner<URL>> optional = findBy instanceof UUID ? getCrawler((UUID) findBy) :
-                (findBy instanceof URL ? getCrawler((URL) findBy) : Optional.empty());
-        if (optional.isPresent()) {
-            CrawlerRunner<URL> runner = optional.get();
-            runner.setState(state);
-            return Optional.of(createCrawlerInfo(runner));
-        }
-        return Optional.empty();
+    private Optional<CrawlerInfo<URL>> changeState(URL url, CrawlerState state) {
+        Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
+        runner.ifPresent(obj -> obj.setState(state));
+        return createCrawlerInfo(runner);
     }
 
     @Override
@@ -193,32 +123,19 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         return false;
     }
 
-    private CrawlerInfo<URL> createCrawlerInfo(CrawlerRunner<URL> crawlerRunner) {
-        if (crawlerRunner == null) {
-            return null;
+    private Optional<CrawlerInfo<URL>> createCrawlerInfo(Optional<CrawlerRunner<URL>> crawlerRunner) {
+        if (!crawlerRunner.isPresent()) {
+            return Optional.empty();
+        } else {
+            CrawlerRunner<URL> runner = crawlerRunner.get();
+            DefaultCrawlerInfo info = new DefaultCrawlerInfo();
+            info.setState(runner.getState());
+            info.setLinksStorage(runner.getLinksStorage());
+            info.setStartPoint(runner.getBaseUrl());
+            info.setSubscribers(runner.getSubscribers());
+            info.setUuid(runner.getId());
+            return Optional.of(info);
         }
-        DefaultCrawlerInfo info = new DefaultCrawlerInfo();
-        info.setState(crawlerRunner.getState());
-        info.setLinksStorage(crawlerRunner.getLinksStorage());
-        info.setStartPoint(crawlerRunner.getBaseUrl());
-        info.setSubscribers(crawlerRunner.getSubscribers());
-        info.setUuid(crawlerRunner.getId());
-        return info;
-    }
-
-    private Optional<CrawlerRunner<URL>> getCrawler(URL url) {
-        return Optional.of(crawlerPool.get(url));
-    }
-
-    private Optional<CrawlerRunner<URL>> getCrawler(UUID uuid) {
-        CrawlerRunner<URL> runner = null;
-        for (CrawlerRunner<URL> crawlerRunner : crawlerPool.values()) {
-            if (crawlerRunner.getId().equals(uuid)) {
-                runner = crawlerRunner;
-                break;
-            }
-        }
-        return Optional.of(runner);
     }
 
     private void runCrawler(CrawlerRunner<URL> runner) {
@@ -276,6 +193,20 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
         public void setLinksStorage(LinksStorage<URL> linksStorage) {
             this.linksStorage = linksStorage;
+        }
+    }
+
+    private class CrawlerPool extends ConcurrentHashMap<URL, Optional<CrawlerRunner<URL>>> {
+
+        @Override
+        public Optional<CrawlerRunner<URL>> get(Object key) {
+            Optional<CrawlerRunner<URL>> item = super.get(key);
+            return item != null ? item : Optional.empty();
+        }
+
+        public Optional<CrawlerRunner<URL>> put(URL url, CrawlerRunner<URL> crawlerRunner) {
+            Objects.requireNonNull(crawlerRunner);
+            return super.put(url, Optional.of(crawlerRunner));
         }
     }
 }
