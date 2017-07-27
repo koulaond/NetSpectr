@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DefaultLinksStorage implements LinksStorage<URL> {
 
-    private Map<URL, LinkState> links;
+    private Map<URL, ItemState> links;
 
     public DefaultLinksStorage() {
         links = new HashMap<>();
@@ -15,31 +15,31 @@ public class DefaultLinksStorage implements LinksStorage<URL> {
 
     @Override
     public synchronized void toQueue(URL url) {
-        LinkState state = getStateFor(url);
+        ItemState state = getStateFor(url);
         if (state == null) {
-            links.put(url, LinkState.QUEUED);
-        } else if (LinkState.PROCESSED.equals(state)) {
+            links.put(url, ItemState.QUEUED);
+        } else if (ItemState.PROCESSED.equals(state)) {
             throw new IllegalStateException("URL " + url.toExternalForm() + " is already processed.");
         }
     }
 
     @Override
     public synchronized void processed(URL url) {
-        LinkState state = getStateFor(url);
+        ItemState state = getStateFor(url);
         if (state == null) {
             throw new IllegalStateException("URL " + url.toExternalForm() + " is not queued in storage.");
-        } else if (LinkState.QUEUED.equals(state)) {
-            links.put(url, LinkState.PROCESSED);
+        } else if (ItemState.QUEUED.equals(state)) {
+            links.put(url, ItemState.PROCESSED);
         }
     }
 
     @Override
     public synchronized URL nextQueued() {
         final URL[] url = {null};
-        Iterator<URL> keys = getAllLinks().iterator();
+        Iterator<URL> keys = getAll().iterator();
         while(keys.hasNext()) {
             URL next = keys.next();
-            if(LinkState.QUEUED.equals(getStateFor(next))){
+            if(ItemState.QUEUED.equals(getStateFor(next))){
                 url[0] = next;
                 break;
             }
@@ -48,22 +48,22 @@ public class DefaultLinksStorage implements LinksStorage<URL> {
     }
 
     @Override
-    public synchronized LinkState getStateFor(URL url) {
+    public synchronized ItemState getStateFor(URL url) {
         return links.get(url);
     }
 
     @Override
     public synchronized boolean isProcessed(URL url) {
-        return equalsToState(url, LinkState.PROCESSED);
+        return equalsToState(url, ItemState.PROCESSED);
     }
 
     @Override
     public synchronized boolean isQueued(URL url) {
-        return equalsToState(url, LinkState.QUEUED);
+        return equalsToState(url, ItemState.QUEUED);
     }
 
-    private boolean equalsToState(URL url, LinkState state) {
-        LinkState stateInStorage = getStateFor(url);
+    private boolean equalsToState(URL url, ItemState state) {
+        ItemState stateInStorage = getStateFor(url);
         if (stateInStorage == null) {
             return false;
         }
@@ -72,11 +72,11 @@ public class DefaultLinksStorage implements LinksStorage<URL> {
 
     @Override
     public synchronized boolean isEmpty() {
-        return !getAllLinks().iterator().hasNext();
+        return !getAll().iterator().hasNext();
     }
 
     @Override
-    public synchronized Iterable<URL> getAllLinks() {
+    public synchronized Iterable<URL> getAll() {
         return links.keySet();
     }
 

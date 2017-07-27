@@ -96,7 +96,7 @@ public class DefaultLinksFilterTest {
             }
 
             @Override
-            public LinkState getStateFor(URL item) {
+            public ItemState getStateFor(URL item) {
                 return null;
             }
 
@@ -120,7 +120,7 @@ public class DefaultLinksFilterTest {
             }
 
             @Override
-            public Iterable<URL> getAllLinks() {
+            public Iterable<URL> getAll() {
                 return null;
             }
 
