@@ -151,7 +151,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
-    public URL getBaseUrl() {
+    public URL getStartPoint() {
         return baseUrl;
     }
 

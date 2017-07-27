@@ -38,8 +38,6 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         return createCrawlerInfo(Optional.of(runner));
     }
 
-
-
     @Override
     public Optional<CrawlerInfo<URL>> subscribeTo(URL url, Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer) {
         Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
@@ -133,7 +131,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
             DefaultCrawlerInfo info = new DefaultCrawlerInfo();
             info.setState(runner.getState());
             info.setLinksStorage(runner.getLinksStorage());
-            info.setStartPoint(runner.getBaseUrl());
+            info.setStartPoint(runner.getStartPoint());
             info.setSubscribers(runner.getSubscribers());
             info.setUuid(runner.getId());
             return Optional.of(info);
