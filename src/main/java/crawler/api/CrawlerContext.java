@@ -127,6 +127,10 @@ public interface CrawlerContext<T> {
      */
     boolean isCrawled(T startPoint);
 
+    /**
+     * Interface for wrapping objects that contain crawler basic information.
+     * @param <T>
+     */
     interface CrawlerInfo<T> {
         T getStartPoint();
 
