@@ -1,4 +1,4 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
 
 public class DefaultCrawlerRunnerConcurrencyTest {

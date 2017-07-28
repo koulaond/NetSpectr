@@ -1,4 +1,4 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
 import crawler.impl.dflt.DefaultLinkExtractor;
 import org.junit.BeforeClass;

@@ -1,4 +1,4 @@
-package crawler.impl;
+package crawler.impl.dflt;
 
 import crawler.impl.dflt.DefaultContentDownloader;
 import org.junit.Assert;
