@@ -6,6 +6,7 @@ package crawler.api;
  * @param <T>
  */
 public interface ContentDownloader<S, T> {
+
     /**
      * Downloads target data as {@code T} instance from {@code S} source object.
      * @param source

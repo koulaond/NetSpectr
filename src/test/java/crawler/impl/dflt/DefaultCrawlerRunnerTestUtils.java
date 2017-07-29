@@ -12,6 +12,10 @@ import static org.mockito.Mockito.when;
 
 public class DefaultCrawlerRunnerTestUtils {
 
+    public static final String PROTOCOL = "https";
+    public static final String DOMAIN = "test";
+    public static final String SLASH = "/";
+
     public static DefaultContentDownloader mockDownloader(){
         return mock(DefaultContentDownloader.class);
     }
@@ -20,8 +24,7 @@ public class DefaultCrawlerRunnerTestUtils {
         return mock(DefaultLinkExtractor.class);
     }
 
-    public static void mockCrawlerComponents(int[][] graph, DefaultContentDownloader downloader, DefaultLinkExtractor extractor)
-            throws InstantiationException, IllegalAccessException {
+    public static void mockCrawlerComponents(int[][] graph, DefaultContentDownloader downloader, DefaultLinkExtractor extractor, long delayMillis) {
         List<URL> urlPool = new ArrayList<>();
         for (int i = 0; i < graph.length; i++) {
             List<URL> urls = new ArrayList<>();
@@ -37,7 +40,12 @@ public class DefaultCrawlerRunnerTestUtils {
                     Assert.fail();
                 }
             }
-            when(extractor.extractLinks("/" + i)).thenReturn(urls);
+            when(extractor.extractLinks("/" + i)).thenAnswer(invocationOnMock -> {
+                if(delayMillis > 0) {
+                    Thread.sleep(delayMillis);
+                }
+                return urls;
+            });
         }
         int j = 0;
         Collections.sort(urlPool, urlComparator());
