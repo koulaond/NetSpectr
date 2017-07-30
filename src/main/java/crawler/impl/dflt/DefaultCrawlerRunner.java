@@ -1,6 +1,8 @@
 package crawler.impl.dflt;
 
 import crawler.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
@@ -19,6 +21,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private CrawlerEventPublisher publisher;
     private SubscriberContainer subscribers;
     private CrawlerState state;
+    private static final Logger log = LoggerFactory.getLogger(DefaultCrawlerRunner.class);
 
     public DefaultCrawlerRunner(URL baseUrl) {
         this(baseUrl, null, null, null, null);
@@ -76,6 +79,8 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
                 content = downloader.downloadContent(url);
             } catch (IllegalStateException ex) {
                 setState(CrawlerState.ERROR);
+                log.error("Cannot download HTML content on URL " + url.toExternalForm() + ", error cause: " + ex.getMessage());
+                ex.printStackTrace();
                 break;
             }
             this.publisher.publish(new ContentToProcessEvent(content, url));

@@ -1,5 +1,8 @@
 package crawler.impl.dflt;
 
+import crawler.api.ContentToProcessEvent;
+import crawler.api.CrawlerConsumer;
+import crawler.api.CrawlerRunner;
 import org.junit.Assert;
 import org.reflections.Reflections;
 
@@ -143,5 +146,24 @@ public class DefaultCrawlerRunnerTestUtils {
             }
             return output;
         }
+    }
+
+    /**
+     * Implementation of {@code CrawlerConsumer} for testing purposes.
+     */
+    static class TestConsumer extends CrawlerConsumer<ContentToProcessEvent> {
+
+        private CountDown countDown;
+
+        public TestConsumer(CrawlerRunner runner, CountDown countDown) {
+            super(runner);
+            this.countDown = countDown;
+        }
+
+        @Override
+        public void accept(ContentToProcessEvent crawlerEvent) {
+            countDown.countDown();
+        }
+
     }
 }
