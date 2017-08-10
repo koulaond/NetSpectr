@@ -6,11 +6,13 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Objects.requireNonNull;
+
 public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
     private CrawlerPool crawlerPool;
 
-    private DefaultCrawlerContext() {
+    public DefaultCrawlerContext() {
         this.crawlerPool = new CrawlerPool();
     }
 
@@ -26,7 +28,9 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
     @Override
     public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
-        if (crawlerPool.get(startPoint) != null) {
+        requireNonNull(startPoint);
+        Optional<CrawlerRunner<URL>> possiblyExisting = crawlerPool.get(startPoint);
+        if (possiblyExisting.isPresent()) {
             throw new IllegalStateException("Crawler with URL " + startPoint.toExternalForm() + " already exists.");
         }
         CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startPoint, linksStorage);
@@ -209,7 +213,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         }
 
         public Optional<CrawlerRunner<URL>> put(URL url, CrawlerRunner<URL> crawlerRunner) {
-            Objects.requireNonNull(crawlerRunner);
+            requireNonNull(crawlerRunner);
             return super.put(url, Optional.of(crawlerRunner));
         }
     }
