@@ -155,7 +155,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
             return startPoint;
         }
 
-        public void setStartPoint(URL startPoint) {
+        private void setStartPoint(URL startPoint) {
             this.startPoint = startPoint;
         }
 
@@ -164,7 +164,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
             return uuid;
         }
 
-        public void setUuid(UUID uuid) {
+        private void setUuid(UUID uuid) {
             this.uuid = uuid;
         }
 
@@ -193,6 +193,10 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
         public void setLinksStorage(LinksStorage<URL> linksStorage) {
             this.linksStorage = linksStorage;
+        }
+
+        private class CrawlerInfoBuilder {
+
         }
     }
 
