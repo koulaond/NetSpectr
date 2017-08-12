@@ -1,12 +1,10 @@
 package crawler.impl.dflt;
 
-import crawler.api.CrawlerContext;
+import crawler.api.*;
 import crawler.api.CrawlerContext.CrawlerInfo;
-import crawler.api.CrawlerState;
-import crawler.api.NewLinksAvailableEvent;
-import crawler.api.SubscriberContainer;
 import org.junit.Assert;
 import org.junit.Test;
+import reactor.fn.Consumer;
 import sun.security.krb5.internal.CredentialsUtil;
 
 import java.net.URL;
@@ -48,8 +46,12 @@ public class DefaultCrawlerContextTest {
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
         DefaultLinksStorage storage = new DefaultLinksStorage();
-       // SubscriberContainer container = SubscriberContainer.builder().add(NewLinksAvailableEvent.class, )
-        Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url, storage);
+        SubscriberContainer container = SubscriberContainer.builder()
+                .add(NewLinksAvailableEvent.class, new TestConsumer(NewLinksAvailableEvent.class))
+                .add(ContentToProcessEvent.class, new TestConsumer(ContentToProcessEvent.class))
+                .add(CrawlerStateChangedEvent.class, new TestConsumer(CrawlerStateChangedEvent.class))
+                .build();
+        Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url, storage, container);
         assertTrue(crawlerInfoOpt.isPresent());
         CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
         assertEquals(url, crawlerInfo.getStartPoint());
@@ -120,6 +122,23 @@ public class DefaultCrawlerContextTest {
     @Test
     public void isCrawled() throws Exception {
 
+    }
+
+    private class TestConsumer<T extends CrawlerEvent> implements Consumer<T>{
+        private Class<CrawlerEvent> eventClass;
+
+        TestConsumer(Class<CrawlerEvent> eventClass){
+            this.eventClass = eventClass;
+        }
+
+        public Class<CrawlerEvent> getEventClass() {
+            return eventClass;
+        }
+
+        @Override
+        public void accept(T o) {
+
+        }
     }
 
 }

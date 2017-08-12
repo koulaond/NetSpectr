@@ -15,42 +15,68 @@ public final class SubscriberContainer {
         this.subscriberContainer = subscriberContainer;
     }
 
-    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(Class<? extends CrawlerEvent> event){
+    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(Class<? extends CrawlerEvent> event) {
         Subscribers subscribers = subscriberContainer.get(event);
-        if(subscribers == null){
+        if (subscribers == null) {
             return null;
         }
         return subscribers.getSubscribers();
     }
 
-    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(CrawlerEvent event){
+    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(CrawlerEvent event) {
         return getSubscribersFor(event.getClass());
     }
 
-    public Set<Class<? extends CrawlerEvent>> getEvents(){
+    public Set<Class<? extends CrawlerEvent>> getEvents() {
         return subscriberContainer.keySet();
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return this.subscriberContainer.isEmpty();
     }
 
-    public static SubscriberContainerBuilder builder(){
+    public static SubscriberContainerBuilder builder() {
         return new SubscriberContainerBuilder();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj)) {
+            return true;
+        }
+        if (!(obj instanceof SubscriberContainer)) {
+            return false;
+        }
+        SubscriberContainer that = (SubscriberContainer) obj;
+        // getEvents() never returns null so it can be compared directly
+        if (!that.getEvents().equals(getEvents())) {
+            return false;
+        }
+        for (Class<? extends CrawlerEvent> event : getEvents()) {
+            Set thisSubscribersForEvent = getSubscribersFor(event);
+            Set thatSubscribersForEvent = that.getSubscribersFor(event);
+            boolean same = thisSubscribersForEvent != null
+                    ? thisSubscribersForEvent.equals(thatSubscribersForEvent)
+                    : thatSubscribersForEvent != null;
+            if(!same){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static final class SubscriberContainerBuilder {
         private Map<Class<? extends CrawlerEvent>, Subscribers> subscriberContainer;
 
-        private SubscriberContainerBuilder(){
+        private SubscriberContainerBuilder() {
             this.subscriberContainer = new HashMap<>();
         }
 
-        public SubscriberContainerBuilder add(Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer){
+        public SubscriberContainerBuilder add(Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer) {
             requireNonNull(eventClass);
             requireNonNull(consumer);
             Subscribers subscribers = subscriberContainer.get(eventClass);
-            if(subscribers == null){
+            if (subscribers == null) {
                 subscribers = new Subscribers();
                 subscriberContainer.put(eventClass, subscribers);
             }
@@ -58,12 +84,12 @@ public final class SubscriberContainer {
             return this;
         }
 
-        public SubscriberContainer build(){
+        public SubscriberContainer build() {
             return new SubscriberContainer(this.subscriberContainer);
         }
     }
 
-    private static class Subscribers{
+    private static class Subscribers {
         private Set<Consumer<? extends CrawlerEvent>> subscribers;
 
         Subscribers() {
@@ -74,7 +100,11 @@ public final class SubscriberContainer {
             this.subscribers.add(subscriber);
         }
 
-        Set<Consumer<? extends CrawlerEvent>> getSubscribers(){
+        boolean contains(Consumer<? extends CrawlerEvent> subscriber) {
+            return this.subscribers.contains(subscriber);
+        }
+
+        Set<Consumer<? extends CrawlerEvent>> getSubscribers() {
             return unmodifiableSet(subscribers);
         }
     }
