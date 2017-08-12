@@ -7,6 +7,7 @@ import reactor.Environment;
 import reactor.bus.EventBus;
 import reactor.bus.selector.ClassSelector;
 import reactor.bus.spec.EventBusSpec;
+import reactor.fn.Consumer;
 
 import java.net.URL;
 import java.util.UUID;
@@ -128,7 +129,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     }
 
     @Override
-    public void subscribe(Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer) {
+    public void subscribe(Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer) {
         updateSubscribers(eventClass, consumer);
         this.publisher.subscribe(new ClassSelector(eventClass), consumer);
     }
@@ -139,7 +140,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         initPublisher();
     }
 
-    private void updateSubscribers(Class<? extends CrawlerEvent> newEvent, CrawlerConsumer newConsumer) {
+    private void updateSubscribers(Class<? extends CrawlerEvent> newEvent, Consumer<? extends CrawlerEvent> newConsumer) {
         SubscriberContainer.SubscriberContainerBuilder builder = SubscriberContainer.builder();
         if (this.subscribers != null) {
             this.subscribers.getEvents().forEach(event -> {

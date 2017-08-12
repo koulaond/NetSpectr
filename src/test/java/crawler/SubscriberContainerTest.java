@@ -4,6 +4,7 @@ import crawler.api.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import reactor.fn.Consumer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,12 +65,11 @@ public class SubscriberContainerTest {
         return builder;
     }
 
-    private static class TestConsumer extends CrawlerConsumer<CrawlerEvent> {
+    private static class TestConsumer implements Consumer<CrawlerEvent> {
 
         private Class<? extends CrawlerEvent> eventClass;
 
         public TestConsumer(Class<? extends CrawlerEvent> eventClass) {
-            super(null);
             this.eventClass = eventClass;
         }
 

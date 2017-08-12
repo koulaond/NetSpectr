@@ -1,5 +1,7 @@
 package crawler.api;
 
+import reactor.fn.Consumer;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -35,18 +37,18 @@ public interface CrawlerContext<T> {
     Optional<CrawlerInfo<T>> createNewCrawler(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
 
     /**
-     * Subscribes a new {@code CrawlerConsumer} to the crawler with the particular starting point. The consumer will react on the particular {@code CrawlerEvent}s.
+     * Subscribes a new {@code Consumer} to the crawler with the particular starting point. The consumer will react on the particular {@code CrawlerEvent}s.
      * @param startPoint Starting point the given crawler works on.
      * @param eventClass Class of {@code CrawlerEvent}s the given consumer will react on.
      * @param consumer Consumer.
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer);
+    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer);
 
     /**
-     * Subscribes a collection of {@code CrawlerConsumer}s to the crawler with the particular starting point.
+     * Subscribes a collection of {@code Consumer}s to the crawler with the particular starting point.
      * @param startPoint Starting point the given crawler works on.
-     * @param subscribers Collection of {@code CrawlerConsumer}s
+     * @param subscribers Collection of {@code Consumer}s
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
     Optional<CrawlerInfo<T>> subscribeTo(T startPoint, SubscriberContainer subscribers);

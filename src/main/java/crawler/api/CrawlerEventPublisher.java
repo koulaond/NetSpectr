@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import reactor.bus.Event;
 import reactor.bus.EventBus;
 import reactor.bus.selector.Selector;
+import reactor.fn.Consumer;
 
 public final class CrawlerEventPublisher {
 
@@ -19,7 +20,7 @@ public final class CrawlerEventPublisher {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void subscribe(Selector selector, CrawlerConsumer consumer){
+    public void subscribe(Selector selector, Consumer<? extends CrawlerEvent> consumer){
         this.eventBus.on(selector, consumer);
     }
 

@@ -1,10 +1,9 @@
 package crawler.impl.dflt;
 
 import crawler.api.ContentToProcessEvent;
-import crawler.api.CrawlerConsumer;
-import crawler.api.CrawlerRunner;
 import org.junit.Assert;
 import org.reflections.Reflections;
+import reactor.fn.Consumer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -149,14 +148,13 @@ public class DefaultCrawlerRunnerTestUtils {
     }
 
     /**
-     * Implementation of {@code CrawlerConsumer} for testing purposes.
+     * Implementation of {@code Consumer} for testing purposes.
      */
-    static class TestConsumer extends CrawlerConsumer<ContentToProcessEvent> {
+    static class TestConsumer implements Consumer<ContentToProcessEvent> {
 
         private CountDown countDown;
 
-        public TestConsumer(CrawlerRunner runner, CountDown countDown) {
-            super(runner);
+        public TestConsumer( CountDown countDown) {
             this.countDown = countDown;
         }
 

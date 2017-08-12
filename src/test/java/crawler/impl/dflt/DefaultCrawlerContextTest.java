@@ -2,6 +2,9 @@ package crawler.impl.dflt;
 
 import crawler.api.CrawlerContext;
 import crawler.api.CrawlerContext.CrawlerInfo;
+import crawler.api.CrawlerState;
+import crawler.api.NewLinksAvailableEvent;
+import crawler.api.SubscriberContainer;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.security.krb5.internal.CredentialsUtil;
@@ -15,25 +18,43 @@ import static crawler.impl.dflt.DefaultCrawlerRunnerTestUtils.SLASH;
 import static org.junit.Assert.*;
 
 public class DefaultCrawlerContextTest {
+
     @Test
     public void createNewCrawler_startPointOnly() throws Exception {
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
-        Optional<CrawlerInfo<URL>> crawlerInfo = context.createNewCrawler(url);
-        Assert.assertTrue(crawlerInfo.isPresent());
-        crawlerInfo.ifPresent(urlCrawlerInfo -> {
-            Assert.assertEquals(url, urlCrawlerInfo.getStartPoint());
-        });
+        Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url);
+        assertTrue(crawlerInfoOpt.isPresent());
+        CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
+        assertEquals(url, crawlerInfo.getStartPoint());
+        assertEquals(CrawlerState.NEW, crawlerInfo.getState());
     }
 
     @Test
     public void createNewCrawler_startPoint_storage() throws Exception {
-
+        DefaultCrawlerContext context = new DefaultCrawlerContext();
+        URL url = new URL(PROTOCOL, DOMAIN, SLASH);
+        DefaultLinksStorage storage = new DefaultLinksStorage();
+        Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url, storage);
+        assertTrue(crawlerInfoOpt.isPresent());
+        CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
+        assertEquals(url, crawlerInfo.getStartPoint());
+        assertEquals(CrawlerState.NEW, crawlerInfo.getState());
+        assertEquals(storage, crawlerInfo.getLinksStorage());
     }
 
     @Test
     public void createNewCrawler_startPoint_storage_subscribers() throws Exception {
-
+        DefaultCrawlerContext context = new DefaultCrawlerContext();
+        URL url = new URL(PROTOCOL, DOMAIN, SLASH);
+        DefaultLinksStorage storage = new DefaultLinksStorage();
+       // SubscriberContainer container = SubscriberContainer.builder().add(NewLinksAvailableEvent.class, )
+        Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url, storage);
+        assertTrue(crawlerInfoOpt.isPresent());
+        CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
+        assertEquals(url, crawlerInfo.getStartPoint());
+        assertEquals(CrawlerState.NEW, crawlerInfo.getState());
+        assertEquals(storage, crawlerInfo.getLinksStorage());
     }
 
     @Test

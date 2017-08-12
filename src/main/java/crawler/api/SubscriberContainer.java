@@ -1,5 +1,7 @@
 package crawler.api;
 
+import reactor.fn.Consumer;
+
 import java.util.*;
 
 import static java.util.Collections.unmodifiableSet;
@@ -13,7 +15,7 @@ public final class SubscriberContainer {
         this.subscriberContainer = subscriberContainer;
     }
 
-    public Set<CrawlerConsumer> getSubscribersFor(Class<? extends CrawlerEvent> event){
+    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(Class<? extends CrawlerEvent> event){
         Subscribers subscribers = subscriberContainer.get(event);
         if(subscribers == null){
             return null;
@@ -21,7 +23,7 @@ public final class SubscriberContainer {
         return subscribers.getSubscribers();
     }
 
-    public Set<CrawlerConsumer> getSubscribersFor(CrawlerEvent event){
+    public Set<Consumer<? extends CrawlerEvent>> getSubscribersFor(CrawlerEvent event){
         return getSubscribersFor(event.getClass());
     }
 
@@ -44,7 +46,7 @@ public final class SubscriberContainer {
             this.subscriberContainer = new HashMap<>();
         }
 
-        public SubscriberContainerBuilder add(Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer){
+        public SubscriberContainerBuilder add(Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer){
             requireNonNull(eventClass);
             requireNonNull(consumer);
             Subscribers subscribers = subscriberContainer.get(eventClass);
@@ -62,21 +64,17 @@ public final class SubscriberContainer {
     }
 
     private static class Subscribers{
-        private Set<CrawlerConsumer> subscribers;
+        private Set<Consumer<? extends CrawlerEvent>> subscribers;
 
         Subscribers() {
             this.subscribers = new HashSet<>();
         }
 
-        void addSubscriber(CrawlerConsumer subscriber) {
+        void addSubscriber(Consumer<? extends CrawlerEvent> subscriber) {
             this.subscribers.add(subscriber);
         }
 
-        boolean contains(CrawlerConsumer consumer){
-            return subscribers.contains(consumer);
-        }
-
-        Set<CrawlerConsumer> getSubscribers(){
+        Set<Consumer<? extends CrawlerEvent>> getSubscribers(){
             return unmodifiableSet(subscribers);
         }
     }

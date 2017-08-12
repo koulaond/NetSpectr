@@ -34,7 +34,7 @@ public class DefaultCrawlerRunnerStateTest {
     public void testRunning(){
         DefaultCrawlerRunner runner = defaultCrawlerRunner();
         CountDown countDown = new CountDown(PAGES_COUNT);
-        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, countDown));
+        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(countDown));
         new Thread(runner).start();
         try {
             Thread.sleep(1000);
@@ -48,7 +48,7 @@ public class DefaultCrawlerRunnerStateTest {
     public void testFinished(){
         DefaultCrawlerRunner runner = defaultCrawlerRunner();
         CountDown countDown = new CountDown(PAGES_COUNT);
-        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, countDown));
+        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(countDown));
         new Thread(runner).start();
         try {
             Thread.sleep(1000);
@@ -65,7 +65,7 @@ public class DefaultCrawlerRunnerStateTest {
     public void testStop() {
         DefaultCrawlerRunner runner = defaultCrawlerRunner();
         CountDown countDown = new CountDown(PAGES_COUNT);
-        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, countDown));
+        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(countDown));
         new Thread(runner).start();
         try {
             Thread.sleep(1000);
@@ -85,7 +85,7 @@ public class DefaultCrawlerRunnerStateTest {
     public void testPending(){
         DefaultCrawlerRunner runner = defaultCrawlerRunner();
         CountDown countDown = new CountDown(PAGES_COUNT);
-        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, countDown));
+        runner.subscribe(ContentToProcessEvent.class, new TestConsumer(countDown));
         new Thread(runner).start();
         try {
             Thread.sleep(1000);

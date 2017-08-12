@@ -1,5 +1,7 @@
 package crawler.api;
 
+import reactor.fn.Consumer;
+
 import java.util.UUID;
 
 /**
@@ -44,7 +46,7 @@ public interface CrawlerRunner<T> extends Runnable {
      * @param clazz Event class type
      * @param consumer Crawler consumer
      */
-    void subscribe(Class<? extends CrawlerEvent> clazz, CrawlerConsumer consumer);
+    void subscribe(Class<? extends CrawlerEvent> clazz, Consumer<? extends CrawlerEvent> consumer);
 
     /**
      * Deletes all registered subscribers / consumers from the crawler

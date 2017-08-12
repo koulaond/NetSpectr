@@ -1,8 +1,6 @@
 package crawler.impl.dflt;
 
 import crawler.api.ContentToProcessEvent;
-import crawler.api.CrawlerConsumer;
-import crawler.api.CrawlerRunner;
 import crawler.api.CrawlerState;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,8 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static crawler.impl.dflt.DefaultCrawlerRunnerTestUtils.*;
 import static org.junit.Assert.assertEquals;
@@ -53,7 +49,7 @@ public class DefaultCrawlerRunnerCrawlTest {
                     e.printStackTrace();
                 }
                 CountDown countDown = new CountDown(PAGES_COUNT);
-                runner.subscribe(ContentToProcessEvent.class, new TestConsumer(runner, countDown));
+                runner.subscribe(ContentToProcessEvent.class, new TestConsumer(countDown));
                 runner.run();
                 try {
                     Thread.sleep(2000);

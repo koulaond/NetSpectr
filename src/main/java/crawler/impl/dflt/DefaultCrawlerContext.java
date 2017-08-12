@@ -1,6 +1,7 @@
 package crawler.impl.dflt;
 
 import crawler.api.*;
+import reactor.fn.Consumer;
 
 import java.net.URL;
 import java.util.*;
@@ -43,7 +44,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
     }
 
     @Override
-    public Optional<CrawlerInfo<URL>> subscribeTo(URL url, Class<? extends CrawlerEvent> eventClass, CrawlerConsumer consumer) {
+    public Optional<CrawlerInfo<URL>> subscribeTo(URL url, Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer) {
         Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
         runner.ifPresent(obj -> obj.subscribe(eventClass, consumer));
         return createCrawlerInfo(runner);
