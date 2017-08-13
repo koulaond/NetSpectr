@@ -6,6 +6,9 @@ import reactor.fn.Consumer;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -75,29 +78,26 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         return Optional.of(subscribers[0]);
     }
 
-    @Override
     public Optional<CrawlerInfo<URL>> startCrawler(URL url) {
         Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
         runner.ifPresent(obj -> runCrawler(obj));
         return createCrawlerInfo(runner);
     }
 
-    @Override
     public Optional<CrawlerInfo<URL>> stopCrawler(URL url) {
         return changeState(url, CrawlerState.STOPPED);
     }
 
-    @Override
     public Optional<CrawlerInfo<URL>> pauseCrawler(URL url) {
         return changeState(url, CrawlerState.PENDING);
     }
 
-    @Override
     public Optional<CrawlerInfo<URL>> resumeCrawler(URL url) {
         return changeState(url, CrawlerState.RUNNING);
     }
 
-    private Optional<CrawlerInfo<URL>> changeState(URL url, CrawlerState state) {
+    @Override
+    public Optional<CrawlerInfo<URL>> changeState(URL url, CrawlerState state) {
         Optional<CrawlerRunner<URL>> runner = crawlerPool.get(url);
         runner.ifPresent(obj -> obj.setState(state));
         return createCrawlerInfo(runner);
@@ -105,27 +105,40 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
 
     @Override
     public Optional<CrawlerInfo<URL>> getCrawlerByID(UUID uuid) {
-        return null;
+        for (Optional<CrawlerRunner<URL>> runner : crawlerPool.values()) {
+            if(runner.isPresent() && uuid.equals(runner.get().getId())){
+                return createCrawlerInfo(runner);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<CrawlerInfo<URL>> getCrawlerByStartPoint(URL url) {
-        return null;
+        return createCrawlerInfo(crawlerPool.get(url));
     }
 
     @Override
     public Set<CrawlerInfo<URL>> getAllCrawlers() {
-        return null;
+        return getCrawlersFiltered(urlCrawlerInfo -> true);
     }
 
     @Override
     public Set<CrawlerInfo<URL>> getCrawlersByState(CrawlerState state) {
-        return null;
+        return getCrawlersFiltered(urlCrawlerInfo -> state.equals(urlCrawlerInfo.getState()));
+    }
+
+    private Set<CrawlerInfo<URL>> getCrawlersFiltered(Predicate<CrawlerInfo<URL>> predicate){
+        return crawlerPool.values()
+                .stream()
+                .map(urlCrawlerRunner -> createCrawlerInfo(urlCrawlerRunner).get())
+                .filter(predicate)
+                .collect(Collectors.toSet());
     }
 
     @Override
     public boolean isCrawled(URL url) {
-        return false;
+        return crawlerPool.get(url).isPresent();
     }
 
     private Optional<CrawlerInfo<URL>> createCrawlerInfo(Optional<CrawlerRunner<URL>> crawlerRunner) {

@@ -68,32 +68,12 @@ public interface CrawlerContext<T> {
     Optional<SubscriberContainer> getSubscribersForCrawler(T startPoint);
 
     /**
-     * Starts the crawler.
-     * @param startPoint Starting point of the crawler that is supposed to start.
+     * Changes the state of the crawler with the given {@code startPoint}.
+     * @param startPoint start point of the changed crawler
+     * @param newState new state for the crawler
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> startCrawler(T startPoint);
-
-    /**
-     * Stops the crawler.
-     * @param startPoint Starting point of the crawler that is supposed to stop.
-     * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
-     */
-    Optional<CrawlerInfo<T>> stopCrawler(T startPoint);
-
-    /**
-     * Pauses the crawler.
-     * @param startPoint Starting point of the crawler that is supposed to pause.
-     * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
-     */
-    Optional<CrawlerInfo<T>> pauseCrawler(T startPoint);
-
-    /**
-     * Resumes the crawler.
-     * @param startPoint Starting point of the crawler that is supposed to resume.
-     * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
-     */
-    Optional<CrawlerInfo<T>> resumeCrawler(T startPoint);
+    Optional<CrawlerInfo<T>> changeState(T startPoint, CrawlerState newState);
 
     /**
      * Return info about the crawler with the given {@code UUID}.
