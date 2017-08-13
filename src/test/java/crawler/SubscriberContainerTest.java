@@ -1,6 +1,7 @@
 package crawler;
 
 import crawler.api.*;
+import crawler.api.SubscriberContainer.SubscriberContainerBuilder;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static crawler.api.SubscriberContainer.builder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -56,14 +58,14 @@ public class SubscriberContainerTest {
 
     @Test(expected = NullPointerException.class)
     public void testBuildNewContainer_addNullValues() throws Exception {
-        SubscriberContainer.SubscriberContainerBuilder builder = containerBuilder();
+        SubscriberContainerBuilder builder = containerBuilder();
         builder.add(null, null);
     }
 
     @Test
     public void testEquals_identical() {
-        SubscriberContainer.SubscriberContainerBuilder leftBuilder = SubscriberContainer.builder();
-        SubscriberContainer.SubscriberContainerBuilder rightBuilder = SubscriberContainer.builder();
+        SubscriberContainerBuilder leftBuilder = builder();
+        SubscriberContainerBuilder rightBuilder = builder();
 
         CONSUMERS.forEach((eventClass, testConsumers) ->
                 Stream.of(testConsumers).forEach(testConsumer -> {
@@ -78,8 +80,8 @@ public class SubscriberContainerTest {
 
     @Test
     public void testEquals_differentEvents() {
-        SubscriberContainer.SubscriberContainerBuilder leftBuilder = SubscriberContainer.builder();
-        SubscriberContainer.SubscriberContainerBuilder rightBuilder = SubscriberContainer.builder();
+        SubscriberContainerBuilder leftBuilder = builder();
+        SubscriberContainerBuilder rightBuilder = builder();
 
         CONSUMERS.forEach((eventClass, testConsumers) ->
                 Stream.of(testConsumers).forEach(testConsumer -> {
@@ -96,16 +98,14 @@ public class SubscriberContainerTest {
 
     @Test
     public void testEquals_sameEvents_differentConsumers() {
-        SubscriberContainer.SubscriberContainerBuilder leftBuilder = SubscriberContainer.builder();
-        SubscriberContainer.SubscriberContainerBuilder rightBuilder = SubscriberContainer.builder();
+        SubscriberContainerBuilder leftBuilder = builder();
+        SubscriberContainerBuilder rightBuilder = builder();
 
         CONSUMERS.forEach((eventClass, testConsumers) ->
                 Stream.of(testConsumers).forEach(testConsumer -> {
                     leftBuilder.add(eventClass, testConsumer);
-                    if (eventClass.equals(CrawlerStateChangedEvent.class)) {
-                        if (!testConsumer.equals(CONSUMERS_FOR_STATE_EVENT[0])) {
-                            rightBuilder.add(eventClass, testConsumer);
-                        }
+                    if (!testConsumer.equals(CONSUMERS_FOR_STATE_EVENT[0])) {
+                        rightBuilder.add(eventClass, testConsumer);
                     }
                 }));
 
@@ -114,8 +114,8 @@ public class SubscriberContainerTest {
         assertFalse(leftContainer.equals(rightContainer));
     }
 
-    private SubscriberContainer.SubscriberContainerBuilder containerBuilder() {
-        SubscriberContainer.SubscriberContainerBuilder builder = SubscriberContainer.builder();
+    private SubscriberContainerBuilder containerBuilder() {
+        SubscriberContainerBuilder builder = builder();
         CONSUMERS.forEach((eventClass, testConsumers) -> Stream.of(testConsumers).forEach(testConsumer -> builder.add(eventClass, testConsumer)));
         return builder;
     }

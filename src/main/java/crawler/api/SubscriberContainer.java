@@ -48,7 +48,6 @@ public final class SubscriberContainer {
             return false;
         }
         SubscriberContainer that = (SubscriberContainer) obj;
-        // getEvents() never returns null so it can be compared directly
         if (!that.getEvents().equals(getEvents())) {
             return false;
         }
