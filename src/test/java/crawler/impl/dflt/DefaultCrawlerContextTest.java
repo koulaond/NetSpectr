@@ -185,6 +185,10 @@ public class DefaultCrawlerContextTest {
 
     @Test
     public void getCrawlerByStartPoint() throws Exception {
+
+    }
+    @Test
+    public void getAllCrawlers() throws Exception {
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url1 = new URL(PROTOCOL, DOMAIN, SLASH + 1);
         URL url2 = new URL(PROTOCOL, DOMAIN, SLASH + 2);
@@ -194,11 +198,6 @@ public class DefaultCrawlerContextTest {
         context.createNewCrawler(url3);
         Set<CrawlerInfo<URL>> allCrawlers = context.getAllCrawlers();
         assertEquals(3, allCrawlers.size());
-    }
-
-    @Test
-    public void getAllCrawlers() throws Exception {
-
     }
 
     @Test
