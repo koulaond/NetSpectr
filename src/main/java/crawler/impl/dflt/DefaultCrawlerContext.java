@@ -137,13 +137,13 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         if (runner == null) {
             return null;
         } else {
-            DefaultCrawlerInfo info = new DefaultCrawlerInfo();
-            info.setState(runner.getState());
-            info.setLinksStorage(runner.getLinksStorage());
-            info.setStartPoint(runner.getStartPoint());
-            info.setSubscribers(runner.getSubscribers());
-            info.setUuid(runner.getId());
-            return info;
+            return DefaultCrawlerInfo.builder()
+                    .uuid(runner.getId())
+                    .startPoint(runner.getStartPoint())
+                    .state(runner.getState())
+                    .linkStorage(runner.getLinksStorage())
+                    .subscribers(runner.getSubscribers())
+                    .build();
         }
     }
 
@@ -152,60 +152,5 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
         thread.start();
     }
 
-    private class DefaultCrawlerInfo implements CrawlerInfo<URL> {
-        private URL startPoint;
-        private UUID uuid;
-        private CrawlerState state;
-        private SubscriberContainer subscribers;
-        private LinksStorage<URL> linksStorage;
 
-        @Override
-        public URL getStartPoint() {
-            return startPoint;
-        }
-
-        private void setStartPoint(URL startPoint) {
-            this.startPoint = startPoint;
-        }
-
-        @Override
-        public UUID getUuid() {
-            return uuid;
-        }
-
-        private void setUuid(UUID uuid) {
-            this.uuid = uuid;
-        }
-
-        @Override
-        public CrawlerState getState() {
-            return state;
-        }
-
-        public void setState(CrawlerState state) {
-            this.state = state;
-        }
-
-        @Override
-        public SubscriberContainer getSubscribers() {
-            return subscribers;
-        }
-
-        public void setSubscribers(SubscriberContainer subscribers) {
-            this.subscribers = subscribers;
-        }
-
-        @Override
-        public LinksStorage<URL> getLinksStorage() {
-            return linksStorage;
-        }
-
-        public void setLinksStorage(LinksStorage<URL> linksStorage) {
-            this.linksStorage = linksStorage;
-        }
-
-        private class CrawlerInfoBuilder {
-
-        }
-    }
 }
