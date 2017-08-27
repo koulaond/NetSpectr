@@ -1,18 +1,20 @@
 package crawler.api;
 
-import java.net.URL;
+/**
+ * Event that carries new data node downloaded by a crawler.
+ * @param <NODE> new downloaded node
+ * @param <TRANSITION> transition that directs to the new available node
+ */
+public final class ContentToProcessEvent<NODE, TRANSITION> extends CrawlerEvent<NODE> {
 
+    private TRANSITION incomeTransition;
 
-public final class ContentToProcessEvent extends CrawlerEvent<String> {
-
-    private URL sourceUrl;
-
-    public ContentToProcessEvent(String htmlContext, URL sourceUrl) {
-        super(htmlContext);
-        this.sourceUrl = sourceUrl;
+    public ContentToProcessEvent(NODE NODE, TRANSITION source) {
+        super(NODE);
+        this.incomeTransition = source;
     }
 
-    public URL getSourceUrl() {
-        return sourceUrl;
+    public TRANSITION getIncomeTransition() {
+        return incomeTransition;
     }
 }

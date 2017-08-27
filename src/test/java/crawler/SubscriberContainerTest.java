@@ -18,10 +18,10 @@ import static org.junit.Assert.assertTrue;
 public class SubscriberContainerTest {
 
     private static final TestConsumer[] CONSUMERS_FOR_NEW_LINKS_EVENT = {
-            new TestConsumer(NewLinksAvailableEvent.class),
-            new TestConsumer(NewLinksAvailableEvent.class),
-            new TestConsumer(NewLinksAvailableEvent.class),
-            new TestConsumer(NewLinksAvailableEvent.class)
+            new TestConsumer(NewTransitionsEvent.class),
+            new TestConsumer(NewTransitionsEvent.class),
+            new TestConsumer(NewTransitionsEvent.class),
+            new TestConsumer(NewTransitionsEvent.class)
     };
 
     private static final TestConsumer[] CONSUMERS_FOR_CONTENT_TO_PROCESS_EVENT = {
@@ -39,7 +39,7 @@ public class SubscriberContainerTest {
 
     @BeforeClass
     public static void setup() {
-        CONSUMERS.put(NewLinksAvailableEvent.class, CONSUMERS_FOR_NEW_LINKS_EVENT);
+        CONSUMERS.put(NewTransitionsEvent.class, CONSUMERS_FOR_NEW_LINKS_EVENT);
         CONSUMERS.put(ContentToProcessEvent.class, CONSUMERS_FOR_CONTENT_TO_PROCESS_EVENT);
         CONSUMERS.put(CrawlerStateChangedEvent.class, CONSUMERS_FOR_STATE_EVENT);
     }

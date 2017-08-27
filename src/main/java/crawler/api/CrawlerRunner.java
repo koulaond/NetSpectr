@@ -6,9 +6,9 @@ import java.util.UUID;
 
 /**
  * Interface defining behavior of the crawler runner.
- * @param <T> type of crawling units
+ * @param <TRANSITION> type of outcomes that come from HTML units
  */
-public interface CrawlerRunner<T> extends Runnable {
+public interface CrawlerRunner<TRANSITION> extends Runnable {
 
     /**
      * Unique identifier of the crawler.
@@ -18,9 +18,9 @@ public interface CrawlerRunner<T> extends Runnable {
 
     /**
      * Returns the starting point where the crawler starts crawling process.
-     * @return An instance of {@code T} type.
+     * @return An instance of {@code TRANSITION} type.
      */
-    T getStartPoint();
+    TRANSITION getStartPoint();
 
     /**
      * Returns an actual crawlig state.
@@ -36,9 +36,9 @@ public interface CrawlerRunner<T> extends Runnable {
 
     /**
      * Returns a storage instance that caches all crawled items and containing a queue with items supposed to visit in next steps.
-     * @return {@code {@link LinksStorage}} instance.
+     * @return {@code {@link Storage }} instance.
      */
-    LinksStorage<T> getLinksStorage();
+    Storage<TRANSITION> getStorage();
 
     /**
      * Subscribes the given {@code {@link CrawlerContext}} on the particular {@code {@link CrawlerEvent}} type.

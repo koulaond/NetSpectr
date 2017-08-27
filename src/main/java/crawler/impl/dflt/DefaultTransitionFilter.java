@@ -1,15 +1,15 @@
 package crawler.impl.dflt;
 
-import crawler.api.LinksFilter;
-import crawler.api.LinksStorage;
+import crawler.api.Storage;
+import crawler.api.TransitionFilter;
 
 import java.net.URL;
 import java.util.HashSet;
 
-public class DefaultLinksFilter implements LinksFilter<URL, LinksStorage<URL>>{
+public class DefaultTransitionFilter implements TransitionFilter<URL, Storage<URL>> {
 
     @Override
-    public Iterable<URL> filterLinks(Iterable<URL> toFilter, LinksStorage<URL> storage) {
+    public Iterable<URL> filter(Iterable<URL> toFilter, Storage<URL> storage) {
         HashSet<URL> filtered = new HashSet<>();
         toFilter.forEach(url -> {
             if(!storage.isProcessed(url) && !storage.isQueued(url)){

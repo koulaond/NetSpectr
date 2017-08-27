@@ -18,15 +18,15 @@ public class DefaultCrawlerRunnerTestUtils {
     public static final String DOMAIN = "test";
     public static final String SLASH = "/";
 
-    public static DefaultContentDownloader mockDownloader(){
-        return mock(DefaultContentDownloader.class);
+    public static DefaultContentNodeDownloader mockDownloader(){
+        return mock(DefaultContentNodeDownloader.class);
     }
 
-    public static DefaultLinkExtractor mockExtractor(){
-        return mock(DefaultLinkExtractor.class);
+    public static DefaultTransitionExtractor mockExtractor(){
+        return mock(DefaultTransitionExtractor.class);
     }
 
-    public static void mockCrawlerComponents(int[][] graph, DefaultContentDownloader downloader, DefaultLinkExtractor extractor, long delayMillis) {
+    public static void mockCrawlerComponents(int[][] graph, DefaultContentNodeDownloader downloader, DefaultTransitionExtractor extractor, long delayMillis) {
         List<URL> urlPool = new ArrayList<>();
         for (int i = 0; i < graph.length; i++) {
             List<URL> urls = new ArrayList<>();

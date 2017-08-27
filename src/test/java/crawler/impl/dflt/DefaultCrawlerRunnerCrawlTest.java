@@ -2,7 +2,6 @@ package crawler.impl.dflt;
 
 import crawler.api.ContentToProcessEvent;
 import crawler.api.CrawlerState;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -28,8 +27,8 @@ public class DefaultCrawlerRunnerCrawlTest {
         Set<Class<? extends GraphCreationStrategy>> classes = getStrategies();
         for (int i = 0; i < CYCLES; i++) {
             classes.forEach(clazz -> {
-                DefaultContentDownloader downloader = mockDownloader();
-                DefaultLinkExtractor extractor = mockExtractor();
+                DefaultContentNodeDownloader downloader = mockDownloader();
+                DefaultTransitionExtractor extractor = mockExtractor();
                 int[][] graph = null;
                 try {
                     graph = clazz.newInstance().createGraph(PAGES_COUNT, OUTCOMES);
@@ -43,7 +42,7 @@ public class DefaultCrawlerRunnerCrawlTest {
                 String path = SLASH + graph[0][0];
                 try {
                     URL startUrl = new URL(PROTOCOL, DOMAIN, path);
-                    runner = new DefaultCrawlerRunner(startUrl, new DefaultLinksStorage(), downloader, extractor);
+                    runner = new DefaultCrawlerRunner(startUrl, new DefaultStorage(), downloader, extractor);
                 } catch (MalformedURLException e) {
                     fail("Cannot create start URL for (protocol, domain, path) = (" + PROTOCOL + ", " + DOMAIN + ", " + path + ")");
                     e.printStackTrace();

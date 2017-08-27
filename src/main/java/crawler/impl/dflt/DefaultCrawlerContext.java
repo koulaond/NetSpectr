@@ -25,18 +25,18 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
     }
 
     @Override
-    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage) {
-        return createNewCrawler(startPoint, linksStorage, null);
+    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, Storage<URL> storage) {
+        return createNewCrawler(startPoint, storage, null);
     }
 
     @Override
-    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, LinksStorage<URL> linksStorage, SubscriberContainer subscribers) {
+    public Optional<CrawlerInfo<URL>> createNewCrawler(URL startPoint, Storage<URL> storage, SubscriberContainer subscribers) {
         requireNonNull(startPoint);
         CrawlerRunner<URL> possiblyExisting = crawlerPool.get(startPoint);
         if (possiblyExisting != null) {
             throw new IllegalStateException("Crawler with URL " + startPoint.toExternalForm() + " already exists.");
         }
-        CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startPoint, linksStorage);
+        CrawlerRunner<URL> runner = new DefaultCrawlerRunner(startPoint, storage);
         if (subscribers != null) {
             SubscriberHandler handler = new SubscriberHandler();
             handler.subscribe(runner, subscribers);
@@ -141,7 +141,7 @@ public class DefaultCrawlerContext implements CrawlerContext<URL> {
                     .uuid(runner.getId())
                     .startPoint(runner.getStartPoint())
                     .state(runner.getState())
-                    .linkStorage(runner.getLinksStorage())
+                    .linkStorage(runner.getStorage())
                     .subscribers(runner.getSubscribers())
                     .build();
         }

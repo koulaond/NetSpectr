@@ -1,6 +1,6 @@
 package crawler.impl.dflt;
 
-import crawler.api.LinksStorage;
+import crawler.api.Storage;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DefaultLinksFilterTest {
+public class DefaultTransitionFilterTest {
 
     private static final String[] URLS_TO_FILTER = {
             "https://www.winteriscoming.com",
@@ -65,13 +65,13 @@ public class DefaultLinksFilterTest {
 
     @Test
     public void testFilterLinks() throws Exception {
-        DefaultLinksFilter filter = new DefaultLinksFilter();
-        Iterable<URL> filtered = filter.filterLinks(new ArrayList<>(URLS_TO_FILTER_COLLECTION), storage());
+        DefaultTransitionFilter filter = new DefaultTransitionFilter();
+        Iterable<URL> filtered = filter.filter(new ArrayList<>(URLS_TO_FILTER_COLLECTION), storage());
         filtered.forEach(url -> Assert.assertTrue(FILTERED_URLS_COLLECTION.contains(url)));
     }
 
-    private LinksStorage<URL> storage() {
-        return new LinksStorage<URL>() {
+    private Storage<URL> storage() {
+        return new Storage<URL>() {
 
 
             @Override

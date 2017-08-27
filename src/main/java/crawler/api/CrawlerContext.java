@@ -8,33 +8,33 @@ import java.util.UUID;
 
 /**
  * Facade interface that offers methods for managing whole Crawler system.
- * @param <T>
+ * @param <TYPE> type of instance representing "links" between crawled items
  */
-public interface CrawlerContext<T> {
+public interface CrawlerContext<TYPE> {
 
     /**
      * Creates new crawler.
      * @param startPoint Starting point where the crawler starts crawling process.
      * @return {@code Optional} with info object about the created crawler or an empty {@code Optional} if the crawler was not been created.
      */
-    Optional<CrawlerInfo<T>> createNewCrawler(T startPoint);
+    Optional<CrawlerInfo<TYPE>> createNewCrawler(TYPE startPoint);
 
     /**
-     * Creates new crawler with the given {@code LinksStorage<T>} implementation.
+     * Creates new crawler with the given {@code Storage<TYPE>} implementation.
      * @param startPoint Starting point where the crawler starts crawling process.
-     * @param linksStorage Links storage implementation.
+     * @param storage Links storage implementation.
      * @return {@code Optional} with info object about the created crawler or an empty {@code Optional} if the crawler was not been created.
      */
-    Optional<CrawlerInfo<T>> createNewCrawler(T startPoint, LinksStorage<T> linksStorage);
+    Optional<CrawlerInfo<TYPE>> createNewCrawler(TYPE startPoint, Storage<TYPE> storage);
 
     /**
-     * Creates new crawler with the given {@code LinksStorage<T>} implementation and subscribers that will be notified by the internal Event publisher.
+     * Creates new crawler with the given {@code Storage<TYPE>} implementation and subscribers that will be notified by the internal Event publisher.
      * @param startPoint Starting point where the crawler starts crawling process.
-     * @param linksStorage Links storage implementation.
+     * @param storage Links storage implementation.
      * @param subscribers {@code SubscriberContainer} instance containing consumers for crawler events that are raised during crawling process.
      * @return {@code Optional} with info object about the created crawler or an empty {@code Optional} if the crawler was not been created.
      */
-    Optional<CrawlerInfo<T>> createNewCrawler(T startPoint, LinksStorage<T> linksStorage, SubscriberContainer subscribers);
+    Optional<CrawlerInfo<TYPE>> createNewCrawler(TYPE startPoint, Storage<TYPE> storage, SubscriberContainer subscribers);
 
     /**
      * Subscribes a new {@code Consumer} to the crawler with the particular starting point. The consumer will react on the particular {@code CrawlerEvent}s.
@@ -43,7 +43,7 @@ public interface CrawlerContext<T> {
      * @param consumer Consumer.
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer);
+    Optional<CrawlerInfo<TYPE>> subscribeTo(TYPE startPoint, Class<? extends CrawlerEvent> eventClass, Consumer<? extends CrawlerEvent> consumer);
 
     /**
      * Subscribes a collection of {@code Consumer}s to the crawler with the particular starting point.
@@ -51,21 +51,21 @@ public interface CrawlerContext<T> {
      * @param subscribers Collection of {@code Consumer}s
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> subscribeTo(T startPoint, SubscriberContainer subscribers);
+    Optional<CrawlerInfo<TYPE>> subscribeTo(TYPE startPoint, SubscriberContainer subscribers);
 
     /**
      * Deletes all subscribers from the crawler with the given starting point.
      * @param startPoint Starting point of the crawler.
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> deleteSubscribersFrom(T startPoint);
+    Optional<CrawlerInfo<TYPE>> deleteSubscribersFrom(TYPE startPoint);
 
     /**
      * Retrieves all subscribers on the given crawler.
      * @param startPoint Starting point of the crawler.
      * @return {@code SubscriberContainer} instance with all subscribers.
      */
-    Optional<SubscriberContainer> getSubscribersForCrawler(T startPoint);
+    Optional<SubscriberContainer> getSubscribersForCrawler(TYPE startPoint);
 
     /**
      * Changes the state of the crawler with the given {@code startPoint}.
@@ -73,48 +73,48 @@ public interface CrawlerContext<T> {
      * @param newState new state for the crawler
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} if some issue was occurred.
      */
-    Optional<CrawlerInfo<T>> changeState(T startPoint, CrawlerState newState);
+    Optional<CrawlerInfo<TYPE>> changeState(TYPE startPoint, CrawlerState newState);
 
     /**
      * Return info about the crawler with the given {@code UUID}.
      * @param uuid {@code UUID} of the crawler.
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} the crawler does not exist.
      */
-    Optional<CrawlerInfo<T>> getCrawlerByID(UUID uuid);
+    Optional<CrawlerInfo<TYPE>> getCrawlerByID(UUID uuid);
 
     /**
      * Return info about the crawler with the given starting point.
      * @param startPoint Starting point of the crawler.
      * @return {@code Optional} with info object about the given crawler or an empty {@code Optional} the crawler does not exist.
      */
-    Optional<CrawlerInfo<T>> getCrawlerByStartPoint(T startPoint);
+    Optional<CrawlerInfo<TYPE>> getCrawlerByStartPoint(TYPE startPoint);
 
     /**
      * Returns a set of all existing crawlers.
      * @return {@code Set} containing all crawlers.
      */
-    Set<CrawlerInfo<T>> getAllCrawlers();
+    Set<CrawlerInfo<TYPE>> getAllCrawlers();
 
     /**
      * Returns a set of crawlers with the given {@code CrawlerState}.
      * @param state {@code CrawlerState}
      * @return {@code Set} containing all crawlers.
      */
-    Set<CrawlerInfo<T>> getCrawlersByState(CrawlerState state);
+    Set<CrawlerInfo<TYPE>> getCrawlersByState(CrawlerState state);
 
     /**
      * Returns a boolean whether there exists a crawler for the starting point in engine or not.
      * @param startPoint Starting point
      * @return Boolean whether there exists a crawler for the starting point in engine or not.
      */
-    boolean isCrawled(T startPoint);
+    boolean isCrawled(TYPE startPoint);
 
     /**
      * Interface for wrapping objects that contain crawler basic information.
-     * @param <T>
+     * @param <TYPE>
      */
-    interface CrawlerInfo<T> {
-        T getStartPoint();
+    interface CrawlerInfo<TYPE> {
+        TYPE getStartPoint();
 
         UUID getUuid();
 
@@ -122,6 +122,6 @@ public interface CrawlerContext<T> {
 
         SubscriberContainer getSubscribers();
 
-        LinksStorage<T> getLinksStorage();
+        Storage<TYPE> getStorage();
     }
 }

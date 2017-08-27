@@ -1,6 +1,5 @@
 package crawler.impl.dflt;
 
-import crawler.impl.dflt.DefaultLinkExtractor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
-public class DefaultLinkExtractorTest {
+public class DefaultTransitionExtractorTest {
     private static final String BASE_URL_DEF = "https://www.test.domain.com";
     private static URL BASE_URL;
 
@@ -60,7 +59,8 @@ public class DefaultLinkExtractorTest {
 
     @Test
     public void testExtractLinks() throws Exception {
-        DefaultLinkExtractor extractor = new DefaultLinkExtractor(BASE_URL);
-        extractor.extractLinks(HTML).forEach(url -> assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
+        DefaultTransitionExtractor extractor = new DefaultTransitionExtractor();
+        HtmlMetaData metaData = new HtmlMetaData(null, EXPECTED_URLS_COLLECTION, null, null);
+        extractor.extractLinks(metaData).forEach(url -> assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
     }
 }

@@ -1,6 +1,5 @@
 package crawler.impl.dflt;
 
-import crawler.impl.dflt.DefaultContentDownloader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,7 +10,7 @@ import java.net.URL;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class DefaultContentDownloaderTest {
+public class DefaultContentNodeDownloaderTest {
     private static URL URL_GOOGLE_CORRECT_HTTP;
     private static URL URL_GOOGLE_CORRECT_HTTPS;
     private static URL URL_GOOGLE_BAD_ADDRESS;
@@ -33,7 +32,7 @@ public class DefaultContentDownloaderTest {
 
     @Test
     public void downloadContent_correctUrl_HTTP() throws Exception {
-        DefaultContentDownloader downloader = new DefaultContentDownloader();
+        DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
         String content = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTP);
         assertNotNull(content);
         assertFalse(content.isEmpty());
@@ -41,7 +40,7 @@ public class DefaultContentDownloaderTest {
 
     @Test
     public void downloadContent_correctUrl_HTTPS() throws Exception {
-        DefaultContentDownloader downloader = new DefaultContentDownloader();
+        DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
         String content = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTPS);
         assertNotNull(content);
         assertFalse(content.isEmpty());
@@ -49,19 +48,19 @@ public class DefaultContentDownloaderTest {
 
     @Test(expected = IllegalStateException.class)
     public void downloadContent_missingProtocol() {
-        DefaultContentDownloader downloader = new DefaultContentDownloader();
+        DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
         downloader.downloadContent(URL_GOOGLE_UNSUPPORTED_PROTOCOL);
     }
 
     @Test(expected = IllegalStateException.class)
     public void downloadContent_protocolOnly() {
-        DefaultContentDownloader downloader = new DefaultContentDownloader();
+        DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
         downloader.downloadContent(URL_GOOGLE_PROTOCOL_ONLY);
     }
 
     @Test(expected = IllegalStateException.class)
     public void downloadContent_badAddress() {
-        DefaultContentDownloader downloader = new DefaultContentDownloader();
+        DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
         downloader.downloadContent(URL_GOOGLE_BAD_ADDRESS);
     }
 }

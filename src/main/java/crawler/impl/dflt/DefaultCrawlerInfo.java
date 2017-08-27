@@ -2,7 +2,7 @@ package crawler.impl.dflt;
 
 import crawler.api.CrawlerContext;
 import crawler.api.CrawlerState;
-import crawler.api.LinksStorage;
+import crawler.api.Storage;
 import crawler.api.SubscriberContainer;
 
 import java.net.URL;
@@ -13,7 +13,7 @@ class DefaultCrawlerInfo implements CrawlerContext.CrawlerInfo<URL> {
     private UUID uuid;
     private CrawlerState state;
     private SubscriberContainer subscribers;
-    private LinksStorage<URL> linksStorage;
+    private Storage<URL> storage;
 
     private DefaultCrawlerInfo() {
 
@@ -55,13 +55,12 @@ class DefaultCrawlerInfo implements CrawlerContext.CrawlerInfo<URL> {
         this.subscribers = subscribers;
     }
 
-    @Override
-    public LinksStorage<URL> getLinksStorage() {
-        return linksStorage;
+    public Storage<URL> getStorage() {
+        return storage;
     }
 
-    private void setLinksStorage(LinksStorage<URL> linksStorage) {
-        this.linksStorage = linksStorage;
+    private void setStorage(Storage<URL> storage) {
+        this.storage = storage;
     }
 
     public static CrawlerInfoBuilder builder() {
@@ -95,8 +94,8 @@ class DefaultCrawlerInfo implements CrawlerContext.CrawlerInfo<URL> {
             return this;
         }
 
-        CrawlerInfoBuilder linkStorage(LinksStorage<URL> linksStorage) {
-            info.setLinksStorage(linksStorage);
+        CrawlerInfoBuilder linkStorage(Storage<URL> storage) {
+            info.setStorage(storage);
             return this;
         }
 

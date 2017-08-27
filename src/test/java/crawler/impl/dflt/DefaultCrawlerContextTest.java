@@ -32,22 +32,22 @@ public class DefaultCrawlerContextTest {
     public void createNewCrawler_startPoint_storage() throws Exception {
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
-        DefaultLinksStorage storage = new DefaultLinksStorage();
+        DefaultStorage storage = new DefaultStorage();
         Optional<CrawlerInfo<URL>> crawlerInfoOpt = context.createNewCrawler(url, storage);
         assertTrue(crawlerInfoOpt.isPresent());
         CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
         assertEquals(url, crawlerInfo.getStartPoint());
         assertEquals(CrawlerState.NEW, crawlerInfo.getState());
-        assertEquals(storage, crawlerInfo.getLinksStorage());
+        assertEquals(storage, crawlerInfo.getStorage());
     }
 
     @Test
     public void createNewCrawler_startPoint_storage_subscribers() throws Exception {
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
-        DefaultLinksStorage storage = new DefaultLinksStorage();
+        DefaultStorage storage = new DefaultStorage();
         SubscriberContainer subscribers = SubscriberContainer.builder()
-                .add(NewLinksAvailableEvent.class, new TestConsumer(NewLinksAvailableEvent.class))
+                .add(NewTransitionsEvent.class, new TestConsumer(NewTransitionsEvent.class))
                 .add(ContentToProcessEvent.class, new TestConsumer(ContentToProcessEvent.class))
                 .add(CrawlerStateChangedEvent.class, new TestConsumer(CrawlerStateChangedEvent.class))
                 .build();
@@ -56,32 +56,32 @@ public class DefaultCrawlerContextTest {
         CrawlerInfo<URL> crawlerInfo = crawlerInfoOpt.get();
         assertEquals(url, crawlerInfo.getStartPoint());
         assertEquals(CrawlerState.NEW, crawlerInfo.getState());
-        assertEquals(storage, crawlerInfo.getLinksStorage());
+        assertEquals(storage, crawlerInfo.getStorage());
         assertEquals(subscribers, crawlerInfo.getSubscribers());
     }
 
     @Test
     public void subscribeTo_singleSubscriber() throws Exception {
-        TestConsumer consumer = new TestConsumer(NewLinksAvailableEvent.class);
+        TestConsumer consumer = new TestConsumer(NewTransitionsEvent.class);
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
         context.createNewCrawler(url);
-        context.subscribeTo(url, NewLinksAvailableEvent.class, consumer);
+        context.subscribeTo(url, NewTransitionsEvent.class, consumer);
         Optional<CrawlerInfo<URL>> info = context.getCrawlerByStartPoint(url);
         assertTrue(info.isPresent());
         SubscriberContainer subscribers = info.get().getSubscribers();
-        Set<Consumer<? extends CrawlerEvent>> subscribersFor = subscribers.getSubscribersFor(NewLinksAvailableEvent.class);
+        Set<Consumer<? extends CrawlerEvent>> subscribersFor = subscribers.getSubscribersFor(NewTransitionsEvent.class);
         assertEquals(1, subscribersFor.size());
         assertEquals(consumer, subscribersFor.iterator().next());
     }
 
     @Test
     public void subscribeTo_subscriberContainer() throws Exception {
-        TestConsumer newLinksConsumer = new TestConsumer(NewLinksAvailableEvent.class);
+        TestConsumer newLinksConsumer = new TestConsumer(NewTransitionsEvent.class);
         TestConsumer stateChangedConsumer = new TestConsumer(CrawlerStateChangedEvent.class);
         TestConsumer contentConsumer = new TestConsumer(ContentToProcessEvent.class);
         SubscriberContainer subscribers = SubscriberContainer.builder()
-                .add(NewLinksAvailableEvent.class, newLinksConsumer)
+                .add(NewTransitionsEvent.class, newLinksConsumer)
                 .add(CrawlerStateChangedEvent.class, stateChangedConsumer)
                 .add(ContentToProcessEvent.class, contentConsumer)
                 .build();
@@ -97,15 +97,15 @@ public class DefaultCrawlerContextTest {
 
     @Test
     public void deleteSubscribersFrom() throws Exception {
-        TestConsumer consumer = new TestConsumer(NewLinksAvailableEvent.class);
+        TestConsumer consumer = new TestConsumer(NewTransitionsEvent.class);
         DefaultCrawlerContext context = new DefaultCrawlerContext();
         URL url = new URL(PROTOCOL, DOMAIN, SLASH);
         context.createNewCrawler(url);
-        context.subscribeTo(url, NewLinksAvailableEvent.class, consumer);
+        context.subscribeTo(url, NewTransitionsEvent.class, consumer);
         Optional<CrawlerInfo<URL>> info = context.getCrawlerByStartPoint(url);
         assertTrue(info.isPresent());
         SubscriberContainer subscribers = info.get().getSubscribers();
-        Set<Consumer<? extends CrawlerEvent>> subscribersFor = subscribers.getSubscribersFor(NewLinksAvailableEvent.class);
+        Set<Consumer<? extends CrawlerEvent>> subscribersFor = subscribers.getSubscribersFor(NewTransitionsEvent.class);
         assertEquals(1, subscribersFor.size());
         assertEquals(consumer, subscribersFor.iterator().next());
         context.deleteSubscribersFrom(url);
@@ -117,11 +117,11 @@ public class DefaultCrawlerContextTest {
 
     @Test
     public void getSubscribersForCrawler() throws Exception {
-        TestConsumer newLinksConsumer = new TestConsumer(NewLinksAvailableEvent.class);
+        TestConsumer newLinksConsumer = new TestConsumer(NewTransitionsEvent.class);
         TestConsumer stateChangedConsumer = new TestConsumer(CrawlerStateChangedEvent.class);
         TestConsumer contentConsumer = new TestConsumer(ContentToProcessEvent.class);
         SubscriberContainer subscribers = SubscriberContainer.builder()
-                .add(NewLinksAvailableEvent.class, newLinksConsumer)
+                .add(NewTransitionsEvent.class, newLinksConsumer)
                 .add(CrawlerStateChangedEvent.class, stateChangedConsumer)
                 .add(ContentToProcessEvent.class, contentConsumer)
                 .build();
@@ -233,7 +233,7 @@ public class DefaultCrawlerContextTest {
         private URL startPoint;
         private CrawlerState state;
         private SubscriberContainer subscribers;
-        private LinksStorage<URL> linksStorage;
+        private Storage<URL> storage;
 
         @Override
         public UUID getId() {
@@ -255,9 +255,8 @@ public class DefaultCrawlerContextTest {
             return subscribers;
         }
 
-        @Override
-        public LinksStorage<URL> getLinksStorage() {
-            return linksStorage;
+        public Storage<URL> getStorage() {
+            return storage;
         }
 
         @Override

@@ -2,7 +2,9 @@ package crawler.api;
 
 import java.util.UUID;
 
-
+/**
+ * Event that carries a state change of the crawler.
+ */
 public class CrawlerStateChangedEvent extends CrawlerEvent<UUID> {
 
     private CrawlerState oldState;

@@ -1,15 +1,15 @@
 package crawler.impl.dflt;
 
-import crawler.api.LinksStorage;
+import crawler.api.Storage;
 
 import java.net.URL;
 import java.util.*;
 
-public class DefaultLinksStorage implements LinksStorage<URL> {
+public class DefaultStorage implements Storage<URL> {
 
     private Map<URL, ItemState> links;
 
-    public DefaultLinksStorage() {
+    public DefaultStorage() {
         links = new HashMap<>();
     }
 

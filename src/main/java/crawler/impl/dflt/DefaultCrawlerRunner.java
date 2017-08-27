@@ -15,10 +15,9 @@ import java.util.UUID;
 public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     private final UUID id;
     private final URL baseUrl;
-    private final LinksStorage<URL> linksStorage;
-    private final ContentDownloader<URL, String> downloader;
-    private final LinkExtractor<String, URL> extractor;
-    private final LinksFilter<URL, LinksStorage<URL>> filter;
+    private final Storage<URL> storage;
+    private final ContentNodeDownloader<URL, HtmlMetaData> downloader;
+    private final TransitionFilter<URL, Storage<URL>> filter;
     private CrawlerEventPublisher publisher;
     private SubscriberContainer subscribers;
     private CrawlerState state;
@@ -28,32 +27,31 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this(baseUrl, null, null, null, null);
     }
 
-    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage) {
-        this(baseUrl, linksStorage, null, null, null);
+    public DefaultCrawlerRunner(URL baseUrl, Storage<URL> storage) {
+        this(baseUrl, storage, null, null, null);
     }
 
-    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader) {
-        this(baseUrl, linksStorage, downloader, null, null);
+    public DefaultCrawlerRunner(URL baseUrl, Storage<URL> storage, ContentNodeDownloader<URL, HtmlMetaData> downloader) {
+        this(baseUrl, storage, downloader, null, null);
     }
 
-    public DefaultCrawlerRunner(URL baseUrl, LinksStorage<URL> linksStorage, ContentDownloader<URL, String> downloader, LinkExtractor<String, URL> extractor) {
-        this(baseUrl, linksStorage, downloader, extractor, null);
+    public DefaultCrawlerRunner(URL baseUrl, Storage<URL> storage, ContentNodeDownloader<URL, HtmlMetaData> downloader, TransitionExtractor<String, URL> extractor) {
+        this(baseUrl, storage, downloader, extractor, null);
     }
 
     public DefaultCrawlerRunner(URL baseUrl,
-                                LinksStorage<URL> linksStorage,
-                                ContentDownloader<URL, String> downloader,
-                                LinkExtractor<String, URL> extractor,
-                                LinksFilter<URL, LinksStorage<URL>> filter) {
+                                Storage<URL> storage,
+                                ContentNodeDownloader<URL, HtmlMetaData> downloader,
+                                TransitionExtractor<String, URL> extractor,
+                                TransitionFilter<URL, Storage<URL>> filter) {
         this.id = UUID.randomUUID();
         initPublisher();
 
         this.baseUrl = baseUrl;
 
-        this.linksStorage = linksStorage != null ? linksStorage : new DefaultLinksStorage();
-        this.downloader = downloader != null ? downloader : new DefaultContentDownloader();
-        this.extractor = extractor != null ? extractor : new DefaultLinkExtractor(baseUrl);
-        this.filter = filter != null ? filter : new DefaultLinksFilter();
+        this.storage = storage != null ? storage : new DefaultStorage();
+        this.downloader = downloader != null ? downloader : new DefaultContentNodeDownloader();
+        this.filter = filter != null ? filter : new DefaultTransitionFilter();
         this.state = CrawlerState.NEW;
     }
 
@@ -64,18 +62,18 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
     @Override
     public void run() {
         setState(CrawlerState.RUNNING);
-        linksStorage.toQueue(baseUrl);
-        while (!linksStorage.isEmpty()) {
+        storage.toQueue(baseUrl);
+        while (!storage.isEmpty()) {
             tryPending();
             if (CrawlerState.STOPPED.equals(getState())) {
                 break;
             }
-            URL url = linksStorage.nextQueued();
+            URL url = storage.nextQueued();
             if (url == null) {
                 break;
             }
-            linksStorage.processed(url);
-            String content;
+            storage.processed(url);
+            HtmlMetaData content;
             try {
                 content = downloader.downloadContent(url);
             } catch (IllegalStateException ex) {
@@ -89,15 +87,15 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
             if (CrawlerState.STOPPED.equals(getState())) {
                 break;
             }
-            Iterable<URL> extractedLinks = extractor.extractLinks(content);
+            Iterable<URL> extractedLinks = content.getOutcomes();
             tryPending();
             if (CrawlerState.STOPPED.equals(getState())) {
                 break;
             }
-            Iterable<URL> urlsToQueue = filter.filterLinks(extractedLinks, linksStorage);
+            Iterable<URL> urlsToQueue = filter.filter(extractedLinks, storage);
             urlsToQueue.forEach(toQueue -> {
-                if (!linksStorage.isQueued(toQueue) && !linksStorage.isProcessed(toQueue)) {
-                    linksStorage.toQueue(toQueue);
+                if (!storage.isQueued(toQueue) && !storage.isProcessed(toQueue)) {
+                    storage.toQueue(toQueue);
                 }
             });
         }
@@ -232,8 +230,7 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
         this.publisher.publish(new CrawlerStateChangedEvent(id, prev, next));
     }
 
-    @Override
-    public LinksStorage<URL> getLinksStorage() {
-        return linksStorage;
+    public Storage<URL> getStorage() {
+        return storage;
     }
 }
