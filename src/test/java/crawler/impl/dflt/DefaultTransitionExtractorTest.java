@@ -60,7 +60,7 @@ public class DefaultTransitionExtractorTest {
     @Test
     public void testExtractLinks() throws Exception {
         DefaultTransitionExtractor extractor = new DefaultTransitionExtractor();
-        HtmlMetaData metaData = new HtmlMetaData(null, EXPECTED_URLS_COLLECTION, null, null);
+        HtmlMetaData metaData = new HtmlMetaData(null, null, null, EXPECTED_URLS_COLLECTION);
         extractor.extractLinks(metaData).forEach(url -> assertTrue(EXPECTED_URLS_COLLECTION.contains(url)));
     }
 }

@@ -18,57 +18,31 @@ public class DefaultCrawlerRunnerTestUtils {
     public static final String DOMAIN = "test";
     public static final String SLASH = "/";
 
-    public static DefaultContentNodeDownloader mockDownloader(){
-        return mock(DefaultContentNodeDownloader.class);
-    }
-
-    public static DefaultTransitionExtractor mockExtractor(){
-        return mock(DefaultTransitionExtractor.class);
-    }
-
-    public static void mockCrawlerComponents(int[][] graph, DefaultContentNodeDownloader downloader, DefaultTransitionExtractor extractor, long delayMillis) {
-        List<URL> urlPool = new ArrayList<>();
+    public static DefaultContentNodeDownloader mockDownloader(int[][] graph){
+        DefaultContentNodeDownloader downloader = mock(DefaultContentNodeDownloader.class);
+        Map<URL, HtmlMetaData> nodes = new HashMap<>();
         for (int i = 0; i < graph.length; i++) {
-            List<URL> urls = new ArrayList<>();
-            int[] node = graph[i];
-            for (int j = 0; j < node.length; j++) {
-                try {
-                    URL url = new URL("https", "test", "/" + node[j]);
-                    urls.add(url);
-                    if (!urlPool.contains(url)) {
-                        urlPool.add(url);
+            final int inc = i;  // effectively final
+            try {
+                URL url = new URL(PROTOCOL, DOMAIN, SLASH + i);
+                nodes.computeIfAbsent(url, url1 -> {
+                    List<URL> outcomes = new ArrayList<>();
+                    for (int j = 0; j < graph[inc].length; j++) {
+                        try {
+                            outcomes.add(new URL(PROTOCOL, DOMAIN, SLASH + j));
+                        } catch (MalformedURLException e) {
+                            Assert.fail();
+                        }
                     }
-                } catch (MalformedURLException e) {
-                    Assert.fail();
-                }
-            }
-            when(extractor.extractLinks("/" + i)).thenAnswer(invocationOnMock -> {
-                if(delayMillis > 0) {
-                    Thread.sleep(delayMillis);
-                }
-                return urls;
-            });
-        }
-        int j = 0;
-        Collections.sort(urlPool, urlComparator());
-        Iterator<URL> iterator = urlPool.iterator();
-        while (iterator.hasNext()) {
-            URL next = iterator.next();
-            when(downloader.downloadContent(next)).thenReturn("/" + j);
-            j++;
-        }
-    }
+                    return new HtmlMetaData(url1, "html for " + inc, "title for "+inc, outcomes);
+                });
 
-    private static Comparator<URL> urlComparator() {
-        return (url1, url2) -> {
-            Integer left = Integer.parseInt(url1.getPath().substring(1));
-            Integer right = Integer.parseInt(url2.getPath().substring(1));
-            if (left > right) {
-                return 1;
-            } else if (left < right) {
-                return -1;
-            } else return 0;
-        };
+            } catch (MalformedURLException e) {
+                Assert.fail();
+            }
+        }
+        nodes.forEach((url, metaData) -> when(downloader.downloadContent(url)).thenReturn(metaData));
+        return downloader;
     }
 
     public static Set<Class<? extends GraphCreationStrategy>> getStrategies(){

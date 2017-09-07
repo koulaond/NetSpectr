@@ -33,17 +33,17 @@ public class DefaultContentNodeDownloaderTest {
     @Test
     public void downloadContent_correctUrl_HTTP() throws Exception {
         DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
-        String content = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTP);
-        assertNotNull(content);
-        assertFalse(content.isEmpty());
+        HtmlMetaData metaData = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTP);
+        assertNotNull(metaData);
+        assertFalse(metaData.getSourceHtml().isEmpty());
     }
 
     @Test
     public void downloadContent_correctUrl_HTTPS() throws Exception {
         DefaultContentNodeDownloader downloader = new DefaultContentNodeDownloader();
-        String content = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTPS);
-        assertNotNull(content);
-        assertFalse(content.isEmpty());
+        HtmlMetaData metaData  = downloader.downloadContent(URL_GOOGLE_CORRECT_HTTPS);
+        assertNotNull(metaData);
+        assertFalse(metaData.getSourceHtml().isEmpty());
     }
 
     @Test(expected = IllegalStateException.class)

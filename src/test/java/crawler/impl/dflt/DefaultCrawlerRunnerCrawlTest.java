@@ -19,7 +19,7 @@ import static org.junit.Assert.fail;
 public class DefaultCrawlerRunnerCrawlTest {
 
     private static final int PAGES_COUNT = 500;
-    private static final int OUTCOMES = 6;
+    private static final int OUTCOMES_COUNT_FROM_EACH_PAGE = 6;
     private static final int CYCLES = 10;
 
     @Test
@@ -27,22 +27,20 @@ public class DefaultCrawlerRunnerCrawlTest {
         Set<Class<? extends GraphCreationStrategy>> classes = getStrategies();
         for (int i = 0; i < CYCLES; i++) {
             classes.forEach(clazz -> {
-                DefaultContentNodeDownloader downloader = mockDownloader();
-                DefaultTransitionExtractor extractor = mockExtractor();
                 int[][] graph = null;
                 try {
-                    graph = clazz.newInstance().createGraph(PAGES_COUNT, OUTCOMES);
+                    graph = clazz.newInstance().createGraph(PAGES_COUNT, OUTCOMES_COUNT_FROM_EACH_PAGE);
                 } catch (InstantiationException | IllegalAccessException e) {
                     fail("Cannot mock crawler components because there was some instantiation problem: " + e.getMessage());
                     e.printStackTrace();
                 }
-                mockCrawlerComponents(graph, downloader, extractor, 0);
 
+                DefaultContentNodeDownloader downloader = mockDownloader(graph);
                 DefaultCrawlerRunner runner = null;
                 String path = SLASH + graph[0][0];
                 try {
                     URL startUrl = new URL(PROTOCOL, DOMAIN, path);
-                    runner = new DefaultCrawlerRunner(startUrl, new DefaultStorage(), downloader, extractor);
+                    runner = new DefaultCrawlerRunner(startUrl, new DefaultStorage(), downloader, null);
                 } catch (MalformedURLException e) {
                     fail("Cannot create start URL for (protocol, domain, path) = (" + PROTOCOL + ", " + DOMAIN + ", " + path + ")");
                     e.printStackTrace();

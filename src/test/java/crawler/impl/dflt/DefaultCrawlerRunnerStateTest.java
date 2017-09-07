@@ -109,9 +109,7 @@ public class DefaultCrawlerRunnerStateTest {
 
     private DefaultCrawlerRunner defaultCrawlerRunner() {
         int[][] graph = new TreeGraphCreationStrategy().createGraph(PAGES_COUNT, OUTCOMES);
-        DefaultContentNodeDownloader downloader = mockDownloader();
-        DefaultTransitionExtractor extractor = mockExtractor();
-        mockCrawlerComponents(graph, downloader, extractor, DELAY);
+        DefaultContentNodeDownloader downloader = mockDownloader(graph);
         String path = SLASH + graph[0][0];
         URL startUrl = null;
         try {
@@ -120,6 +118,6 @@ public class DefaultCrawlerRunnerStateTest {
             fail("Cannot create start URL for (protocol, domain, path) = (" + PROTOCOL + ", " + DOMAIN + ", " + path + ")");
             e.printStackTrace();
         }
-        return new DefaultCrawlerRunner(startUrl, new DefaultStorage(), downloader, extractor);
+        return new DefaultCrawlerRunner(startUrl, new DefaultStorage(), downloader);
     }
 }

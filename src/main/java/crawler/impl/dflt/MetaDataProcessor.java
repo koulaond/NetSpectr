@@ -13,9 +13,9 @@ import static java.util.Objects.requireNonNull;
 
 public class MetaDataProcessor {
 
-    public HtmlMetaData process(String rawHtml, URL sourceUrl){
+    public HtmlMetaData process(String rawHtml, URL sourceUrl) {
         Document doc = Jsoup.parse(rawHtml);
-        HtmlMetaData metaData = new HtmlMetaData(rawHtml, extractLinks(rawHtml, sourceUrl), doc.title(), doc.baseUri());
+        HtmlMetaData metaData = new HtmlMetaData(sourceUrl, rawHtml, doc.title(), extractLinks(rawHtml, sourceUrl));
         return metaData;
     }
 
@@ -42,12 +42,12 @@ public class MetaDataProcessor {
             } else {
                 return new URL(sourceUrl.getProtocol(), sourceUrl.getHost(), path);
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             return null;
         }
     }
 
-    private boolean isOnDomain(URL url, URL sourceUrl){
+    private boolean isOnDomain(URL url, URL sourceUrl) {
         return !url.getHost().isEmpty() && url.getHost().equals(sourceUrl.getHost());
     }
 }
