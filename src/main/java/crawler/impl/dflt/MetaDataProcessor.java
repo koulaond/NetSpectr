@@ -25,7 +25,7 @@ public class MetaDataProcessor {
         Elements links = htmlDocument.getElementsByAttribute("href");
         Set<URL> extractedLinks = new HashSet<>();
 
-        links.forEach(element -> {
+        links.stream().filter(element -> !"text/css".equals(element.attr("type"))).forEach(element -> {
             String hrefValue = element.attr("href");
             URL url = buildLink(hrefValue, sourceUrl);
             if (url != null && isOnDomain(url, sourceUrl)) {
@@ -39,7 +39,9 @@ public class MetaDataProcessor {
         try {
             if (path.startsWith("http")) {
                 return new URL(path);
-            } else {
+            } else if(path.startsWith(".")){
+                return new URL(sourceUrl.getProtocol(), sourceUrl.getHost(), path.substring(1));
+            }else{
                 return new URL(sourceUrl.getProtocol(), sourceUrl.getHost(), path);
             }
         } catch (MalformedURLException ex) {

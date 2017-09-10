@@ -9,6 +9,7 @@ import reactor.bus.selector.ClassSelector;
 import reactor.bus.spec.EventBusSpec;
 import reactor.fn.Consumer;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -232,5 +233,12 @@ public final class DefaultCrawlerRunner implements CrawlerRunner<URL> {
 
     public Storage<URL> getStorage() {
         return storage;
+    }
+
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
+        DefaultCrawlerRunner runner = new DefaultCrawlerRunner(new URL("http://www.caj.cz/"));
+        Thread thread = new Thread(runner);
+        thread.start();
+        Thread.sleep(500000);
     }
 }
