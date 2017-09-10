@@ -29,7 +29,7 @@ public class DefaultCrawlerRunnerTestUtils {
                     List<URL> outcomes = new ArrayList<>();
                     for (int j = 0; j < graph[inc].length; j++) {
                         try {
-                            outcomes.add(new URL(PROTOCOL, DOMAIN, SLASH + j));
+                            outcomes.add(new URL(PROTOCOL, DOMAIN, SLASH + graph[inc][j]));
                         } catch (MalformedURLException e) {
                             Assert.fail();
                         }
@@ -103,7 +103,7 @@ public class DefaultCrawlerRunnerTestUtils {
     }
 
     /**
-     * Strategy class that generates a connected graph as n-nary tree.
+     * Strategy class that generates a connected graph as n-ary tree.
      */
     static class TreeGraphCreationStrategy implements GraphCreationStrategy {
 
