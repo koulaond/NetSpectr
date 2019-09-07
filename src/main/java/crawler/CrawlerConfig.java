@@ -14,6 +14,7 @@ public class CrawlerConfig {
     private Set<CrawlerEventListener> eventListeners;
 
     private static class CrawlerConfigBuilder {
+
         public CrawlerConfigBuilder eventListener(CrawlerEventListener crawlerEventListener) {
             this.eventListeners.add(crawlerEventListener);
             return this;
