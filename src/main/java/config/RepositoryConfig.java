@@ -6,18 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import rest.RepositoryController;
-import service.NetworkService;
 
 @Configuration
 @EnableTransactionManagement
 @EnableNeo4jRepositories("repository")
 public class RepositoryConfig {
-
-    @Bean
-    public NetworkService networkService() {
-        return new NetworkService();
-    }
 
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {

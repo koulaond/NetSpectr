@@ -8,6 +8,6 @@ public class ErrorService {
     }
 
     public void crawlerError(UUID crawlerUuid, String message, Throwable throwable){
-        // TODO
+        System.err.println(throwable);
     }
 }

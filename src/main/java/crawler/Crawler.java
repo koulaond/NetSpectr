@@ -6,50 +6,84 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+
+import static java.lang.String.format;
 
 public class Crawler {
 
-    private UUID uuid;
+    private final UUID uuid;
 
-    private CrawlerConfig config;
+    private final CrawlerConfig config;
+
+    private final ErrorService errorService;
 
     private CrawlerDataContainer dataContainer;
 
-    private ErrorService errorService;
+    private LinksFilter linksFilter ;
 
     private Crawler(CrawlerConfig crawlerConfig, ErrorService errorService) {
+        this.uuid = UUID.randomUUID();
         this.config = crawlerConfig;
-        this.dataContainer = new CrawlerDataContainer();
         this.errorService = errorService;
+        this.dataContainer = new CrawlerDataContainer();
+        this.linksFilter = new LinksFilter();
     }
 
     public void startCrawling() {
         URL initUrl = config.getInitUrl();
+        CrawlerURL crawlerURL = new CrawlerURL(initUrl);
+        proceedUrl(crawlerURL);
+        CrawlerURL nextUrl;
+
+        while ((nextUrl = dataContainer.nextUrl()) != null) {
+            proceedUrl(nextUrl);
+        }
+    }
+
+    private void proceedUrl(CrawlerURL url) {
+        Document htmlDocument;
         try {
-            proceedUrl(initUrl);
-            URL nextUrl;
-            while ((nextUrl = dataContainer.nextUrl()) != null) {
-                proceedUrl(nextUrl);
-            }
+            htmlDocument = Jsoup.connect(url.getUrl().toString())
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36")
+
+                    .get();
         } catch (IOException e) {
-            errorService.crawlerError(uuid, "InitUrl failed to download.", e);
+            dataContainer.markAsFailed(url);
+            errorService.crawlerError(uuid, format("Cannot get HTML from %s", url.toString()), e);
+            return;
         }
-    }
+        proceedHtml(htmlDocument);
+        dataContainer.markAsCrawled(url);
+        Elements outcomeLinks = htmlDocument.select("a[href]");
+        Set<String> filteredLinks = linksFilter.filterLinks(outcomeLinks, config.getExcludedTypes());
 
-    private void proceedUrl(URL nextUrl) throws IOException {
-        Document nextDocument = Jsoup.connect(nextUrl.toString()).get();
-        Elements nextLinks = nextDocument.select("a[href]");
-        for (Element link : nextLinks) {
-            String href = link.attr("abs:href");
-            if (isOnDomain(href)) {
-                dataContainer.addToQueueIfNotProcessed(new URL(href));
+        for (String link : filteredLinks) {
+            try {
+                CrawlerURL outcomeLink = new CrawlerURL(new URL(link));
+
+                if (isOnDomain(outcomeLink)) {
+                    dataContainer.addToQueueIfNotProcessed(outcomeLink);
+                }
+            } catch (MalformedURLException e) {
+                errorService.crawlerError(uuid, format("Invalid link: %s", link, e));
             }
         }
     }
 
-    private boolean isOnDomain(String url) {
-        return true;
+    private void proceedHtml(Document htmlDocument) {
+        System.out.println(htmlDocument.location());
+    }
+
+    private boolean isOnDomain(CrawlerURL url) {
+        return Objects.equals(url.getUrl().getHost(), config.getInitUrl().getHost());
+    }
+
+    public static Crawler newCrawler(CrawlerConfig config, ErrorService errorService) {
+        return new Crawler(config, errorService);
     }
 }
