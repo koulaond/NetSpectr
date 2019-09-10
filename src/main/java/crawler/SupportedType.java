@@ -1,11 +1,11 @@
 package crawler;
 
-import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.HashSet;
 import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 @Getter
 @AllArgsConstructor
@@ -84,27 +84,28 @@ public enum SupportedType {
     private String[] extensions;
 
     public static Set<SupportedType> imageTypes() {
-        return Sets.newHashSet(BMP, GIF, ICO, JPEG, PNG, SVG, TIF, WEBP, TTF);
+        return newHashSet(BMP, GIF, ICO, JPEG, PNG, SVG, TIF, WEBP, TTF);
     }
 
     public static Set<SupportedType> videoTypes() {
-        return Sets.newHashSet(AVI, MPEG, OGV, TS, WEBM, THREEG2, THREEGP);
+        return newHashSet(AVI, MPEG, OGV, TS, WEBM, THREEG2, THREEGP);
     }
 
     public static Set<SupportedType> audioTypes() {
-        return Sets.newHashSet(MID, MP3, OGA, WAV, WEBA, THREEG2, THREEGP);
+        return newHashSet(MID, MP3, OGA, WAV, WEBA, THREEG2, THREEGP);
     }
 
     public static Set<SupportedType> archives() {
-        return Sets.newHashSet(ARC, BZ, BZ2, JAR, RAR, TAR, ZIP, SEVENZ);
+        return newHashSet(ARC, BZ, BZ2, JAR, RAR, TAR, ZIP, SEVENZ);
     }
 
     public static Set<SupportedType> markups() {
-        return Sets.newHashSet(HTML, XHTML, XML);
+        return newHashSet(HTML, XHTML, XML);
     }
 
     public static Set<SupportedType> binaries() {
-        return Sets.newHashSet(ABW, AZV, BIN, DOC, DOCX, EOT, EPUB, ODP, ODS, ODT, PDF, PPT, PPTX, SWF, VSD, WOFF2, XLS, XLSX);
+        return newHashSet(ABW, AZV, BIN, DOC, DOCX, EOT, EPUB, ODP, ODS, ODT,
+                PDF, PPT, PPTX, SWF, VSD, WOFF2, XLS, XLSX);
     }
 
 

@@ -14,4 +14,6 @@ public class CrawlerConfig {
 
     @Singular
     private Set<SupportedType> excludedTypes;
+
+    private String userAgent;
 }
