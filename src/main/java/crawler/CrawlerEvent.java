@@ -1,4 +1,4 @@
-package crawler.event;
+package crawler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,5 @@
 
-import crawler.event.CrawlerEventHandler;
+import crawler.CrawlerEventHandler;
 
 import java.net.MalformedURLException;
 import java.util.UUID;

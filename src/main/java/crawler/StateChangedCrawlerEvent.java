@@ -1,6 +1,5 @@
-package crawler.event;
+package crawler;
 
-import crawler.CrawlerState;
 import lombok.Getter;
 
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package crawler.event;
+package crawler;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -46,49 +46,15 @@ public final class CrawlerEventHandler {
 
     }
 
-    public static CrawlerEventHandlerBuilder builder() {
-        return new CrawlerEventHandlerBuilder();
-    }
-
-    private void subscribeDataAcquired(UUID crawlerUuid, Consumer<DataAcquiredCrawlerEvent> consumer) {
+    void subscribeDataAcquired(UUID crawlerUuid, Consumer<DataAcquiredCrawlerEvent> consumer) {
         dataAcquiredEvents.computeIfAbsent(crawlerUuid, o -> new HashSet<>()).add(consumer);
     }
 
-    private void subscribeLinksExtracted(UUID crawlerUuid, Consumer<LinksExtractedCrawlerEvent> consumer) {
+    void subscribeLinksExtracted(UUID crawlerUuid, Consumer<LinksExtractedCrawlerEvent> consumer) {
         linksExtractedEvents.computeIfAbsent(crawlerUuid, o -> new HashSet<>()).add(consumer);
     }
 
-    private void subscribeStateChanged(UUID crawlerUuid, Consumer<StateChangedCrawlerEvent> consumer) {
+    void subscribeStateChanged(UUID crawlerUuid, Consumer<StateChangedCrawlerEvent> consumer) {
         stateChangedEvents.computeIfAbsent(crawlerUuid, o -> new HashSet<>()).add(consumer);
-    }
-
-    public static final class CrawlerEventHandlerBuilder {
-        private CrawlerEventHandler handler;
-
-        private CrawlerEventHandlerBuilder() {
-            this.handler = new CrawlerEventHandler();
-        }
-
-        public CrawlerEventHandlerBuilder subscribeDataAcquired(UUID crawlerUuid, Consumer<DataAcquiredCrawlerEvent>... consumers) {
-            for (Consumer<DataAcquiredCrawlerEvent> consumer : consumers)
-                this.handler.subscribeDataAcquired(crawlerUuid, consumer);
-            return this;
-        }
-
-        public CrawlerEventHandlerBuilder subscribeLinksExtracted(UUID crawlerUuid, Consumer<LinksExtractedCrawlerEvent>... consumers) {
-            for (Consumer<LinksExtractedCrawlerEvent> consumer : consumers)
-                this.handler.subscribeLinksExtracted(crawlerUuid, consumer);
-            return this;
-        }
-
-        public CrawlerEventHandlerBuilder subscribeStateChanged(UUID crawlerUuid, Consumer<StateChangedCrawlerEvent>... consumers) {
-            for (Consumer<StateChangedCrawlerEvent> consumer : consumers)
-                this.handler.subscribeStateChanged(crawlerUuid, consumer);
-            return this;
-        }
-
-        public CrawlerEventHandler build() {
-            return handler;
-        }
     }
 }

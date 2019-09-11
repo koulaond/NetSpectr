@@ -1,9 +1,5 @@
 package crawler;
 
-import crawler.event.CrawlerEventHandler;
-import crawler.event.DataAcquiredCrawlerEvent;
-import crawler.event.LinksExtractedCrawlerEvent;
-import crawler.event.StateChangedCrawlerEvent;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
