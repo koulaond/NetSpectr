@@ -12,13 +12,10 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toSet;
 
 public class PreAnalyzer {
-    private WebsiteStructureHandler structureHandler;
+
 
     public WebPage preAnalyzePage(URL location, String pageTitle, String html, Set<URL> outcomeUrlsOnDomain, Set<URL> outcomeUrlsOutOfDomain) {
-        // Do not preanalyze if web page already analyzed in past
-        if (structureHandler.isInStructure(location)) {
-            return null;
-        }
+
         Document parsedDocument = Jsoup.parse(html);
         Elements scriptElements = parsedDocument.getElementsByTag("script");
         Set<String> scripts = scriptElements.stream().map(Element::html).collect(toSet());

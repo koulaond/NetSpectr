@@ -6,7 +6,7 @@ import java.util.Map;
 public class WebsiteStructureHandler {
     private WebsiteStructure structure;
 
-    WebsiteStructureHandler() {
+    public WebsiteStructureHandler() {
         this.structure = new WebsiteStructure();
     }
 
