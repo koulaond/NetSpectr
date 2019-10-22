@@ -1,8 +1,12 @@
-package core.analysis;
+package core;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.net.URL;
 import java.util.Map;
 
+@Getter(AccessLevel.PACKAGE)
 public class WebsiteStructureHandler {
     private WebsiteStructure structure;
 
@@ -16,6 +20,7 @@ public class WebsiteStructureHandler {
             // First node
             WebPageNode node = new WebPageNode();
             node.setWebPage(webPage);
+            node.setSourceUrl(webPage.getSourceUrl());
             structure.setInitialNode(node);
             webPageNodes.put(webPage.getSourceUrl(), node);
             adjustOutcomeNodes(webPage, webPageNodes, node);
@@ -23,9 +28,10 @@ public class WebsiteStructureHandler {
             WebPageNode node = webPageNodes.get(webPage.getSourceUrl());
             if (node == null) {
                 node = new WebPageNode();
-                node.setWebPage(webPage);
                 webPageNodes.put(webPage.getSourceUrl(), node);
             }
+            node.setWebPage(webPage);
+            node.setSourceUrl(webPage.getSourceUrl());
             adjustOutcomeNodes(webPage, webPageNodes, node);
         }
     }
@@ -42,8 +48,10 @@ public class WebsiteStructureHandler {
                 outcomeNode.setSourceUrl(outcomeUrl);
                 webPageNodes.put(outcomeUrl, outcomeNode);
             }
-            outcomeNode.getIncomeWebPageNodes().add(sourceNode);
-            sourceNode.getOutcomeWebPageNodes().add(outcomeNode);
+            if (!outcomeNode.getSourceUrl().equals(sourceNode.getSourceUrl())) {
+                outcomeNode.getIncomeWebPageNodes().add(sourceNode);
+                sourceNode.getOutcomeWebPageNodes().add(outcomeNode);
+            }
         }
     }
 }

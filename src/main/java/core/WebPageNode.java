@@ -1,4 +1,4 @@
-package core.analysis;
+package core;
 
 import lombok.AccessLevel;
 import lombok.Getter;

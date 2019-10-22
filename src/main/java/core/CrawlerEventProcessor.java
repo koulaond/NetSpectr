@@ -2,11 +2,17 @@ package core;
 
 import com.ondrejkoula.crawler.PageDataAcquiredCrawlerEvent;
 import core.analysis.PreAnalyzer;
-import core.analysis.WebPage;
-import core.analysis.WebsiteStructureHandler;
+import lombok.AccessLevel;
+import lombok.Getter;
+import utils.WebPageUtils;
 
+import java.net.URL;
+import java.util.Set;
 import java.util.function.Consumer;
 
+import static java.util.stream.Collectors.toSet;
+
+@Getter(AccessLevel.PACKAGE)
 public class CrawlerEventProcessor implements Consumer<PageDataAcquiredCrawlerEvent> {
     private final PreAnalyzer preAnalyzer;
     private final WebsiteStructureHandler structureHandler;
@@ -18,15 +24,25 @@ public class CrawlerEventProcessor implements Consumer<PageDataAcquiredCrawlerEv
 
     @Override
     public void accept(PageDataAcquiredCrawlerEvent event) {
-        // Do not preanalyze if web page already analyzed in past
-        if (!structureHandler.isInStructure(event.getLocation())) {
+        URL fixedlocation = WebPageUtils.cleanUrl(event.getLocation());
+
+        Set<URL> outcomeUrlsOnDomain = event.getOutcomeUrlsOnDomain()
+                .stream()
+                .map(WebPageUtils::cleanUrl)
+                .collect(toSet());
+
+        Set<URL> outcomeUrlsOutOfDomain = event.getOutcomeUrlsOutOfDomain()
+                .stream()
+                .map(WebPageUtils::cleanUrl)
+                .collect(toSet());
+
             WebPage page = preAnalyzer.preAnalyzePage(
-                    event.getLocation(),
+                    fixedlocation,
                     event.getDocumentTitle(),
                     event.getDocumentHtml(),
-                    event.getOutcomeUrlsOnDomain(),
-                    event.getOutcomeUrlsOutOfDomain());
-          structureHandler.updateStructure(page);
-        }
+                    outcomeUrlsOnDomain,
+                    outcomeUrlsOutOfDomain);
+            structureHandler.updateStructure(page);
+
     }
 }

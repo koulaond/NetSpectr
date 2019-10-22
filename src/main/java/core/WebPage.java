@@ -1,6 +1,5 @@
-package core.analysis;
+package core;
 
-import domain.Entity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
