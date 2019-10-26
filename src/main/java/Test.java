@@ -1,6 +1,5 @@
 import com.ondrejkoula.crawler.CrawlerContext;
 import com.ondrejkoula.crawler.messages.LoggerMessageService;
-import core.Job;
 import core.JobManager;
 import core.WebsiteStructureHandler;
 import core.analysis.PreAnalyzer;
@@ -9,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.String.format;
 
 public class Test {
@@ -17,13 +17,13 @@ public class Test {
         JobManager jobManager = new JobManager(crawlerContext);
         PreAnalyzer preAnalyzer = new PreAnalyzer();
         WebsiteStructureHandler structureHandler = new WebsiteStructureHandler();
-        Job.JobInfo jobInfo = jobManager.createJob(new URL("https://virtii.com/de/blog"), preAnalyzer, structureHandler,
-                event -> System.out.println(format("Job (Crawler ID: %s) changed state: %s -> %s", event.getCrawlerUuid(), event.getOldState(), event.getNewState())));
-        System.out.println(jobInfo);
+        UUID jobUuid = jobManager.createJob(new URL("https://virtii.com/de/blog"), preAnalyzer, structureHandler,
+                newHashSet(event -> System.out.println(format("Web page %s added to structure %s", event.getWebPageAdded().getSourceUrl(), event.getDomain()))));
+        System.out.println(jobUuid);
 
-        jobManager.startJob(jobInfo.getJobUuid());
+        jobManager.startJob(jobUuid);
         Thread.sleep(5000);
-        Job.JobInfo newJobInfo = jobManager.getJobInfo(jobInfo.getJobUuid());
+        JobManager.JobInfo newJobInfo = jobManager.getJobInfo(jobUuid);
         System.out.println();
     }
 }

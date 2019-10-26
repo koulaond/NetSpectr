@@ -2,11 +2,12 @@ package core;
 
 import com.ondrejkoula.crawler.CrawlerConfig;
 import com.ondrejkoula.crawler.CrawlerContext;
-import com.ondrejkoula.crawler.StateChangedCrawlerEvent;
-import core.Job.JobInfo;
 import core.analysis.PreAnalyzer;
+import core.event.StructureUpdatedEvent;
+import lombok.Getter;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -29,10 +30,10 @@ public class JobManager {
         this(crawlerContext, new ConcurrentHashMap<>());
     }
 
-    public JobInfo createJob(URL initialUrl,
-                             PreAnalyzer preAnalyzer,
-                             WebsiteStructureHandler structureHandler,
-                             Consumer<StateChangedCrawlerEvent>... stateChangedConsumers) {
+    public UUID createJob(URL initialUrl,
+                          PreAnalyzer preAnalyzer,
+                          WebsiteStructureHandler structureHandler,
+                          Set<Consumer<StructureUpdatedEvent>> structureUpdatedConsumers) {
 
         if (initialUrl == null) {
             throw new IllegalStateException(NO_CRAWL_URL_ERROR_MESSAGE);
@@ -42,14 +43,14 @@ public class JobManager {
                 .userAgent(USER_AGENT)
                 .build();
         String host = initialUrl.getHost();
-        return initJobAndRegisterProcessor(preAnalyzer, structureHandler, crawlerConfig, host);
+        return initJobAndRegisterProcessor(preAnalyzer, structureHandler, crawlerConfig, host, structureUpdatedConsumers );
     }
 
-    public JobInfo createJob(Set<URL> urlsToSkip,
-                             Set<URL> urlsToCrawl,
-                             PreAnalyzer preAnalyzer,
-                             WebsiteStructureHandler structureHandler,
-                             Consumer<StateChangedCrawlerEvent>... stateChangedConsumers) {
+    public UUID createJob(Set<URL> urlsToSkip,
+                          Set<URL> urlsToCrawl,
+                          PreAnalyzer preAnalyzer,
+                          WebsiteStructureHandler structureHandler,
+                          Set<Consumer<StructureUpdatedEvent>> structureUpdatedConsumers) {
 
         if (urlsToCrawl.isEmpty()) {
             throw new IllegalStateException(NO_CRAWL_URL_ERROR_MESSAGE);
@@ -60,7 +61,7 @@ public class JobManager {
                 .userAgent(USER_AGENT)
                 .build();
         String host = urlsToCrawl.iterator().next().getHost();
-        return initJobAndRegisterProcessor(preAnalyzer, structureHandler, crawlerConfig, host);
+        return initJobAndRegisterProcessor(preAnalyzer, structureHandler, crawlerConfig, host, structureUpdatedConsumers);
     }
 
 
@@ -82,32 +83,44 @@ public class JobManager {
 
     public JobInfo getJobInfo(UUID jobUuid) {
         Job job = jobs.get(jobUuid);
-        return job != null ?  job.getInfo() : null;
+        if (job == null) return null;
+        return new JobInfo(job.getUuid(), job.getCrawlerUuid(), job.getHost(), new HashMap<>(job.getStructureHandler().getStructure().getWebPageNodes()));
     }
 
-    private JobInfo initJobAndRegisterProcessor(PreAnalyzer preAnalyzer,
-                                                WebsiteStructureHandler structureHandler,
-                                                CrawlerConfig crawlerConfig,
-                                                String host,
-                                                Consumer<StateChangedCrawlerEvent>... stateChangedConsumers) {
+    private UUID initJobAndRegisterProcessor(PreAnalyzer preAnalyzer,
+                                             WebsiteStructureHandler structureHandler,
+                                             CrawlerConfig crawlerConfig,
+                                             String host,
+                                             Set<Consumer<StructureUpdatedEvent>> structureUpdatedConsumers) {
 
         UUID crawlerUuid = crawlerContext.registerNewCrawler(crawlerConfig);
-        CrawlerEventProcessor crawlerEventProcessor = new CrawlerEventProcessor(preAnalyzer, structureHandler);
-        if (stateChangedConsumers != null) {
-            for (Consumer<StateChangedCrawlerEvent> consumer : stateChangedConsumers) {
-                crawlerContext.subscribeStateChanged(crawlerUuid, consumer);
-            }
-        }
+
+        Job job = new Job(crawlerUuid, host, crawlerContext, structureHandler);
+        CrawlerEventProcessor crawlerEventProcessor = new CrawlerEventProcessor(job.getUuid(), preAnalyzer, structureHandler, structureUpdatedConsumers);
         crawlerContext.subscribePageDataAcquired(crawlerUuid, crawlerEventProcessor);
-        Job job = new Job(crawlerUuid, host, crawlerEventProcessor, crawlerContext);
-        jobs.put(job.getJobUuid(), job);
-        return job.getInfo();
+        jobs.put(job.getUuid(), job);
+        return job.getUuid();
     }
 
     private void doActionWithJob(UUID jobUuid, Consumer<Job> jobConsumer) {
         Job job = jobs.get(jobUuid);
         if (job != null) {
             jobConsumer.accept(job);
+        }
+    }
+
+    @Getter
+    public static class JobInfo {
+        private final UUID jobUuid;
+        private final UUID crawlerUuid;
+        private final String host;
+        private final Map<URL, WebPageNode> collectedWebPageNodes;
+
+        private JobInfo(UUID jobUuid, UUID crawlerUuid, String host, Map<URL, WebPageNode> collectedWebPageNodes) {
+            this.jobUuid = jobUuid;
+            this.crawlerUuid = crawlerUuid;
+            this.host = host;
+            this.collectedWebPageNodes = collectedWebPageNodes;
         }
     }
 }

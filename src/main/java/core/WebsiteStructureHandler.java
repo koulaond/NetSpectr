@@ -12,6 +12,7 @@ public class WebsiteStructureHandler {
     private WebsiteStructure structure;
     private ReentrantLock reentrantLock = new ReentrantLock();
 
+
     public WebsiteStructureHandler() {
         this.structure = new WebsiteStructure();
     }
@@ -26,6 +27,7 @@ public class WebsiteStructureHandler {
                 node.setWebPage(webPage);
                 node.setSourceUrl(webPage.getSourceUrl());
                 structure.setInitialNode(node);
+                structure.setDomain(webPage.getSourceUrl().getHost());
                 webPageNodes.put(webPage.getSourceUrl(), node);
                 adjustOutcomeNodes(webPage, webPageNodes, node);
             } else {
