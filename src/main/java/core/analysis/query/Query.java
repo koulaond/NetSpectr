@@ -1,7 +1,9 @@
 package core.analysis.query;
 
+import core.analysis.query.syntax.QueryItem;
+
 public class Query {
-    public static QueryTemplate queryTemplate() {
-        return new QueryTemplate();
+    public static QueryItem queryTemplate() {
+        return new QueryItem();
     }
 }
