@@ -11,7 +11,7 @@ public class AttributeQueryTemplate extends LogicalStatement {
     }
 
     public AttributeQueryTemplate hasName(String name) {
-        subordinates.add(new OperableStatement<>(StatementTarget.ATTRIBUTE_NAME, Operator.isEqualTo(name)));
+        subordinates.add(new OperableStatement<>(StatementTarget.ATTRIBUTE_NAME, Operator.exact(name)));
         return this;
     }
 
@@ -21,7 +21,7 @@ public class AttributeQueryTemplate extends LogicalStatement {
     }
 
     public AttributeQueryTemplate hasValue(String value) {
-        subordinates.add(new OperableStatement<>(StatementTarget.ATTRIBUTE_VALUE, Operator.isEqualTo(value)));
+        subordinates.add(new OperableStatement<>(StatementTarget.ATTRIBUTE_VALUE, Operator.exact(value)));
         return this;
     }
 
