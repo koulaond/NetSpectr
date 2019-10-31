@@ -1,46 +1,51 @@
 package core.analysis.query.syntax;
 
-import java.util.Queue;
+import com.google.common.collect.Sets;
 
-public class ElementQueryTemplate extends QueryItem<Queue<Statement>> {
+import java.util.HashSet;
+
+public class ElementQueryTemplate extends LogicalStatement {
+
+    ElementQueryTemplate() {
+        super(StatementTarget.ELEMENT_STRUCTURE, LogicalStatementType.AND, new HashSet<>());
+    }
 
     public ElementQueryTemplate withName(Operator<String> operator) {
-        addToQueue(new Statement(operator));
+        subordinates.add(new OperableStatement<>(StatementTarget.ELEMENT_NAME, operator));
         return this;
     }
 
-
     public ElementQueryTemplate hasText() {
-
+        subordinates.add(new OperableStatement<>(StatementTarget.ELEMENT_NAME, Operator.any()));
+        return this;
     }
 
     public ElementQueryTemplate hasText(Operator<String> operator) {
-
-    }
-
-    public ElementQueryTemplate hasAttribute(AttributeQueryTemplate attributeQueryTemplate) {
-
+        subordinates.add(new OperableStatement<>(StatementTarget.ELEMENT_NAME, operator));
+        return this;
     }
 
     public ElementQueryTemplate hasAttribute(String attrName) {
+        return hasAttribute(Attributes.hasName(attrName));
+    }
 
+    public ElementQueryTemplate hasAttribute(AttributeQueryTemplate attributeQueryTemplate) {
+        subordinates.add(attributeQueryTemplate);
+        return this;
     }
 
     public ElementQueryTemplate and(ElementQueryTemplate... templates) {
-
+        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, Sets.newHashSet(templates)));
+        return this;
     }
 
     public ElementQueryTemplate or(ElementQueryTemplate... templates) {
-
+        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.OR, Sets.newHashSet(templates)));
+        return this;
     }
 
     public ElementQueryTemplate containsSubElement(ElementQueryTemplate elementQueryTemplate) {
-
-    }
-
-    protected void addToQueue(Statement<QueryItem> statement) {
-        if (!unit.contains(statement)) {
-            unit.add(statement);
-        }
+        subordinates.add(elementQueryTemplate);
+        return this;
     }
 }

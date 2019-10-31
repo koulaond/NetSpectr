@@ -10,7 +10,7 @@ public class Operator<T> {
     private OperatorType operatorType;
     private T value;
 
-    private Operator(T value,  OperatorType operatorType) {
+    private Operator(OperatorType operatorType, T value) {
         if (!operatorType.supportsType(value.getClass())) {
             throw new IllegalStateException(format("Operator type %s does not support class type %s", operatorType.name(), value.getClass().getName()));
         }
@@ -19,6 +19,10 @@ public class Operator<T> {
     }
 
     public static Operator<String> isEqualTo(String value) {
-        return new Operator<>(value, OperatorType.EQUALS);
+        return new Operator<>(OperatorType.EQUALS, value);
+    }
+
+    public static Operator<String> any() {
+        return new Operator<>(OperatorType.MATCHES_REGEX, ".");
     }
 }

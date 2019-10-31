@@ -13,7 +13,8 @@ public enum OperatorType {
     IS_ON_POSITION(Integer.class),
     BEFORE(Date.class),
     AFTER(Date.class),
-    BETWEEN(Date.class);
+    BETWEEN(Date.class),
+    MATCHES_REGEX(String.class);
 
     private Class[] supportedTypes;
 

@@ -7,5 +7,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QueryItem<T> {
     protected T unit;
-
 }

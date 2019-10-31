@@ -3,11 +3,11 @@ package core.analysis.query.syntax;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class Statement<T> {
+public class Statement {
 
-    protected Operator<T> operator;
+    protected StatementTarget target;
 
-    public Statement(Operator<T> operator) {
-        this.operator = operator;
+    public Statement(StatementTarget target) {
+        this.target = target;
     }
 }
