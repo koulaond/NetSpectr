@@ -1,13 +1,15 @@
 package core.analysis.query.syntax;
 
 import com.google.common.collect.Sets;
+import lombok.EqualsAndHashCode;
 
-import java.util.Collections;
+import java.util.HashSet;
 
+@EqualsAndHashCode(callSuper = true)
 public class AttributeQueryTemplate extends LogicalStatement {
 
     AttributeQueryTemplate() {
-        super(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, Collections.emptySet());
+        super(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet());
     }
 
     public AttributeQueryTemplate hasName(String name) {

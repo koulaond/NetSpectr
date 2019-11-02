@@ -1,12 +1,14 @@
 package core.analysis.query.syntax;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.Date;
 
 import static java.lang.String.format;
 
 @EqualsAndHashCode
+@Getter
 public class Operator<T> {
 
     private OperatorType operatorType;
@@ -21,7 +23,7 @@ public class Operator<T> {
     }
 
     public static Operator<String> exact(String value) {
-        return new Operator<>(OperatorType.EQUALS, value);
+        return new Operator<>(OperatorType.EXACT, value);
     }
 
     public static Operator<String> any() {

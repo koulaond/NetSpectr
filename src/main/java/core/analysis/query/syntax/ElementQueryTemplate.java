@@ -1,9 +1,11 @@
 package core.analysis.query.syntax;
 
 import com.google.common.collect.Sets;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 
+@EqualsAndHashCode(callSuper = true)
 public class ElementQueryTemplate extends LogicalStatement {
 
     ElementQueryTemplate() {
