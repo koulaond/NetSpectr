@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import java.util.HashSet;
 
 @EqualsAndHashCode(callSuper = true)
-public class AttributeQueryTemplate extends LogicalStatement {
+public class AttributeQueryTemplate extends LogicalStatement<Statement> {
 
     AttributeQueryTemplate() {
         super(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet());

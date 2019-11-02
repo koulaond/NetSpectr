@@ -6,10 +6,14 @@ import lombok.EqualsAndHashCode;
 import java.util.HashSet;
 
 @EqualsAndHashCode(callSuper = true)
-public class ElementQueryTemplate extends LogicalStatement {
+public class ElementQueryTemplate extends LogicalStatement<Statement> {
 
     ElementQueryTemplate() {
         super(StatementTarget.ELEMENT_STRUCTURE, LogicalStatementType.AND, new HashSet<>());
+    }
+
+    public ElementQueryTemplate withName(String name) {
+        return withName(Operator.exact(name));
     }
 
     public ElementQueryTemplate withName(Operator<String> operator) {

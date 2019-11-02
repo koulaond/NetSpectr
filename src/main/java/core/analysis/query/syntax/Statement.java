@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @EqualsAndHashCode
 @Getter
-public class Statement {
+public abstract class Statement {
 
     protected StatementTarget target;
 

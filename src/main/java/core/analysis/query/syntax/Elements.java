@@ -2,6 +2,10 @@ package core.analysis.query.syntax;
 
 public final class Elements {
 
+    public static ElementQueryTemplate withName(String name) {
+        return new ElementQueryTemplate().withName(name);
+    }
+
     public static ElementQueryTemplate withName(Operator<String> operator) {
         return new ElementQueryTemplate().withName(operator);
     }
