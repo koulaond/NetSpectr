@@ -14,17 +14,19 @@ public class OperableStatementEvaluator implements StatementEvaluator<OperableSt
     public ElementQueryResult evaluate(Element element, OperableStatement statement, WebPage webPage) {
         Operator operator = statement.getOperator();
         StatementTarget target = statement.getTarget();
-        switch (target){
+        ElementQueryResult result;
+        switch (target) {
             case ELEMENT_NAME:
-                for (Element searchedElement : element.getAllElements()) {
-                    boolean nameMatches = operator.operate(searchedElement.tag().getName());
-                    if (nameMatches) {
-                        ElementQueryResult result = new ElementQueryResult(webPage, statement, emptyList(), 0,0);
-                        return result;
-                    }
-                }
+                boolean nameMatches = operator.operate(element.tag().getName());
+                result = new ElementQueryResult(webPage, statement, emptyList(), nameMatches, element, 0, 0);
+                break;
+            case ELEMENT_TEXT:
+                boolean textMatches = operator.operate(element.text());
+                result = new ElementQueryResult(webPage, statement, emptyList(), textMatches, element, 0, 0);
+                break;
+            default:
+                result = new ElementQueryResult(webPage, statement, emptyList(), false, element, 0, 0);
         }
-
-        return null;
+        return result;
     }
 }

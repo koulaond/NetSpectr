@@ -1,7 +1,6 @@
 package core.analysis.query.execute;
 
 import core.WebPage;
-import core.analysis.query.syntax.OperableStatement;
 import core.analysis.query.syntax.Query;
 import core.analysis.query.syntax.Statement;
 import org.jsoup.Jsoup;
@@ -26,11 +25,9 @@ public class QueryExecutor {
 
     private QueryResult doExecute(WebPage webPage, Set<Statement> statements, Element body) {
         OperableStatementEvaluator evaluator = new OperableStatementEvaluator();
-        for (Statement statement : statements) {
-            for (Element subElement : body.getAllElements()) {
-                if (statement instanceof OperableStatement) {
-                    return evaluator.evaluate(subElement, (OperableStatement) statement, webPage);
-                }
+        for (Element nestedElement : body.getAllElements()) {
+            for (Statement statement : statements) {
+
             }
         }
         return null;

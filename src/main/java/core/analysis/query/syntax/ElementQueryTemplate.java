@@ -9,7 +9,7 @@ import java.util.HashSet;
 public class ElementQueryTemplate extends LogicalStatement<Statement> {
 
     ElementQueryTemplate() {
-        super(StatementTarget.ELEMENT_STRUCTURE, LogicalStatementType.AND, new HashSet<>());
+        super(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, new HashSet<>());
     }
 
     public ElementQueryTemplate withName(String name) {

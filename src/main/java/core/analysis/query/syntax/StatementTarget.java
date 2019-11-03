@@ -2,7 +2,7 @@ package core.analysis.query.syntax;
 
 public enum StatementTarget{
     ELEMENT,
-    ELEMENT_STRUCTURE,
+    ELEMENT_SUBELEMENTS,
     ELEMENT_NAME,
     ELEMENT_TEXT,
     ELEMENT_CHILDREN,
