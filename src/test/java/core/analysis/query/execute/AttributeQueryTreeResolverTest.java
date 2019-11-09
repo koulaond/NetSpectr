@@ -363,7 +363,7 @@ class AttributeQueryTreeResolverTest {
         AttributeQueryTreeResolver resolver = new AttributeQueryTreeResolver();
         Statement statement = or(      // true
                 and(     // false
-                        or(     // false
+                        or(     // true
                                 hasValue(endsWith(".jpg")),     // true
                                 hasName("href")                 // true
                         ),
@@ -393,9 +393,9 @@ class AttributeQueryTreeResolverTest {
     @Test
     public void resolveAttributeComposableLogicalStatementWith__Multilevel_ANDs_ORs_where_nested_AND_fails() {
         AttributeQueryTreeResolver resolver = new AttributeQueryTreeResolver();
-        Statement statement = and(      // true
+        Statement statement = and(      // false
                 and(     // false
-                        or(     // false
+                        or(     // true
                                 hasValue(endsWith(".jpg")),     // true
                                 hasName("href")                 // true
                         ),
@@ -417,6 +417,24 @@ class AttributeQueryTreeResolverTest {
                         hasValue(endsWith("man_cover.jpg")),      // true
                         hasName("href")                         // true
                 )
+        );
+        boolean result = resolver.resolveAttribute(ATTRIBUTE, statement);
+        assertFalse(result);
+    }
+
+    @Test
+    public void resolveAttributeComposableLogicalStatementWith__Multilevel_ANDs_ORs_many_siblings() {
+        AttributeQueryTreeResolver resolver = new AttributeQueryTreeResolver();
+        Statement statement = and(      // false
+                or(     // false
+                        hasValue(endsWith(".j")),     // false
+                        hasName("hre")                 // false
+                ),
+                hasValue(endsWith("cover.jpg")),    // true
+                hasValue(endsWith("over.jpg")),     // true
+                hasValue(endsWith("ver.jpg")),      // true
+                hasValue(endsWith("er.jpg")),       // true
+                hasValue(endsWith("r.jpg"))
         );
         boolean result = resolver.resolveAttribute(ATTRIBUTE, statement);
         assertFalse(result);

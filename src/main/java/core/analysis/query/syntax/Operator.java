@@ -38,7 +38,7 @@ public class Operator<T> {
     }
 
     public static Operator<String> exact(String value) {
-        return new Operator<>(OperatorType.EXACT, value, o -> createStringFunction(o, s -> s.contains(value)));
+        return new Operator<>(OperatorType.EXACT, value, o -> createStringFunction(o, s -> s.equals(value)));
     }
 
     public static Operator<String> any() {
