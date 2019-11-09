@@ -37,7 +37,7 @@ public class ElementQueryTemplateEvaluator implements StatementEvaluator<Element
                 break;
             }
         }
-        if (resultForAnyElement != null) {
+        if (resultForAnyElement == null) {
             resultForAnyElement = new ElementQueryResult(webPage, lastSubStatement, subElementResults, false, null, 0, 0);
         }
         return resultForAnyElement;
