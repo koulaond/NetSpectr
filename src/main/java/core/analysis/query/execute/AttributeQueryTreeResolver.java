@@ -3,6 +3,7 @@ package core.analysis.query.execute;
 import core.analysis.query.syntax.*;
 import org.jsoup.nodes.Attribute;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,11 +62,12 @@ public class AttributeQueryTreeResolver {
     }
 
     private static class AttributeStatementResolverProvider {
-        private static Map<Class<? extends Statement>, AttributeStatementResolver> statementResolvers;
+        private static final Map<Class<? extends Statement>, AttributeStatementResolver> statementResolvers = new HashMap<>();
 
         static {
             statementResolvers.put(LogicalStatement.class, new AttributeLogicalStatementResolver());
             statementResolvers.put(OperableStatement.class, new AttributeOperableStatementResolver());
+            statementResolvers.put(AttributeQueryTemplate.class, new AttributeLogicalStatementResolver());
         }
 
         static AttributeStatementResolver getResolver(Statement statement) {
