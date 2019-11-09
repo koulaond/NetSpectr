@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OperableStatementEvaluatorTest {
+
     private static Element PARSED_ELEMENT;
     private static WebPage WEB_PAGE;
 

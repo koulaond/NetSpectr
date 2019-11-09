@@ -41,12 +41,12 @@ public class ElementQueryTemplate extends LogicalStatement<Statement> {
     }
 
     public ElementQueryTemplate and(ElementQueryTemplate... templates) {
-        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, Sets.newHashSet(templates)));
+        subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, Sets.newHashSet(templates)));
         return this;
     }
 
     public ElementQueryTemplate or(ElementQueryTemplate... templates) {
-        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.OR, Sets.newHashSet(templates)));
+        subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.OR, Sets.newHashSet(templates)));
         return this;
     }
 

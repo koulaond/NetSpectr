@@ -8,13 +8,13 @@ import org.jsoup.nodes.Element;
 
 public class AttributeQueryTemplateEvaluator implements StatementEvaluator<AttributeQueryTemplate, ElementQueryResult> {
     @Override
-    public ElementQueryResult evaluate(Element element, AttributeQueryTemplate statement, WebPage webPage) {
+    public AttributeQueryTreeResult evaluate(Element element, AttributeQueryTemplate statement, WebPage webPage) {
         Attributes attributes = element.attributes();
         AttributeQueryTreeResolver resolver = new AttributeQueryTreeResolver();
         for (Attribute attribute : attributes) {
             boolean resultForAttribute = resolver.resolveAttribute(attribute, statement);
             if (resultForAttribute) {
-                new AttributeQueryTreeResult(webPage, statement, null, true, element, 0, 0, attribute);
+               return new AttributeQueryTreeResult(webPage, statement, null, true, element, 0, 0, attribute);
             }
         }
         return new AttributeQueryTreeResult(webPage, statement, null, false, element, 0, 0, null);
