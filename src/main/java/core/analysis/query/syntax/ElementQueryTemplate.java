@@ -2,14 +2,19 @@ package core.analysis.query.syntax;
 
 import com.google.common.collect.Sets;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.HashSet;
 
 @EqualsAndHashCode(callSuper = true)
+@Getter
 public class ElementQueryTemplate extends LogicalStatement<Statement> {
+
+    private boolean processSubElements;
 
     ElementQueryTemplate() {
         super(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, new HashSet<>());
+        processSubElements(true);
     }
 
     public ElementQueryTemplate withName(String name) {
@@ -41,11 +46,17 @@ public class ElementQueryTemplate extends LogicalStatement<Statement> {
     }
 
     public ElementQueryTemplate and(ElementQueryTemplate... templates) {
+        for (ElementQueryTemplate template : templates) {
+            template.processSubElements(false);
+        }
         subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, Sets.newHashSet(templates)));
         return this;
     }
 
     public ElementQueryTemplate or(ElementQueryTemplate... templates) {
+        for (ElementQueryTemplate template : templates) {
+            template.processSubElements(false);
+        }
         subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.OR, Sets.newHashSet(templates)));
         return this;
     }
@@ -53,5 +64,9 @@ public class ElementQueryTemplate extends LogicalStatement<Statement> {
     public ElementQueryTemplate containsSubElement(ElementQueryTemplate elementQueryTemplate) {
         subordinates.add(elementQueryTemplate);
         return this;
+    }
+
+    void processSubElements(boolean value) {
+        this.processSubElements = value;
     }
 }

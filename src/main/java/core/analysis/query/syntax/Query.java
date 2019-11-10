@@ -2,19 +2,16 @@ package core.analysis.query.syntax;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-
-import java.util.Set;
+import lombok.Getter;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @EqualsAndHashCode
 @AllArgsConstructor(access = PRIVATE)
+@Getter
 public class Query {
-    private ElementQueryTemplate template;
 
-    public Set<Statement> getStatements() {
-        return template.getSubordinates();
-    }
+    private ElementQueryTemplate template;
 
     public static Query query(ElementQueryTemplate template) {
         return new Query(template);

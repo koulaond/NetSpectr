@@ -2,7 +2,6 @@ package core.analysis.query;
 
 import core.WebPage;
 import core.analysis.query.execute.QueryExecutor;
-import core.analysis.query.execute.QueryResult;
 import core.analysis.query.syntax.Query;
 import core.analysis.query.syntax.*;
 import org.jsoup.Jsoup;
@@ -39,7 +38,7 @@ public class Test {
                 .html(document.outerHtml())
                 .build();
         QueryExecutor executor = new QueryExecutor();
-        QueryResult queryResult = executor.executeQuery(page, firstQuery);
+        //QueryResult queryResult = executor.executeQuery(page, firstQuery);
         System.out.println();
     }
 }

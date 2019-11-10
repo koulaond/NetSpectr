@@ -1,30 +1,41 @@
 package core.analysis.query.execute;
 
 import core.WebPage;
+import core.analysis.query.syntax.ElementQueryTemplate;
 import core.analysis.query.syntax.Query;
-import core.analysis.query.syntax.Statement;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class QueryExecutor {
 
-    public QueryResult executeQuery(WebPage webPage, Query query) {
+    public List<QueryResult> executeQuery(WebPage webPage, Query query) {
         String html = webPage.getHtml();
         Document page = Jsoup.parse(html);
         Element body = page.body();
-        return doExecute(webPage, query.getStatements(), body);
-    }
 
-    private QueryResult doExecute(WebPage webPage, Set<Statement> statements, Element body) {
-        OperableStatementEvaluator evaluator = new OperableStatementEvaluator();
-        for (Element nestedElement : body.getAllElements()) {
-            for (Statement statement : statements) {
+        ElementQueryTemplate template = query.getTemplate();
+        StatementEvaluator evaluator = EvaluatorProvider.getEvaluator(template);
+        List<QueryResult> queryResults = new ArrayList<>();
 
+        Elements allElements = body.getAllElements();
+        allElements.forEach(element -> {
+            QueryResult childResult = evaluator.evaluate(element, template, webPage);
+            if (childResult.isSuccess()) {
+                queryResults.add(childResult);
             }
-        }
-        return null;
+        });
+
+
+        List<QueryResult> flattenResults = queryResults.stream()
+                .flatMap(queryResult -> queryResult.getSubElementResults().stream())
+                .collect(toList());
+        return flattenResults;
     }
 }

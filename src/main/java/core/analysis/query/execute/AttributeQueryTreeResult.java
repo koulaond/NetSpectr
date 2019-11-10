@@ -18,10 +18,8 @@ public class AttributeQueryTreeResult extends ElementQueryResult {
                                     List<QueryResult> subElementResults,
                                     boolean success,
                                     Element element,
-                                    int positionStart,
-                                    int positionEnd,
                                     Attribute foundAttribute) {
-        super(sourceWebPage, matchingStatement, subElementResults, success, element, positionStart, positionEnd);
+        super(sourceWebPage, matchingStatement, subElementResults, success, element);
         this.foundAttribute = foundAttribute;
     }
 }

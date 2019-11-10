@@ -10,13 +10,9 @@ import java.util.List;
 @Getter
 public class ElementQueryResult extends QueryResult {
     private final Element element;
-    private final int positionStart;
-    private final int positionEnd;
 
-    public ElementQueryResult(WebPage sourceWebPage, Statement matchingStatement, List<QueryResult> subElementResults, boolean success, Element element, int positionStart, int positionEnd) {
+    public ElementQueryResult(WebPage sourceWebPage, Statement matchingStatement, List<QueryResult> subElementResults, boolean success, Element element) {
         super(sourceWebPage, matchingStatement, subElementResults, success);
         this.element = element;
-        this.positionStart = positionStart;
-        this.positionEnd = positionEnd;
     }
 }

@@ -27,7 +27,7 @@ public class LogicalStatementEvaluator implements StatementEvaluator<LogicalStat
                 if (subQueryResult.isSuccess()) {
                     subElementResults.add(subQueryResult);
                 } else {
-                    return new ElementQueryResult(webPage, statement, emptyList(), false, element, 0, 0);
+                    return new ElementQueryResult(webPage, statement, emptyList(), false, element);
                 }
             } else {
                 subElementResults.add(subQueryResult);
@@ -36,13 +36,13 @@ public class LogicalStatementEvaluator implements StatementEvaluator<LogicalStat
         if (OR.equals(statement.getType())) {
             for (QueryResult subResult : subElementResults) {
                 if (subResult.isSuccess()) {
-                    return new ElementQueryResult(webPage, statement, subElementResults, true, element, 0, 0);
+                    return new ElementQueryResult(webPage, statement, subElementResults, true, element);
                 }
             }
-            return new ElementQueryResult(webPage, statement, subElementResults, false, element, 0, 0);
+            return new ElementQueryResult(webPage, statement, subElementResults, false, element);
         } else {
             // Is AND and all results are successful
-            return new ElementQueryResult(webPage, statement, subElementResults, true, element, 0, 0);
+            return new ElementQueryResult(webPage, statement, subElementResults, true, element);
         }
     }
 }

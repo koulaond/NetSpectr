@@ -18,14 +18,14 @@ public class OperableStatementEvaluator implements StatementEvaluator<OperableSt
         switch (target) {
             case ELEMENT_NAME:
                 boolean nameMatches = operator.operate(element.tag().getName());
-                result = new ElementQueryResult(webPage, statement, emptyList(), nameMatches, element, 0, 0);
+                result = new ElementQueryResult(webPage, statement, emptyList(), nameMatches, element);
                 break;
             case ELEMENT_TEXT:
                 boolean textMatches = operator.operate(element.text());
-                result = new ElementQueryResult(webPage, statement, emptyList(), textMatches, element, 0, 0);
+                result = new ElementQueryResult(webPage, statement, emptyList(), textMatches, element);
                 break;
             default:
-                result = new ElementQueryResult(webPage, statement, emptyList(), false, element, 0, 0);
+                result = new ElementQueryResult(webPage, statement, emptyList(), false, element);
         }
         return result;
     }

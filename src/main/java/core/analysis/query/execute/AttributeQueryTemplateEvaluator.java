@@ -14,9 +14,9 @@ public class AttributeQueryTemplateEvaluator implements StatementEvaluator<Attri
         for (Attribute attribute : attributes) {
             boolean resultForAttribute = resolver.resolveAttribute(attribute, statement);
             if (resultForAttribute) {
-               return new AttributeQueryTreeResult(webPage, statement, null, true, element, 0, 0, attribute);
+                return new AttributeQueryTreeResult(webPage, statement, null, true, element, attribute);
             }
         }
-        return new AttributeQueryTreeResult(webPage, statement, null, false, element, 0, 0, null);
+        return new AttributeQueryTreeResult(webPage, statement, null, false, element, null);
     }
 }
