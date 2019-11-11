@@ -13,15 +13,15 @@ import static core.analysis.query.syntax.LogicalStatementType.AND;
 import static core.analysis.query.syntax.LogicalStatementType.OR;
 import static java.util.Collections.emptyList;
 
-public class LogicalStatementEvaluator implements StatementEvaluator<LogicalStatement<Statement>, QueryResult> {
+public class LogicalStatementEvaluator implements StatementEvaluator<LogicalStatement<Statement>, ElementQueryResult> {
 
     @Override
-    public QueryResult evaluate(Element element, LogicalStatement<Statement> statement, WebPage webPage) {
+    public ElementQueryResult evaluate(Element element, LogicalStatement<Statement> statement, WebPage webPage) {
         Set<Statement> subordinates = statement.getSubordinates();
-        List<QueryResult> subElementResults = new ArrayList<>();
+        List<ElementQueryResult> subElementResults = new ArrayList<>();
         for (Statement subStatement : subordinates) {
             StatementEvaluator subEvaluator = EvaluatorProvider.getEvaluator(subStatement);
-            QueryResult subQueryResult = subEvaluator.evaluate(element, subStatement, webPage);
+            ElementQueryResult subQueryResult = subEvaluator.evaluate(element, subStatement, webPage);
             // If type is AND then break after first unsuccessful evaluation
             if (AND.equals(statement.getType())) {
                 if (subQueryResult.isSuccess()) {
@@ -34,7 +34,7 @@ public class LogicalStatementEvaluator implements StatementEvaluator<LogicalStat
             }
         }
         if (OR.equals(statement.getType())) {
-            for (QueryResult subResult : subElementResults) {
+            for (ElementQueryResult subResult : subElementResults) {
                 if (subResult.isSuccess()) {
                     return new ElementQueryResult(webPage, statement, subElementResults, true, element);
                 }

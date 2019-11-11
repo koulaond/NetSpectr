@@ -44,7 +44,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, AND, statements);
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertTrue(success);
     }
@@ -57,7 +57,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, AND, statements);
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertFalse(success);
     }
@@ -77,7 +77,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, AND, statements);
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertTrue(success);
     }
@@ -97,7 +97,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, AND, statements);
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertFalse(success);
     }
@@ -117,7 +117,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, OR, statements);     // true
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertTrue(success);
     }
@@ -137,7 +137,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, OR, statements); // false
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertFalse(success);
     }
@@ -157,7 +157,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, OR, statements); // true
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertTrue(success);
     }
@@ -177,7 +177,7 @@ class LogicalStatementEvaluatorTest {
         );
         LogicalStatement statement = new LogicalStatement(ELEMENT_SUBELEMENTS, OR, statements); // true
         LogicalStatementEvaluator evaluator = new LogicalStatementEvaluator();
-        QueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
+        ElementQueryResult result = evaluator.evaluate(PARSED_ELEMENT, statement, WEB_PAGE);
         boolean success = result.isSuccess();
         assertFalse(success);
     }

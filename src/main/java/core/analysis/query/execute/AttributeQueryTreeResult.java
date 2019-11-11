@@ -15,7 +15,7 @@ public class AttributeQueryTreeResult extends ElementQueryResult {
 
     public AttributeQueryTreeResult(WebPage sourceWebPage,
                                     Statement matchingStatement,
-                                    List<QueryResult> subElementResults,
+                                    List<ElementQueryResult> subElementResults,
                                     boolean success,
                                     Element element,
                                     Attribute foundAttribute) {

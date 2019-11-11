@@ -18,16 +18,16 @@ public class ElementQueryTemplateEvaluator implements StatementEvaluator<Element
         Set<Statement> subordinates = statement.getSubordinates();
         ElementQueryResult resultForAnyElement = null;
         Statement lastSubStatement = null;
-        List<QueryResult> subElementResults = new ArrayList<>();
+        List<ElementQueryResult> subElementResults = new ArrayList<>();
         if (statement.isProcessSubElements()) {
-            List<QueryResult> resultsPerElement = new ArrayList<>();
+            List<ElementQueryResult> resultsPerElement = new ArrayList<>();
             Elements subElements = element.children();
             LOOP_ELEMENT:
             for (Element subElement : subElements) {
                 for (Statement subStatement : subordinates) {
                     lastSubStatement = subStatement;
                     StatementEvaluator subEvaluator = EvaluatorProvider.getEvaluator(subStatement);
-                    QueryResult subElementResult = subEvaluator.evaluate(subElement, subStatement, webPage);
+                    ElementQueryResult subElementResult = subEvaluator.evaluate(subElement, subStatement, webPage);
                     if (!subElementResult.isSuccess()) {
                         subElementResults.clear();
                         continue LOOP_ELEMENT;
@@ -48,7 +48,7 @@ public class ElementQueryTemplateEvaluator implements StatementEvaluator<Element
         } else {
             for (Statement subStatement : subordinates) {
                 StatementEvaluator subEvaluator = EvaluatorProvider.getEvaluator(subStatement);
-                QueryResult elementResult = subEvaluator.evaluate(element, subStatement, webPage);
+                ElementQueryResult elementResult = subEvaluator.evaluate(element, subStatement, webPage);
                 if (!elementResult.isSuccess()) {
                     resultForAnyElement = new ElementQueryResult(webPage, statement, newArrayList(elementResult), false, null);
                     break;
