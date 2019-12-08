@@ -1,7 +1,7 @@
 package core.analysis.query;
 
 import core.WebPage;
-import core.analysis.query.execute.QueryExecutor;
+import core.analysis.query.execute.SinglePageQueryExecutor;
 import core.analysis.query.syntax.Query;
 import core.analysis.query.syntax.*;
 import org.jsoup.Jsoup;
@@ -37,7 +37,7 @@ public class Test {
         WebPage page = WebPage.builder()
                 .html(document.outerHtml())
                 .build();
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         //QueryResult queryResult = executor.executeQuery(page, firstQuery);
         System.out.println();
     }

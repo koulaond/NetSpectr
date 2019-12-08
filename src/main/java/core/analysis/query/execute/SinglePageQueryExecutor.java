@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class QueryExecutor {
+public class SinglePageQueryExecutor {
 
     public List<ElementQueryResult> executeQuery(WebPage webPage, Query query) {
         String html = webPage.getHtml();

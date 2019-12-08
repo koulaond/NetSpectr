@@ -17,6 +17,7 @@ public class Operator<T> {
 
     private OperatorType operatorType;
     private T value;
+    @EqualsAndHashCode.Exclude
     private Function<Object, Boolean> function;
 
     private Operator(OperatorType operatorType, T value, Function<Object, Boolean> function) {

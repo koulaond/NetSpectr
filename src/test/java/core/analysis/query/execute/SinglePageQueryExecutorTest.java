@@ -17,7 +17,7 @@ import java.util.List;
 import static core.analysis.query.syntax.Operator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class QueryExecutorTest {
+class SinglePageQueryExecutorTest {
     public static final String ATTR_CLASS = "class";
     public static final String ATTR_HREF = "href";
     public static final String ATTR_HREF_ASSETS_IMAGES__STARTING_WITH = "assets/images/";
@@ -48,7 +48,7 @@ class QueryExecutorTest {
 
     @Test
     void test__find_composite_div() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         String attr_class_value = "jumbotron jumbotron-fluid about";
         String attr_class = "class";
         String element_div = "div";
@@ -75,7 +75,7 @@ class QueryExecutorTest {
 
     @Test
     void test__find_all_divs() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         Query query = Query.query(Elements.withName("div"));
         List<ElementQueryResult> queryResults = executor.executeQuery(WEB_PAGE, query);
         assertThat(queryResults).hasSize(PARSED_ELEMENT.getElementsByTag("div").size());
@@ -83,7 +83,7 @@ class QueryExecutorTest {
 
     @Test
     void test__find_specific_divs__containing_class_attr_starting_to_col() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         Query query = Query.query(
                 Elements.withName("div")
                         .hasAttribute(
@@ -97,7 +97,7 @@ class QueryExecutorTest {
 
     @Test
     void test__really_brutal_thor_hammer_and_kraken__positive() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         Query query = Query.query(
                 Elements.withName(ELEMENT_DIV)
                         .hasAttribute(
@@ -148,7 +148,7 @@ class QueryExecutorTest {
 
     @Test
     void test__really_brutal_thor_hammer_and_kraken__negative_href_bad_operator() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         Query query = Query.query(
                 Elements.withName(ELEMENT_DIV)
                         .hasAttribute(
@@ -199,7 +199,7 @@ class QueryExecutorTest {
 
     @Test
     void test__really_brutal_thor_hammer_and_kraken__negative_() {
-        QueryExecutor executor = new QueryExecutor();
+        SinglePageQueryExecutor executor = new SinglePageQueryExecutor();
         Query query = Query.query(
                 Elements.withName(ELEMENT_DIV)
                         .hasAttribute(
