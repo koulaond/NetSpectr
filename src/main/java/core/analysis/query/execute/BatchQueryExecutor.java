@@ -6,18 +6,19 @@ import core.analysis.query.syntax.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BatchQueryExecutor {
 
-    public BatchQueryResult executeQueries(Map<WebPage, Query> queries) {
+    public BatchQueryResult executeQueries(Set<WebPage> webPages, Query query) {
         SinglePageQueryExecutor singlePageExecutor = new SinglePageQueryExecutor();
         Map<WebPage, List<ElementQueryResult>> results = new HashMap<>();
-        queries.forEach((webPage, query) -> {
+        webPages.forEach(webPage -> {
             List<ElementQueryResult> resultForPage = singlePageExecutor.executeQuery(webPage, query);
             if (!resultForPage.isEmpty()) {
                 results.put(webPage, resultForPage);
             }
         });
-        return new BatchQueryResult(queries.size(), results.size(), results);
+        return new BatchQueryResult(webPages.size(), results.size(), results);
     }
 }
