@@ -2,12 +2,11 @@ package core;
 
 import com.ondrejkoula.crawler.CrawlerConfig;
 import com.ondrejkoula.crawler.CrawlerContext;
+import com.ondrejkoula.crawler.CrawlerInfo;
 import core.analysis.PreAnalyzer;
 import core.event.StructureUpdatedEvent;
-import lombok.Getter;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +29,7 @@ public class JobManager {
         this(crawlerContext, new ConcurrentHashMap<>());
     }
 
-    public UUID createJob(URL initialUrl,
+    public Job createJob(URL initialUrl,
                           PreAnalyzer preAnalyzer,
                           WebsiteStructureHandler structureHandler,
                           Set<Consumer<StructureUpdatedEvent>> structureUpdatedConsumers) {
@@ -46,7 +45,7 @@ public class JobManager {
         return initJobAndRegisterProcessor(preAnalyzer, structureHandler, crawlerConfig, host, structureUpdatedConsumers );
     }
 
-    public UUID createJob(Set<URL> urlsToSkip,
+    public Job createJob(Set<URL> urlsToSkip,
                           Set<URL> urlsToCrawl,
                           PreAnalyzer preAnalyzer,
                           WebsiteStructureHandler structureHandler,
@@ -81,46 +80,28 @@ public class JobManager {
         doActionWithJob(jobUuid, job -> crawlerContext.resumeCrawler(job.getCrawlerUuid()));
     }
 
-    public JobInfo getJobInfo(UUID jobUuid) {
-        Job job = jobs.get(jobUuid);
-        if (job == null) return null;
-        return new JobInfo(job.getUuid(), job.getCrawlerUuid(), job.getHost(), new HashMap<>(job.getStructureHandler().getStructure().getWebPageNodes()));
+    public Job getJob(UUID jobUuid) {
+        return jobs.get(jobUuid);
     }
 
-    private UUID initJobAndRegisterProcessor(PreAnalyzer preAnalyzer,
+    private Job initJobAndRegisterProcessor(PreAnalyzer preAnalyzer,
                                              WebsiteStructureHandler structureHandler,
                                              CrawlerConfig crawlerConfig,
                                              String host,
                                              Set<Consumer<StructureUpdatedEvent>> structureUpdatedConsumers) {
-
-        UUID crawlerUuid = crawlerContext.registerNewCrawler(crawlerConfig);
-
+        CrawlerInfo crawlerInfo = crawlerContext.registerNewCrawler(crawlerConfig);
+        UUID crawlerUuid = crawlerInfo.getUuid();
         Job job = new Job(crawlerUuid, host, crawlerContext, structureHandler);
         CrawlerEventProcessor crawlerEventProcessor = new CrawlerEventProcessor(job.getUuid(), preAnalyzer, structureHandler, structureUpdatedConsumers);
         crawlerContext.subscribePageDataAcquired(crawlerUuid, crawlerEventProcessor);
         jobs.put(job.getUuid(), job);
-        return job.getUuid();
+        return job;
     }
 
     private void doActionWithJob(UUID jobUuid, Consumer<Job> jobConsumer) {
         Job job = jobs.get(jobUuid);
         if (job != null) {
             jobConsumer.accept(job);
-        }
-    }
-
-    @Getter
-    public static class JobInfo {
-        private final UUID jobUuid;
-        private final UUID crawlerUuid;
-        private final String host;
-        private final Map<URL, WebPageNode> collectedWebPageNodes;
-
-        private JobInfo(UUID jobUuid, UUID crawlerUuid, String host, Map<URL, WebPageNode> collectedWebPageNodes) {
-            this.jobUuid = jobUuid;
-            this.crawlerUuid = crawlerUuid;
-            this.host = host;
-            this.collectedWebPageNodes = collectedWebPageNodes;
         }
     }
 }

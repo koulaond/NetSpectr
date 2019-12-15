@@ -1,8 +1,8 @@
 package service;
 
-import com.ondrejkoula.crawler.messages.MessageService;
+import com.ondrejkoula.crawler.messages.CrawlerMessageService;
 
-public interface ApplicationLogService extends MessageService {
+public interface ApplicationLogService extends CrawlerMessageService {
 
     void generalErrorMessage(String message);
 

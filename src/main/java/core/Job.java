@@ -1,12 +1,11 @@
 package core;
 
 import com.ondrejkoula.crawler.CrawlerContext;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.UUID;
 
-@Getter(AccessLevel.PACKAGE)
+@Getter
 public class Job {
 
     private final UUID uuid;

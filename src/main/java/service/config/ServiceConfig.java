@@ -1,11 +1,12 @@
 package service.config;
 
+import com.ondrejkoula.crawler.CrawlerContext;
 import core.JobManager;
 import core.event.StructureUpdatedEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import service.ApplicationLogService;
-import service.CrawlerService;
+import service.CrawlerJobService;
 import service.DefaultMessageService;
 
 import java.util.function.Consumer;
@@ -19,10 +20,10 @@ public class ServiceConfig {
     }
 
     @Bean
-    public CrawlerService crawlerService(JobManager jobManager,
-                                         Consumer<StructureUpdatedEvent> consumer,
-                                         ApplicationLogService logService) {
-        return new CrawlerService(jobManager, consumer, logService);
+    public CrawlerJobService crawlerService(JobManager jobManager,
+                                            CrawlerContext crawlerContext,
+                                            Consumer<StructureUpdatedEvent> consumer) {
+        return new CrawlerJobService(jobManager, crawlerContext, consumer);
     }
 
     @Bean

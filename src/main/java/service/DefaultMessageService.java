@@ -23,6 +23,11 @@ public class DefaultMessageService implements ApplicationLogService {
     }
 
     @Override
+    public void crawlerInfo(UUID uuid) {
+        // TODO
+    }
+
+    @Override
     public void generalErrorMessage(String message) {
         log.error(message);
     }

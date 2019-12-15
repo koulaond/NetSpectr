@@ -2,14 +2,15 @@ package rest.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import rest.CrawlerController;
-import service.CrawlerService;
+import rest.CrawlerJobController;
+import service.ApplicationLogService;
+import service.CrawlerJobService;
 
 @Configuration
 public class ControllerConfig {
 
     @Bean
-    public CrawlerController crawlerController(CrawlerService crawlerService) {
-        return new CrawlerController(crawlerService);
+    public CrawlerJobController crawlerController(CrawlerJobService crawlerJobService, ApplicationLogService applicationLogService) {
+        return new CrawlerJobController(crawlerJobService, applicationLogService);
     }
 }
