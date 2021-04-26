@@ -27,7 +27,7 @@
         <version.jsoup>1.8.3</version.jsoup>
         <version.guava>28.1-jre</version.guava>
         <version.apache.commons>3.9</version.apache.commons>
-        <version.commons-io>2.5</version.commons-io>
+        <version.commons-io>2.7</version.commons-io>
         <version.lombok>1.18.8</version.lombok>
     </properties>
 
