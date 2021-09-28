@@ -27,6 +27,7 @@
         <version.jsoup>1.8.3</version.jsoup>
         <version.guava>28.1-jre</version.guava>
         <version.apache.commons>3.9</version.apache.commons>
+        <version.apache.collections>4.4</version.apache.collections>
         <version.commons-io>2.5</version.commons-io>
         <version.lombok>1.18.8</version.lombok>
     </properties>
@@ -64,6 +65,13 @@
             <artifactId>commons-lang3</artifactId>
             <version>${version.apache.commons}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${version.apache.collections}</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

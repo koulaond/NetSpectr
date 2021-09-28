@@ -33,7 +33,7 @@ public class Test {
         System.out.println(firstQuery.equals(secondQuery));
         System.out.println(firstQuery.hashCode() == secondQuery.hashCode());
 
-        Document document = Jsoup.connect("https://virtii.com/de/blog").get();
+        Document document = Jsoup.connect("https://www.memsource.com/resources/").get();
         WebPage page = WebPage.builder()
                 .html(document.outerHtml())
                 .build();
