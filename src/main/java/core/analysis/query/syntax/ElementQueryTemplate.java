@@ -1,10 +1,11 @@
 package core.analysis.query.syntax;
 
-import com.google.common.collect.Sets;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.HashSet;
+
+import static java.util.Arrays.asList;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -49,7 +50,7 @@ public class ElementQueryTemplate extends LogicalStatement<Statement> {
         for (ElementQueryTemplate template : templates) {
             template.processSubElements(false);
         }
-        subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, Sets.newHashSet(templates)));
+        subordinates.add(new LogicalStatement<>(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.AND, new HashSet<>(asList(templates))));
         return this;
     }
 
@@ -57,7 +58,7 @@ public class ElementQueryTemplate extends LogicalStatement<Statement> {
         for (ElementQueryTemplate template : templates) {
             template.processSubElements(false);
         }
-        subordinates.add(new LogicalStatement(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.OR, Sets.newHashSet(templates)));
+        subordinates.add(new LogicalStatement<>(StatementTarget.ELEMENT_SUBELEMENTS, LogicalStatementType.OR, new HashSet<>(asList(templates))));
         return this;
     }
 

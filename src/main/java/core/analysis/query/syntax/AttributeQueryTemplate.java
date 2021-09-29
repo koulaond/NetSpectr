@@ -2,14 +2,15 @@ package core.analysis.query.syntax;
 
 import lombok.EqualsAndHashCode;
 
-import java.util.Arrays;
 import java.util.HashSet;
+
+import static java.util.Arrays.asList;
 
 @EqualsAndHashCode(callSuper = true)
 public class AttributeQueryTemplate extends LogicalStatement<Statement> {
 
     AttributeQueryTemplate() {
-        super(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet());
+        super(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet<>());
     }
 
     public AttributeQueryTemplate hasName(String name) {
@@ -33,12 +34,12 @@ public class AttributeQueryTemplate extends LogicalStatement<Statement> {
     }
 
     public AttributeQueryTemplate or(AttributeQueryTemplate... definitions) {
-        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.OR, new HashSet(Arrays.asList(definitions))));
+        subordinates.add(new LogicalStatement<>(StatementTarget.ATTRIBUTE, LogicalStatementType.OR, new HashSet<>(asList(definitions))));
         return this;
     }
 
     public AttributeQueryTemplate and(AttributeQueryTemplate... definitions) {
-        subordinates.add(new LogicalStatement(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet(Arrays.asList(definitions))));
+        subordinates.add(new LogicalStatement<>(StatementTarget.ATTRIBUTE, LogicalStatementType.AND, new HashSet<>(asList(definitions))));
         return this;
     }
 }

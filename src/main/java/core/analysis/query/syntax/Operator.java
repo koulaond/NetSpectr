@@ -1,6 +1,5 @@
 package core.analysis.query.syntax;
 
-import javafx.util.Pair;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -15,10 +14,12 @@ import static java.lang.String.format;
 @Getter
 public class Operator<T> {
 
-    private OperatorType operatorType;
-    private T value;
+    private final OperatorType operatorType;
+
+    private final T value;
+
     @EqualsAndHashCode.Exclude
-    private Function<Object, Boolean> function;
+    private final Function<Object, Boolean> function;
 
     private Operator(OperatorType operatorType, T value, Function<Object, Boolean> function) {
         if (!operatorType.supportsType(value.getClass())) {
@@ -81,7 +82,7 @@ public class Operator<T> {
                 o -> createDateFunction(o, date -> date.after(value), dateFormat));
     }
 
-    public static Operator<Pair> between(Date from, Date to, String dateFormat) {
+    public static Operator<Pair<?>> between(Date from, Date to, String dateFormat) {
         return new Operator<>(OperatorType.GREATER_THAN, new Pair<>(from, to),
                 o -> createDateFunction(o, date -> date.after(from) && date.before(to), dateFormat));
     }
